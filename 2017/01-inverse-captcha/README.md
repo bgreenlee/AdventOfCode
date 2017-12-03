@@ -1,4 +1,4 @@
-# Inverse Captcha Part 1 in Ada
+# Inverse Captcha in Ada
 
 http://adventofcode.com/2017/day/1
 
