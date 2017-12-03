@@ -2,6 +2,8 @@
 
 http://adventofcode.com/2017/day/1
 
+## Part 1
+
 The night before Christmas, one of Santa's Elves calls you in a panic. "The printer's broken! We can't print the Naughty or Nice List!" By the time you make it to sub-basement 17, there are only a few minutes until midnight. "We have a big problem," she says; "there must be almost fifty bugs in this system, but nothing else can print The List. Stand in this square, quick! There's no time to explain; if you can convince them to pay you in stars, you'll be able to--" She pulls a lever and the world goes blurry.
 
 When your eyes can focus again, everything seems a lot more pixelated than before. She must have sent you inside the computer! You check the system clock: 25 milliseconds until midnight. With that much time, you should be able to collect all fifty stars by December 25th.
@@ -21,13 +23,27 @@ For example:
 - 1234 produces 0 because no digit matches the next.
 - 91212129 produces 9 because the only digit that matches the next one is the last digit, 9.
 
+## Part 2
+
+You notice a progress bar that jumps to 50% completion. Apparently, the door isn't yet satisfied, but it did emit a star as encouragement. The instructions change:
+
+Now, instead of considering the next digit, it wants you to consider the digit halfway around the circular list. That is, if your list contains 10 items, only include a digit in your sum if the digit 10/2 = 5 steps forward matches it. Fortunately, your list has an even number of elements.
+
+For example:
+
+- 1212 produces 6: the list contains 4 items, and all four digits match the digit 2 items ahead.
+- 1221 produces 0, because every comparison is between a 1 and a 2.
+- 123425 produces 4, because both 2s match each other, but no other digit has a match.
+- 123123 produces 12.
+- 12131415 produces 4.
+
 ## Setup
 
 - download gnat-gpl from https://www.adacore.com/download
 - `sudo ./doinstall`
 - `PATH="/usr/local/gnat/bin:$PATH"; export PATH`
-- `gnatmake inverse_captcha.adb`
-- `echo "<input>" | ./inverse_captcha`
+- `gnatmake inverse_captcha_part_1.adb`
+- `echo "<input>" | ./inverse_captcha_part_1`
 
 ## Resources
 
