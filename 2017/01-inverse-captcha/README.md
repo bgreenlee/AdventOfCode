@@ -48,3 +48,13 @@ For example:
 ## Resources
 
 - [Ada Tutorial](http://www.adahome.com/Tutorials/Lovelace/lovelace.html)
+
+## Notes
+
+One of the interesting features of Ada is the ability to have constrained types. E.g.:
+
+```
+type I is range 1 .. 10;
+```
+
+defines an integer type, `I`, that can only contain the values 1 to 10.
