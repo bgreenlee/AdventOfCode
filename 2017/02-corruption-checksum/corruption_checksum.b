@@ -2,11 +2,11 @@ GET "libhdr"
 
 LET start() = VALOF
 {
-    LET largest = 0
     LET default_smallest = 9999999
     LET default_largest = 0
     LET smallest = default_smallest
-    LET checksum = default_largest
+    LET largest = default_largest
+    LET checksum = 0
     LET curnum = 0
 
     writes("Enter data, type '.' when finished:*n")
