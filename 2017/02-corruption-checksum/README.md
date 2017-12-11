@@ -64,11 +64,11 @@ make clean
 make
 # Ctrl-C out of there, then:
 cd com
-ln -s ../../../../corruption_checksum.b
+ln -s ../../../../corruption_checksum_1.b
 cd ..
 cintsys
-c bc corruption_checksum
-corruption_checksum
+c bc corruption_checksum_1
+corruption_checksum_1
 ```
 
 It seems program code needs to go in `$BCPLROOT/com`.
