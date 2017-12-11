@@ -72,3 +72,9 @@ corruption_checksum_1
 ```
 
 It seems program code needs to go in `$BCPLROOT/com`.
+
+## Resources
+
+- [The BCPL Cintsys and Cintpos User Guide](http://www.cl.cam.ac.uk/~mr10/bcplman.pdf)
+- [Young Persons Guide to BCPL Programming on the Raspberry Pi Part 1](http://www.cl.cam.ac.uk/~mr10/bcpl4raspi.pdf)
+
