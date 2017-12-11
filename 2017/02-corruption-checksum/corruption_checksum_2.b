@@ -9,11 +9,14 @@ LET start() = VALOF
 
     writes("Enter data, type '.' when finished:*n")
     {
+        // It seems we can only read input one character at a time, so we
+        // need to build numbers up ourselves
         LET ch = rdch()
         IF ch = endstreamch | ch='.' BREAK
-        TEST ch>=48 & ch<=57 THEN
+
+        TEST ch>='0' & ch<='9' THEN
         {
-            curnum := curnum * 10 + (ch - 48)
+            curnum := curnum * 10 + (ch - '0')
         }
         ELSE
         {
@@ -22,6 +25,8 @@ LET start() = VALOF
             curnum := 0
         }
 
+        // 10 is a linefeed. We get one when we first start out, though, so
+        // ignore that
         IF ch = 10 & col > 0 THEN
         {
             FOR i = 0 TO col - 2 DO
