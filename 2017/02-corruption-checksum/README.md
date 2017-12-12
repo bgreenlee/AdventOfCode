@@ -78,3 +78,8 @@ It seems program code needs to go in `$BCPLROOT/com`.
 - [The BCPL Cintsys and Cintpos User Guide](http://www.cl.cam.ac.uk/~mr10/bcplman.pdf)
 - [Young Persons Guide to BCPL Programming on the Raspberry Pi Part 1](http://www.cl.cam.ac.uk/~mr10/bcpl4raspi.pdf)
 
+## Notes
+
+BCPL not being in common use made this particularly tricky, as Stackoverflow Driven Development wasn't an option. The couple user guides that I found were pretty dense. However, it did come with a large collection of sample code, which was extremely helpful.
+
+One interesting thing about BCPL was the lack of types. I didn't spend much time digging in to this, though.
