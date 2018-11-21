@@ -13,3 +13,4 @@ My criteria for picking is language is:
 My choices so far:
 1. [Ada](01-inverse-captcha/)
 2. [BCPL](02-corruption-checksum/)
+3. [Clojure](03-spiral-memory/)
