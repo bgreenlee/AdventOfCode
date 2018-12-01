@@ -1,0 +1,6 @@
+[package]
+name = "chronal-calibration"
+version = "0.1.0"
+authors = ["Brad Greenlee <brad@footle.org>"]
+
+[dependencies]
