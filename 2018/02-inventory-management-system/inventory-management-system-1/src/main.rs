@@ -6,16 +6,6 @@ use std::collections::HashMap;
 /// The score is a tuple (a,b), where a is true if the id contains exactly
 /// two of any letter, and b is true if the id contains exactly three of any
 /// letter.
-///
-/// # Examples
-///
-/// ```
-/// assert_eq(doccomments::score("abcdef"), (false, false));
-/// assert_eq(doccomments::score("bababc"), (true,  true));
-/// assert_eq(doccomments::score("abbcde"), (true,  false));
-/// assert_eq(doccomments::score("abcccd"), (false, true));
-/// ```
-///
 fn score(id: &str) -> (bool, bool) {
     let mut char_counts = HashMap::new();
     for c in id.chars() {
@@ -41,12 +31,9 @@ fn score(id: &str) -> (bool, bool) {
 
 /// Calculate the checksum of an array of ids
 ///
-/// # Example
-///
-/// ```
-/// let result = doccomments::checksum(["abcdef", "bababc", "abbcde", "abcccd", "aabcdd", "abcdee", "ababab"]);
-/// assert_eq(result, 12);
-/// ```
+/// The checksum is the number of ids that have exactly two of the same
+/// character times the number of ids that have exactly three of the same
+/// character.
 fn checksum(ids: &[&str]) -> i32 {
     let mut two_count = 0;
     let mut three_count = 0;
@@ -70,4 +57,23 @@ fn main() -> io::Result<()>  {
     let checksum = checksum(&ids);
     println!("Checksum: {}", checksum);
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_score() {
+        assert_eq!(score("abcdef"), (false, false));
+        assert_eq!(score("bababc"), (true,  true));
+        assert_eq!(score("abbcde"), (true,  false));
+        assert_eq!(score("abcccd"), (false, true));
+    }
+
+    #[test]
+    fn test_checksum() {
+       let result = checksum(&["abcdef", "bababc", "abbcde", "abcccd", "aabcdd", "abcdee", "ababab"]);
+       assert_eq!(result, 12);
+    }
 }
