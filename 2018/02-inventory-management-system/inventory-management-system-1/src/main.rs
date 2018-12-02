@@ -51,14 +51,12 @@ fn checksum(ids: &[&str]) -> i32 {
     let mut two_count = 0;
     let mut three_count = 0;
     for id in ids.iter() {
-        match score(*id) {
-            (true, true) => {
-                two_count += 1;
-                three_count += 1;
-            },
-            (true, false) => two_count += 1,
-            (false, true) => three_count += 1,
-            _ => ()
+        let (has_two, has_three) = score(*id);
+        if has_two {
+            two_count += 1;
+        }
+        if has_three {
+            three_count += 1;
         }
     }
 
@@ -66,7 +64,6 @@ fn checksum(ids: &[&str]) -> i32 {
 }
 
 fn main() -> io::Result<()>  {
-    // read input frequency changes into a vector
     let mut buffer = String::new();
     io::stdin().read_to_string(&mut buffer)?;
     let ids :Vec<&str> = buffer.lines().collect();
