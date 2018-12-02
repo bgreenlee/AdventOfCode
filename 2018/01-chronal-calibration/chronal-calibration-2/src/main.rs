@@ -4,7 +4,7 @@ use std::collections::HashSet;
 /// Finds the first duplicate frequency.
 ///
 /// Starting with the initial frequency and applying the changes from
-/// the given vector of frequency changes repeatedly, return the first
+/// the given array of frequency changes repeatedly, return the first
 /// frequency value that repeats.
 ///
 /// There's no guarantee that this will ever finish. There should
@@ -13,10 +13,10 @@ use std::collections::HashSet;
 /// # Example
 ///
 /// ```
-/// let result = doccomments::find_first_duplicate(0, vec![+3, +3, +4, -2, -4]);
+/// let result = doccomments::find_first_duplicate(0, [+3, +3, +4, -2, -4]);
 /// assert_eq(result, 10);
 /// ```
-fn find_first_duplicate(mut frequency: i32, freq_changes: Vec<i32>) -> i32 {
+fn find_first_duplicate(mut frequency: i32, freq_changes: &[i32]) -> i32 {
     let mut seen_frequencies = HashSet::new();
     loop {
         for freq_change in freq_changes.iter() {
@@ -39,7 +39,7 @@ fn main() -> io::Result<()>  {
         l.parse::<i32>().unwrap_or(0)
     ).collect();
 
-    let duplicate = find_first_duplicate(0, freq_changes);
+    let duplicate = find_first_duplicate(0, &freq_changes);
     println!("First duplicate: {}", duplicate);
     Ok(())
 }
