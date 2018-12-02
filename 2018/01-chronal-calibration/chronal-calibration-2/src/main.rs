@@ -9,13 +9,6 @@ use std::collections::HashSet;
 ///
 /// There's no guarantee that this will ever finish. There should
 /// probably be some sort of timeout, but this is only day 1.
-///
-/// # Example
-///
-/// ```
-/// let result = doccomments::find_first_duplicate(0, [+3, +3, +4, -2, -4]);
-/// assert_eq(result, 10);
-/// ```
 fn find_first_duplicate(mut frequency: i32, freq_changes: &[i32]) -> i32 {
     let mut seen_frequencies = HashSet::new();
     loop {
@@ -42,4 +35,15 @@ fn main() -> io::Result<()>  {
     let duplicate = find_first_duplicate(0, &freq_changes);
     println!("First duplicate: {}", duplicate);
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_find_first_duplicate() {
+        let result = find_first_duplicate(0, &[3, 3, 4, -2, -4]);
+        assert_eq!(result, 10);
+    }
 }
