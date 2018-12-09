@@ -51,6 +51,7 @@ impl Point {
 struct Map<'a> {
     waypoints: &'a Vec<Point>,
     field: HashMap<Point, Option<&'a Point>>,
+    field_distances: HashMap<Point, Csize>,
     left: Csize,
     top: Csize,
     width: Csize,
@@ -66,9 +67,16 @@ impl<'a> Map<'a> {
         let width = right - left;
         let height = bottom - top;
         let field = HashMap::new();
+        let field_distances = HashMap::new();
         let waypoints = points;
 
-        Map { waypoints, field, left, top, width, height }
+        Map { waypoints, field, field_distances, left, top, width, height }
+    }
+
+    fn waypoint_distances(&self, point:&'a Point) -> Vec<Csize> {
+        self.waypoints.iter()
+            .map(|p| p.distance_to(point))
+            .collect()
     }
 
     fn closest_waypoint(&mut self, point:Point) -> Option<&'a Point> {
@@ -91,6 +99,16 @@ impl<'a> Map<'a> {
                 let point = Point{x,y};
                 let closest = self.closest_waypoint(point);
                 self.field.insert(point.clone(), closest);
+            }
+        }
+    }
+
+    fn populate_distances(&mut self) {
+        for x in self.left..=self.left + self.width {
+            for y in self.top..=self.top + self.height {
+                let point = Point { x, y };
+                let total_distance = self.waypoint_distances(&point).iter().sum();
+                self.field_distances.insert(point.clone(), total_distance);
             }
         }
     }
@@ -128,12 +146,16 @@ fn main() {
 
     //println!("{:#?}", map);
 
-    for waypoint in map.waypoints {
-        let size = map.waypoint_size(waypoint);
-        println!("{:?} => {}", waypoint, size);
-    }
+//    for waypoint in map.waypoints {
+//        let size = map.waypoint_size(waypoint);
+//        println!("{:?} => {}", waypoint, size);
+//    }
     let max_size = map.waypoints.iter().map(|wp| map.waypoint_size(wp)).max().unwrap();
     println!("max size: {}", max_size);
+
+    map.populate_distances();
+    let safe_size = map.field_distances.values().filter(|v| **v < 10000).count();
+    println!("safe size: {}", safe_size);
 }
 
 //#[cfg(test)]
