@@ -5,7 +5,6 @@ use std::io::{self, Read};
 /// Given two strings, return a string representing the overlap between the
 /// strings, where overlap is defined as characters from both strings that
 /// are in the same position in each string.
-///
 fn overlap(a: &str, b: &str) -> String {
     let mut result = String::new();
     for (i, c) in a.char_indices() {
