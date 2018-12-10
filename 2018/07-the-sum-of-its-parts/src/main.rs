@@ -1,5 +1,5 @@
 use std::io::{self, Read};
-use std::collections::HashSet;
+use std::collections::{BTreeMap, HashSet};
 
 fn main() {
     let mut buffer = String::new();
@@ -13,37 +13,34 @@ fn main() {
              second.chars().nth(0).unwrap_or('-'))
         }).collect();
 
-    let mut instructions : Vec<char> = Vec::new();
+    let mut completed : Vec<char> = Vec::new();
+    let mut dependencies : BTreeMap<char, HashSet<char>> = BTreeMap::new();
     for (a, b) in input {
-        print!("{:?} => ", (a,b));
-        let instr_clone = instructions.clone();
-        let mut instructions_iter = instr_clone.iter();
-        match instructions_iter.position(|c| *c == a) {
-            Some(a_idx) => // found a, so look for a place to insert b
-                match instructions_iter.position(|c| *c > b) {
-                    Some(insert_offset_idx) => instructions.insert(a_idx + insert_offset_idx + 1, b),
-                    None => instructions.push(b),
-                },
-            None => {
-                // not found, add them both to the end
-                instructions.push(a);
-                instructions.push(b);
-            }
-        }
-        let state : String = instructions.iter().by_ref().collect();
-        println!("{}", state);
+        dependencies.entry(a).or_insert(HashSet::new());
+        let mut deps = dependencies.entry(b).or_insert(HashSet::new());
+        deps.insert(a);
     }
 
-    // we now need to iterate through the instructions from the end, removing any duplicates
-    let mut seen = HashSet::new();
-    let filtered_instructions : Vec<&char> = instructions.iter().rev()
-        .filter(|&c| if seen.contains(c) {
-            false
-        } else {
-            seen.insert(*c);
-            true
-        }).collect();
-//    println!("{:#?}", input);
-    let answer : String = filtered_instructions.iter().cloned().rev().collect();
-    println!("{}", answer)
+    let total_steps = dependencies.keys().len();
+    while completed.len() < total_steps {
+        // anything without dependencies we can move to completed
+        for (step, deps) in dependencies.iter().by_ref() {
+            if deps.is_empty() && !completed.contains(step) {
+                completed.push(*step);
+                break;
+            }
+        }
+
+        // now remove all completed from the dependencies
+        for (_, mut deps) in dependencies.iter_mut() {
+            if !deps.is_empty() {
+                for c in completed.iter().by_ref() {
+                    deps.remove(&c);
+                }
+            }
+        }
+    }
+
+    let answer : String = completed.iter().collect();
+    println!("{:#?}", answer);
 }
