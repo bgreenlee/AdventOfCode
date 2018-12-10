@@ -4,6 +4,7 @@ use std::collections::{BTreeMap, HashSet};
 fn main() {
     let mut buffer = String::new();
     io::stdin().read_to_string(&mut buffer).expect("Error reading from stdin");
+    // parse the input lines into tuples
     let input : Vec<(char,char)> = buffer.lines()
         .map(|l| {
             let mut words = l.split_whitespace();
