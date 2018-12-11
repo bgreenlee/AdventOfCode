@@ -26,6 +26,8 @@ impl Node {
     }
 
     fn value(&self) -> usize {
+        // if we don't have children, our value is the sum of our metadata
+        // otherwise, our value is the sum of our children as indexed by our metadata
         if self.children.is_empty() {
             self.metadata.iter().by_ref().sum()
         } else {
