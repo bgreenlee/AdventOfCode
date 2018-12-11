@@ -30,21 +30,15 @@ fn main() {
         deps.insert(a);
     }
 
-//    println!("dependencies: {:?}", dependencies);
-
     let mut clock = 0;
     let total_steps = dependencies.keys().len();
     while completed.len() < total_steps {
-//        println!("clock: {}", clock);
-
         // anything without dependencies we can move to the work queue
-        for (step, deps) in dependencies.iter().by_ref() {
+        for (step, deps) in &dependencies {
             if deps.is_empty() && !work_queue.contains_key(step) && work_queue.keys().len() < num_workers {
                 work_queue.insert(*step, base_delay + *step as u8 - 65);
             }
         }
-
-//        println!("work queue: {:?}", work_queue);
 
         // update work queue, move anything that has timed out to completed
         for (step, time_remaining) in &work_queue {
@@ -54,18 +48,14 @@ fn main() {
             }
         }
 
-//        println!("completed: {:?}", completed);
-
         // remove all completed from the dependencies
         for (_, mut deps) in dependencies.iter_mut() {
             if !deps.is_empty() {
-                for c in completed.iter().by_ref() {
+                for c in &completed {
                     deps.remove(&c);
                 }
             }
         }
-
-//        println!("updated deps: {:?}", dependencies);
 
         // remove zero-ed steps and decrement
         work_queue = work_queue.iter()
@@ -73,13 +63,7 @@ fn main() {
             .map(|(k,v)| (*k, *v - 1))
             .collect();
 
-//        println!("updated work queue: {:?}", work_queue);
-
         clock += 1;
-
-//        // wait for enter
-//        let mut input = String::new();
-//        io::stdin().read_line(&mut input);
     }
 
     let answer : String = completed.iter().collect();
