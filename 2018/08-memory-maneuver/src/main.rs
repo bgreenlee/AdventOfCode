@@ -29,9 +29,9 @@ impl Node {
         // if we don't have children, our value is the sum of our metadata
         // otherwise, our value is the sum of our children as indexed by our metadata
         if self.children.is_empty() {
-            self.metadata.iter().by_ref().sum()
+            self.metadata.iter().sum()
         } else {
-            self.metadata.iter().by_ref().map(|i|
+            self.metadata.iter().map(|i|
                 if *i <= self.children.len() {
                     self.children[*i-1].value()
                 } else {
