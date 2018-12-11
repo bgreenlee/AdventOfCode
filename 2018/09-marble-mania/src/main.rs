@@ -30,7 +30,7 @@ fn main() {
         } else {
             let player_num = current_marble_value % num_players;
             player_scores[player_num as usize] += current_marble_value;
-            let bonus_marble_idx : i32 = (current_marble_idx - 7) % circle.len() as i32;
+            let bonus_marble_idx : i32 = (current_marble_idx - 7 + circle.len() as i32) % circle.len() as i32;
             let bonus_marble = circle.remove(bonus_marble_idx as usize);
             player_scores[player_num as usize] += bonus_marble;
             current_marble_idx = bonus_marble_idx;
