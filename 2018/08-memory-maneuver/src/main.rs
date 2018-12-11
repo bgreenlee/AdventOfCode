@@ -24,6 +24,20 @@ impl Node {
         let self_sum : usize = self.metadata.iter().sum();
         child_sum + self_sum
     }
+
+    fn value(&self) -> usize {
+        if self.children.is_empty() {
+            self.metadata.iter().by_ref().sum()
+        } else {
+            self.metadata.iter().by_ref().map(|i|
+                if *i <= self.children.len() {
+                    self.children[*i-1].value()
+                } else {
+                    0
+                }
+            ).sum()
+        }
+    }
 }
 
 fn create_node(mut input: &[usize]) -> (Node, &[usize]) {
@@ -51,5 +65,6 @@ fn main() {
 
     let (node, _) = create_node(&input);
 
-    println!("{}", node.sum_metadata());
+    println!("sum: {}", node.sum_metadata());
+    println!("value: {}", node.value());
 }
