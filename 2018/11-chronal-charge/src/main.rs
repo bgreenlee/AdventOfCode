@@ -22,16 +22,21 @@ fn main() {
     }
 
     let mut high_power = i64::min_value();
-    let mut high_coord = (0,0);
-    for y in 0..grid.len()-3 {
-        for x in 0..grid[y].len()-3 {
-            let block_total =
-                grid[y][x]   + grid[y][x+1]   + grid[y][x+2] +
-                grid[y+1][x] + grid[y+1][x+1] + grid[y+1][x+2] +
-                grid[y+2][x] + grid[y+2][x+1] + grid[y+2][x+2];
-            if block_total > high_power {
-                high_power = block_total;
-                high_coord = (x+1, y+1);
+    let mut high_coord = (0,0,0);
+    for s in 0..grid.len() {
+        println!("{}", s+1);
+        for y in 0..grid.len() - s {
+            for x in 0..grid[y].len() - s {
+                let mut block_total = 0;
+                for by in y..=y+s {
+                    for bx in x..=x+s {
+                        block_total += grid[by][bx];
+                    }
+                }
+                if block_total > high_power {
+                    high_power = block_total;
+                    high_coord = (x + 1, y + 1, s + 1);
+                }
             }
         }
     }
