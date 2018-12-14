@@ -3,12 +3,12 @@ use std::collections::HashSet;
 
 #[derive(Debug,PartialEq,Eq)]
 enum Tile { Straight, CornerDown, CornerUp, Intersection, Empty, }
-#[derive(Debug,PartialEq,Eq)]
+#[derive(Debug,PartialEq,Eq,Copy,Clone)]
 enum Direction { Up, Down, Left, Right, }
-#[derive(Debug,PartialEq,Eq)]
+#[derive(Debug,PartialEq,Eq,Copy,Clone)]
 enum Turn { Left, Straight, Right, }
 
-#[derive(Debug,PartialEq,Eq)]
+#[derive(Debug,PartialEq,Eq,Copy,Clone)]
 struct Cart {
     location: (usize, usize),
     direction: Direction,
@@ -66,13 +66,13 @@ impl Cart {
 }
 
 #[derive(Debug)]
-struct Map {
-    cells: Vec<Vec<Tile>>,
+struct Simulation {
+    map: Vec<Vec<Tile>>,
     carts: Vec<Cart>,
 }
 
-impl Map {
-    fn new(map_str: &str) -> Map {
+impl Simulation {
+    fn new(map_str: &str) -> Simulation {
         let mut cells = Vec::new();
         let mut carts = Vec::new();
         let lines : Vec<&str> = map_str.lines().collect();
@@ -95,13 +95,22 @@ impl Map {
             }
             cells.push(row);
         }
-        Map { cells, carts }
+        Simulation { map: cells, carts }
     }
 
-    fn advance(&mut self) -> Result<(), (usize,usize)> {
+    fn advance(&mut self) -> Result<(), Vec<(usize,usize)>> {
+        // first sort carts by location
+        self.carts.sort_by(|a,b| {
+            if a.location.1 == b.location.1 {
+                a.location.0.cmp(&b.location.0)
+            } else {
+                a.location.1.cmp(&b.location.1)
+            }
+        });
+        // advance cart positions
         for cart in self.carts.iter_mut() {
             let (x,y) = cart.location;
-            let tile = &self.cells[y][x];
+            let tile = &self.map[y][x];
             match tile {
                 Tile::Intersection => cart.turn_at_intersection(),
                 Tile::CornerUp | Tile::CornerDown => cart.turn_at_corner(&tile),
@@ -114,28 +123,53 @@ impl Map {
                 Direction::Right => (x+1, y),
             };
         }
-        // check for collision
+        // check for collisions
         let mut locations = HashSet::new();
+        let mut collisions = Vec::new();
         for cart in &self.carts {
             if locations.insert(cart.location) == false {
-                return Err(cart.location);
+                collisions.push(cart.location);
             }
         }
-        Ok(())
+        if collisions.is_empty() {
+            Ok(())
+        } else {
+            Err(collisions)
+        }
+    }
+
+    fn remove_carts_at_location(&mut self, location: &(usize,usize)) {
+        self.carts = self.carts.iter()
+            .filter(|&c| c.location != *location)
+            .cloned()
+            .collect();
     }
 }
 
 fn main() {
     let mut buffer = String::new();
     io::stdin().read_to_string(&mut buffer).expect("Error reading from stdin");
-    let mut map = Map::new(&buffer);
+    let mut sim = Simulation::new(&buffer);
 
-    loop {
-        match map.advance() {
+    'main: loop {
+        match sim.advance() {
             Ok(_) => (),
-            Err(location) => {
-                println!("Collision at {:?}", location);
-                break;
+            Err(collisions) => {
+                for location in collisions {
+                    println!("Collision at {:?}", location);
+                    sim.remove_carts_at_location(&location);
+                    match sim.carts.len() {
+                        0 => {
+                            println!("No carts left!");
+                            break 'main;
+                        },
+                        1 => {
+                            println!("Last cart at {:?}", sim.carts[0].location);
+                            break 'main;
+                        },
+                        _ => (),
+                    }
+                }
             }
         }
     }
