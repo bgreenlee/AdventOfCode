@@ -1,5 +1,5 @@
 use std::io::{self, Read};
-use std::collections::HashSet;
+use std::collections::HashMap;
 
 #[derive(Debug,PartialEq,Eq)]
 enum Tile { Straight, CornerDown, CornerUp, Intersection, Empty, }
@@ -13,6 +13,7 @@ struct Cart {
     location: (usize, usize),
     direction: Direction,
     next_turn: Turn,
+    is_dead: bool,
 }
 
 impl Cart {
@@ -24,7 +25,7 @@ impl Cart {
             '>' => Direction::Right,
             _ => panic!("Illegal cart character: {}", c),
         };
-        Cart { location, direction, next_turn: Turn::Left }
+        Cart { location, direction, next_turn: Turn::Left, is_dead: false }
     }
 
     fn turn_at_intersection(&mut self) {
@@ -98,7 +99,7 @@ impl Simulation {
         Simulation { map: cells, carts }
     }
 
-    fn advance(&mut self) -> Result<(), Vec<(usize,usize)>> {
+    fn advance(&mut self) {
         // first sort carts by location
         self.carts.sort_by(|a,b| {
             if a.location.1 == b.location.1 {
@@ -107,8 +108,22 @@ impl Simulation {
                 a.location.1.cmp(&b.location.1)
             }
         });
+
+        // cache cart locations so we can do easier collision detection
+        let mut locations = HashMap::new();
+        let mut carts_to_kill = Vec::new();
+        for (i, cart) in self.carts.iter().enumerate() {
+            if !cart.is_dead {
+                locations.insert(cart.location, i);
+            }
+        }
+
         // advance cart positions
-        for cart in self.carts.iter_mut() {
+        for (i, cart) in self.carts.iter_mut().enumerate() {
+            if cart.is_dead {
+                continue;
+            }
+            let prev_location = cart.location.clone();
             let (x,y) = cart.location;
             let tile = &self.map[y][x];
             match tile {
@@ -122,27 +137,29 @@ impl Simulation {
                 Direction::Left  => (x-1, y),
                 Direction::Right => (x+1, y),
             };
-        }
-        // check for collisions
-        let mut locations = HashSet::new();
-        let mut collisions = Vec::new();
-        for cart in &self.carts {
-            if locations.insert(cart.location) == false {
-                collisions.push(cart.location);
+            // check for collisions
+            if let Some(cart_id) = locations.get(&cart.location) {
+                println!("Collision at {:?}", cart.location);
+                cart.is_dead = true;
+                carts_to_kill.push(*cart_id); // need to do this outside the loop or rust has a fit
+            } else {
+                locations.remove(&prev_location);
+                locations.insert(cart.location, i);
             }
         }
-        if collisions.is_empty() {
-            Ok(())
-        } else {
-            Err(collisions)
+
+        for id in carts_to_kill {
+            self.carts[id].is_dead = true;
         }
     }
 
-    fn remove_carts_at_location(&mut self, location: &(usize,usize)) {
-        self.carts = self.carts.iter()
-            .filter(|&c| c.location != *location)
+    fn live_carts(&self) -> Vec<Cart> {
+        // rust is ridiculous
+        self.carts.iter()
+            .filter(|&c| !c.is_dead)
             .cloned()
-            .collect();
+            .into_iter()
+            .collect::<Vec<Cart>>()
     }
 }
 
@@ -151,26 +168,22 @@ fn main() {
     io::stdin().read_to_string(&mut buffer).expect("Error reading from stdin");
     let mut sim = Simulation::new(&buffer);
 
+//    sim.advance();
+//    println!("{:#?}", sim);
     'main: loop {
-        match sim.advance() {
-            Ok(_) => (),
-            Err(collisions) => {
-                for location in collisions {
-                    println!("Collision at {:?}", location);
-                    sim.remove_carts_at_location(&location);
-                    match sim.carts.len() {
-                        0 => {
-                            println!("No carts left!");
-                            break 'main;
-                        },
-                        1 => {
-                            println!("Last cart at {:?}", sim.carts[0].location);
-                            break 'main;
-                        },
-                        _ => (),
-                    }
-                }
-            }
+        sim.advance();
+        let live_carts = sim.live_carts();
+//        println!("live: {}", live_carts);
+        match live_carts.len() {
+            0 => {
+                println!("No carts left!");
+                break 'main;
+            },
+            1 => {
+                println!("Last cart at {:?}", live_carts[0].location);
+                break 'main;
+            },
+            _ => (),
         }
     }
 }
