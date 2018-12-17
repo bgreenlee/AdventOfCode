@@ -57,7 +57,7 @@ fn part2(input: &str) {
         elf_a = (elf_a + recipes[elf_a] + 1) % recipes.len();
         elf_b = (elf_b + recipes[elf_b] + 1) % recipes.len();
     }
-    
+
     let answer = recipes.len() - input_digits_len;
     println!("part2: {}", answer);
 }
