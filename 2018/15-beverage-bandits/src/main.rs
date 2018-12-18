@@ -320,12 +320,14 @@ impl Game {
                     .collect::<Vec<Vec<Location>>>();
                 if !paths.is_empty() {
                     paths.sort_by(|a,b|
-                        if a.len() == b.len() {
-                            // order by first step
-                            //a[1].cmp(&b[1])
-                            // or order by first destination?
+                        if a[a.len()-1] == b[b.len()-1] {
+                            // if the paths are to the same target, sort by first step
+                            a[1].cmp(&b[1])
+                        } else if a.len() == b.len() {
+                            // paths are to different targets, but same length, so sort by target
                             a[a.len()-1].cmp(&b[b.len()-1])
                         } else {
+                            // order by path length
                             a.len().cmp(&b.len())
                         });
 
