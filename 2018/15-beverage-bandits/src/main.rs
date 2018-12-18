@@ -5,6 +5,7 @@ use std::io::{self, Read};
 use std::collections::{BinaryHeap, HashMap, HashSet};
 use std::{usize,fmt};
 use std::sync::atomic::{self, AtomicUsize};
+use std::env;
 
 #[derive(PartialEq,Eq,Hash,Copy,Clone)]
 struct Location {
@@ -44,11 +45,12 @@ struct Player {
     race: Race,
     hp: i32,
     location: Location,
+    attack_power: i32,
 }
 
 impl Player {
-    fn new(race: Race, location: Location) -> Player {
-        Player { id: PLAYER_ID.fetch_add(1, std::sync::atomic::Ordering::SeqCst), race, hp: 200, location }
+    fn new(race: Race, location: Location, attack_power: i32) -> Player {
+        Player { id: PLAYER_ID.fetch_add(1, std::sync::atomic::Ordering::SeqCst), race, hp: 200, location, attack_power }
     }
 
     fn is_alive(&self) -> bool {
@@ -62,10 +64,6 @@ impl Player {
             (sl.x == pl.x && (sl.y as i32 - pl.y as i32).abs() == 1) ||
             (sl.y == pl.y && (sl.x as i32 - pl.x as i32).abs() == 1)
         )
-    }
-
-    fn attack(&mut self) {
-        self.hp -= 3;
     }
 }
 
@@ -162,7 +160,7 @@ impl fmt::Debug for Game {
 }
 
 impl Game {
-    fn from_string(input: &str) -> Game {
+    fn from_string(input: &str, elf_attack_power: i32) -> Game {
         let mut tiles = HashSet::new();
         let mut players = Vec::new();
 
@@ -176,11 +174,11 @@ impl Game {
                     },
                     'E' => {
                         tiles.insert(location);
-                        players.push(Player::new(Race::Elf, location));
+                        players.push(Player::new(Race::Elf, location, elf_attack_power));
                     },
                     'G' => {
                         tiles.insert(location);
-                        players.push(Player::new(Race::Goblin, location));
+                        players.push(Player::new(Race::Goblin, location, 3));
                     },
                     _ => (),
                 }
@@ -199,9 +197,9 @@ impl Game {
     }
 
     // return HashMap of location -> player
-    fn player_locations(&self) -> HashMap<Location, &Player> {
+    fn player_locations(&self) -> HashMap<Location, Player> {
         let mut player_locations = HashMap::new();
-        for player in &self.players {
+        for player in self.live_players() {
             player_locations.insert(player.location,player);
         }
         player_locations
@@ -290,19 +288,19 @@ impl Game {
                 }
             }
         }
-        println!("...no path from {:?} to {:?}", start, goal);
+//        println!("...no path from {:?} to {:?}", start, goal);
         None // not reachable
     }
 
     fn advance(&mut self) -> Result<(),&'static str> {
-        self.round += 1;
-//        println!("Round {}:", self.round);
         'outer: for player in self.live_players() {
-            let player = self.players[player.id];
+            let mut player = self.players[player.id]; // reload to make sure
+            if !player.is_alive() {
+                continue;
+            }
             // get list of live enemies
             let enemies = self.enemies(&player);
             if enemies.is_empty() {
-                self.round -= 1;
                 return Err("game over");
             }
             let adjacent_enemies = enemies.iter()
@@ -323,21 +321,22 @@ impl Game {
                 if !paths.is_empty() {
                     paths.sort_by(|a,b|
                         if a.len() == b.len() {
-                            a[0].cmp(&b[0])
+                            // order by first step
+                            //a[1].cmp(&b[1])
+                            // or order by first destination?
+                            a[a.len()-1].cmp(&b[b.len()-1])
                         } else {
                             a.len().cmp(&b.len())
                         });
 
                     // and take one step in that direction
-                    println!("{:?} moving to {:?} (target: {:?})", player, paths[0][1], paths[0].last().unwrap());
+//                    println!("{:?} moving to {:?} (target: {:?})", player, paths[0][1], paths[0].last().unwrap());
                     self.players[player.id].location = paths[0][1]; // paths[0][0] should be the player's own location
-                } else {
-                    println!("{:?} has nowhere to go!", player);
                 }
             }
 
             // look for adjacent enemies again
-            let player = self.players[player.id]; // refresh player
+            player = self.players[player.id]; // refresh player
             let enemies = self.enemies(&player);
             let mut adjacent_enemies = enemies.iter()
                 .filter(|e| e.is_adjacent(&player))
@@ -350,36 +349,49 @@ impl Game {
                     } else {
                         a.hp.cmp(&b.hp)
                     });
-                println!("{:?} attacking {:?}", player, adjacent_enemies[0]);
-                self.players[adjacent_enemies[0].id].attack();
+//                println!("{:?} attacking {:?}", player, adjacent_enemies[0]);
+                self.players[adjacent_enemies[0].id].hp -= player.attack_power;
             }
         }
+        self.round += 1;
         Ok(())
     }
 }
 
 fn main() {
+    let mut elf_attack_power = 3;
+    if env::args().len() > 1 {
+        elf_attack_power = env::args().nth(1).unwrap_or("3".to_string()).parse::<i32>().expect("could not parse input!");
+    }
     let mut buffer = String::new();
     io::stdin().read_to_string(&mut buffer).expect("Error reading from stdin");
-    let mut game = Game::from_string(&buffer);
+    let mut game = Game::from_string(&buffer, elf_attack_power);
 
-    println!("Initially:\n{:?}", game);
+//    println!("Initially:\n{:?}", game);
 
     while game.advance().is_ok() {
-        println!("{:?}", game);
+//        println!("{:?}", game);
     }
 
-    println!("{:#?}", game.elves());
-    println!("{:#?}", game.goblins());
+//    println!("{:#?}", game.elves());
+//    println!("{:#?}", game.goblins());
 
     let elves_total_hp = game.elves().iter().map(|p| p.hp).sum::<i32>();
     let goblins_total_hp = game.goblins().iter().map(|p| p.hp).sum::<i32>();
     let (winner, winner_hp) = if elves_total_hp > 0 { ("Elves", elves_total_hp) }
         else { ("Goblins", goblins_total_hp) };
+
     println!("Combat ends after {} full rounds", game.round);
     println!("{} win with {} total hit points left", winner, winner_hp);
     println!("Outcome: {} * {} = {}", game.round, winner_hp, game.round as i32 * winner_hp);
 
+    let elves_died = game.players.iter()
+        .filter(|p| p.race == Race::Elf && !p.is_alive())
+        .map(|p| *p)
+        .collect::<Vec<Player>>()
+        .len();
+
+    println!("{} elves died", elves_died);
 }
 
 #[cfg(test)]
@@ -398,7 +410,7 @@ mod tests {
             #.....#
             #######
         ");
-        let game = Game::from_string(map);
+        let game = Game::from_string(map, 3);
         assert_eq!(game.open_neighbors(&Location { x: 5, y: 2}),
                    vec![Location { x: 5, y: 1 },
                         Location { x: 4, y: 2 }]);
@@ -421,7 +433,7 @@ mod tests {
             #.....#
             #######
         ");
-        let mut game = Game::from_string(map);
+        let mut game = Game::from_string(map, 3);
         assert_eq!(game.shortest_path(Location { x: 5, y: 2},Location { x: 5, y: 5}),
             Some(vec![
                  Location { x: 5, y: 2 }, Location { x: 4, y: 2 }, Location { x: 3, y: 2 },
@@ -437,4 +449,22 @@ mod tests {
 
     }
 
+//    #[test]
+//    fn test_advance() {
+//        let map = indoc!("
+//            #######
+//            #..G..#
+//            #....G#
+//            #.#G#G#
+//            #...#E#
+//            #.....#
+//            #######
+//        ");
+//        let mut game = Game::from_string(map);
+//        game.advance();
+//        let player_locations = game.player_locations();
+//        assert_eq!(game.player_locations().contains_key(&Location{ x: 5, y: 2 }), false);
+//        assert_eq!(game.player_locations().contains_key(&Location{ x: 4, y: 2 }), true);
+//        assert_eq!(game.player_locations().contains_key(&Location{ x: 5, y: 1 }), false);
+//    }
 }
