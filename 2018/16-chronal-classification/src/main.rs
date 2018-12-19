@@ -1,8 +1,8 @@
 use std::io::{self, Read};
-use log::{info, trace, warn};
+use log::info;
 use env_logger;
 use regex::Regex;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 #[derive(Debug)]
 struct Device {
@@ -96,12 +96,7 @@ impl Device {
 
 }
 
-fn main() {
-    env_logger::init();
-
-    let mut buffer = String::new();
-    io::stdin().read_to_string(&mut buffer).expect("Error reading from stdin");
-
+fn part1(buffer: &String) {
     // capture input, which looks like:
     //    Before: [3, 0, 1, 3]
     //    15 2 1 3
@@ -111,7 +106,7 @@ fn main() {
         (\d+)\s+(\d+)\s+(\d+)\s+(\d+)\n
         After: \s+\[(\d+),\s*(\d+),\s*(\d+),\s*(\d+)\]
         ").expect("regex error");
-    let mut sample_map = HashMap::new();
+    let mut sample_map : HashMap<i32, HashSet<String>> = HashMap::new();
     let mut three_or_more_count = 0;
 
     for cap in re.captures_iter(&buffer) {
@@ -127,128 +122,128 @@ fn main() {
         let mut device = Device::new(before);
         device.addr(a, b, c);
         if device.registers == after {
-            let entry = sample_map.entry(opcode).or_insert(Vec::new());
-            entry.push("addr");
+            let entry = sample_map.entry(opcode).or_insert(HashSet::new());
+            entry.insert("addr".to_string());
             match_count += 1;
         }
 
         let mut device = Device::new(before);
         device.addi(a, b, c);
         if device.registers == after {
-            let entry = sample_map.entry(opcode).or_insert(Vec::new());
-            entry.push("addi");
+            let entry = sample_map.entry(opcode).or_insert(HashSet::new());
+            entry.insert("addi".to_string());
             match_count += 1;
         }
 
         let mut device = Device::new(before);
         device.mulr(a, b, c);
         if device.registers == after {
-            let entry = sample_map.entry(opcode).or_insert(Vec::new());
-            entry.push("mulr");
+            let entry = sample_map.entry(opcode).or_insert(HashSet::new());
+            entry.insert("mulr".to_string());
             match_count += 1;
         }
 
         let mut device = Device::new(before);
         device.muli(a, b, c);
         if device.registers == after {
-            let entry = sample_map.entry(opcode).or_insert(Vec::new());
-            entry.push("muli");
+            let entry = sample_map.entry(opcode).or_insert(HashSet::new());
+            entry.insert("muli".to_string());
             match_count += 1;
         }
 
         let mut device = Device::new(before);
         device.banr(a, b, c);
         if device.registers == after {
-            let entry = sample_map.entry(opcode).or_insert(Vec::new());
-            entry.push("banr");
+            let entry = sample_map.entry(opcode).or_insert(HashSet::new());
+            entry.insert("banr".to_string());
             match_count += 1;
         }
 
         let mut device = Device::new(before);
         device.bani(a, b, c);
         if device.registers == after {
-            let entry = sample_map.entry(opcode).or_insert(Vec::new());
-            entry.push("bani");
+            let entry = sample_map.entry(opcode).or_insert(HashSet::new());
+            entry.insert("bani".to_string());
             match_count += 1;
         }
 
         let mut device = Device::new(before);
         device.borr(a, b, c);
         if device.registers == after {
-            let entry = sample_map.entry(opcode).or_insert(Vec::new());
-            entry.push("borr");
+            let entry = sample_map.entry(opcode).or_insert(HashSet::new());
+            entry.insert("borr".to_string());
             match_count += 1;
         }
 
         let mut device = Device::new(before);
         device.bori(a, b, c);
         if device.registers == after {
-            let entry = sample_map.entry(opcode).or_insert(Vec::new());
-            entry.push("bori");
+            let entry = sample_map.entry(opcode).or_insert(HashSet::new());
+            entry.insert("bori".to_string());
             match_count += 1;
         }
 
         let mut device = Device::new(before);
         device.setr(a, b, c);
         if device.registers == after {
-            let entry = sample_map.entry(opcode).or_insert(Vec::new());
-            entry.push("setr");
+            let entry = sample_map.entry(opcode).or_insert(HashSet::new());
+            entry.insert("setr".to_string());
             match_count += 1;
         }
 
         let mut device = Device::new(before);
         device.seti(a, b, c);
         if device.registers == after {
-            let entry = sample_map.entry(opcode).or_insert(Vec::new());
-            entry.push("seti");
+            let entry = sample_map.entry(opcode).or_insert(HashSet::new());
+            entry.insert("seti".to_string());
             match_count += 1;
         }
 
         let mut device = Device::new(before);
         device.gtir(a, b, c);
         if device.registers == after {
-            let entry = sample_map.entry(opcode).or_insert(Vec::new());
-            entry.push("gtir");
+            let entry = sample_map.entry(opcode).or_insert(HashSet::new());
+            entry.insert("gtir".to_string());
             match_count += 1;
         }
 
         let mut device = Device::new(before);
         device.gtri(a, b, c);
         if device.registers == after {
-            let entry = sample_map.entry(opcode).or_insert(Vec::new());
-            entry.push("gtri");
+            let entry = sample_map.entry(opcode).or_insert(HashSet::new());
+            entry.insert("gtri".to_string());
             match_count += 1;
         }
 
         let mut device = Device::new(before);
         device.gtrr(a, b, c);
         if device.registers == after {
-            let entry = sample_map.entry(opcode).or_insert(Vec::new());
-            entry.push("gtrr");
+            let entry = sample_map.entry(opcode).or_insert(HashSet::new());
+            entry.insert("gtrr".to_string());
             match_count += 1;
         }
 
         let mut device = Device::new(before);
         device.eqir(a, b, c);
         if device.registers == after {
-            let entry = sample_map.entry(opcode).or_insert(Vec::new());
-            entry.push("eqir");
+            let entry = sample_map.entry(opcode).or_insert(HashSet::new());
+            entry.insert("eqir".to_string());
             match_count += 1;
         }
 
         let mut device = Device::new(before);
         device.eqri(a, b, c);
         if device.registers == after {
-            let entry = sample_map.entry(opcode).or_insert(Vec::new());
-            entry.push("eqri");
+            let entry = sample_map.entry(opcode).or_insert(HashSet::new());
+            entry.insert("eqri".to_string());
             match_count += 1;
         }
 
         let mut device = Device::new(before);
         device.eqrr(a, b, c);
         if device.registers == after {
-            let entry = sample_map.entry(opcode).or_insert(Vec::new());
-            entry.push("eqrr");
+            let entry = sample_map.entry(opcode).or_insert(HashSet::new());
+            entry.insert("eqrr".to_string());
             match_count += 1;
         }
 
@@ -257,8 +252,66 @@ fn main() {
         }
     }
 
-    info!("{}", three_or_more_count);
+    info!("Number of samples matching three or more ops: {}", three_or_more_count);
 
+    let mut opcode_map : HashMap<String, i32> = HashMap::new();
+    while opcode_map.len() < 16 {
+        for (opcode, ops) in &sample_map {
+            let known_ops : HashSet<String> = opcode_map.keys().into_iter().cloned().collect();
+            let new_ops : HashSet<String> = ops.difference(&known_ops).cloned().collect();
+            if new_ops.len() == 1 {
+                let op = new_ops.iter().nth(0).unwrap().clone();
+                opcode_map.insert(op, *opcode);
+            }
+        }
+    }
+
+    for (op, opcode) in &opcode_map {
+        println!("{} => device.{}(a, b, c),", opcode, op);
+    }
+
+}
+
+fn part2(buffer: &String) {
+    let mut device = Device::new([0,0,0,0]);
+    for line in buffer.lines() {
+        let parts = line.split_whitespace().into_iter()
+            .map(|num| num.trim().parse::<i32>().expect("could not parse number"))
+            .collect::<Vec<i32>>();
+        let (opcode, a, b, c) = (parts[0], parts[1], parts[2], parts[3]);
+
+        match opcode {
+            0 => device.banr(a, b, c),
+            1 => device.muli(a, b, c),
+            2 => device.bori(a, b, c),
+            3 => device.setr(a, b, c),
+            4 => device.addi(a, b, c),
+            5 => device.eqrr(a, b, c),
+            6 => device.gtri(a, b, c),
+            7 => device.gtir(a, b, c),
+            8 => device.borr(a, b, c),
+            9 => device.eqri(a, b, c),
+            10 => device.bani(a, b, c),
+            11 => device.addr(a, b, c),
+            12 => device.eqir(a, b, c),
+            13 => device.mulr(a, b, c),
+            14 => device.seti(a, b, c),
+            15 => device.gtrr(a, b, c),
+            _ => (),
+        }
+    }
+
+    info!("Register 0: {}", device.registers[0]);
+}
+
+fn main() {
+    env_logger::init();
+
+    let mut buffer = String::new();
+    io::stdin().read_to_string(&mut buffer).expect("Error reading from stdin");
+
+//    part1(&buffer);
+    part2(&buffer);
 }
 
 #[cfg(test)]
