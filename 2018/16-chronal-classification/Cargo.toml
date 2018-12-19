@@ -1,0 +1,10 @@
+[package]
+name = "chronal-classification"
+version = "0.1.0"
+authors = ["Brad Greenlee <brad@footle.org>"]
+edition = "2018"
+
+[dependencies]
+log = "0.4.6"
+env_logger = "0.6.0"
+regex = "1"
