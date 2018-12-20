@@ -1,0 +1,8 @@
+[package]
+name = "reservoir-research"
+version = "0.1.0"
+authors = ["Brad Greenlee <brad@footle.org>"]
+edition = "2018"
+
+[dependencies]
+regex="1.1.0"
