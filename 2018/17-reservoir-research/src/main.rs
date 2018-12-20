@@ -17,6 +17,8 @@ struct Game {
     cells: HashMap<(usize,usize),Cell>,
     min_y: usize,
     max_y: usize,
+    stream_count: i32,
+    water_count: i32,
 }
 
 impl fmt::Display for Game {
@@ -60,12 +62,12 @@ impl Game {
                 }
             }
         }
-        let min_y = 1; //cells.keys().map(|k| k.1).min().unwrap();
+        let min_y = cells.keys().map(|k| k.1).min().unwrap();
         let max_y = cells.keys().map(|k| k.1).max().unwrap();
 
         cells.insert((500,0), Cell::Spring);
 
-        Game { cells, min_y, max_y }
+        Game { cells, min_y, max_y, stream_count: 0, water_count: 0 }
     }
 
     fn cell_at(&self, location: &(usize, usize)) -> Cell {
@@ -75,17 +77,18 @@ impl Game {
         }
     }
 
-    fn cell_in_bounds(&self, location: &(usize, usize)) -> bool {
-        location.1 >= self.min_y && location.1 <= self.max_y
+    fn water_count(&self) -> (i32, i32) {
+        (self.stream_count, self.water_count)
     }
 
-    fn water_count(&self) -> (usize, usize) {
-        let stream_count = self.cells.values()
-            .filter(|&&c| c == Cell::Stream)
+    // need to only count water within the boundaries
+    fn final_water_count(&self) -> (usize, usize) {
+        let stream_count = self.cells.iter()
+            .filter(|(&loc, &cell)| loc.1 >= self.min_y && cell == Cell::Stream)
             .collect::<Vec<_>>()
             .len();
-        let water_count = self.cells.values()
-            .filter(|&&c| c == Cell::Water)
+        let water_count = self.cells.iter()
+            .filter(|(&loc, &cell)| loc.1 >= self.min_y && cell == Cell::Water)
             .collect::<Vec<_>>()
             .len();
         (stream_count, water_count)
@@ -102,14 +105,16 @@ impl Game {
             let cell_down = self.cell_at(&down);
 
             match self.cell_at(&location) {
-                Cell::Spring => {
+                Cell::Spring if cell_down == Cell::Sand => {
                     next_cells.insert(down, Cell::Stream);
+                    self.stream_count += 1;
                 },
                 Cell::Stream => {
-                    if self.cell_in_bounds(&down) {
+                    if down.1 <= self.max_y {
                         match cell_down {
                             Cell::Sand => {
                                 next_cells.insert(down, Cell::Stream);
+                                self.stream_count += 1;
                             },
                             _ => (),
                         };
@@ -118,14 +123,17 @@ impl Game {
                     match cell_left {
                         Cell::Sand if (cell_down == Cell::Water || cell_down == Cell::Clay) => {
                             next_cells.insert(left, Cell::Stream);
+                            self.stream_count += 1;
                         },
                         Cell::Water => {
                             next_cells.insert( *location, Cell::Water);
+                            self.stream_count -= 1;
+                            self.water_count += 1;
                         },
                         Cell::Clay => {
-                            // turn to water if the stream is trapped to the right
+                            // turn to water if the stream is trapped to the right & down
                             let mut is_trapped = false;
-                            let mut x = location.0+1;
+                            let mut x = location.0;
                             loop {
                                 match self.cell_at(&(x, location.1)) {
                                     Cell::Sand => {
@@ -134,13 +142,23 @@ impl Game {
                                     Cell::Clay => {
                                         is_trapped = true;
                                         break;
-                                    }
+                                    },
+                                    Cell::Stream | Cell::Water => {
+                                        match self.cell_at(&(x, location.1+1)) {
+                                            Cell::Sand | Cell::Stream => {
+                                                break;
+                                            },
+                                            _ => (),
+                                        };
+                                    },
                                     _ => (),
-                                }
+                                };
                                 x += 1;
                             }
                             if is_trapped {
                                 next_cells.insert(*location, Cell::Water);
+                                self.stream_count -= 1;
+                                self.water_count += 1;
                             }
                         },
                         _ => (),
@@ -149,14 +167,17 @@ impl Game {
                     match cell_right {
                         Cell::Sand if (cell_down == Cell::Water || cell_down == Cell::Clay) => {
                             next_cells.insert(right, Cell::Stream);
+                            self.stream_count += 1;
                         },
                         Cell::Water => {
                             next_cells.insert( *location, Cell::Water);
+                            self.stream_count -= 1;
+                            self.water_count += 1;
                         },
                         Cell::Clay => {
-                            // turn to water if the stream is trapped to the left
+                            // turn to water if the stream is trapped to the right & down
                             let mut is_trapped = false;
-                            let mut x = location.0-1;
+                            let mut x = location.0;
                             loop {
                                 match self.cell_at(&(x, location.1)) {
                                     Cell::Sand => {
@@ -165,13 +186,23 @@ impl Game {
                                     Cell::Clay => {
                                         is_trapped = true;
                                         break;
-                                    }
+                                    },
+                                    Cell::Stream | Cell::Water => {
+                                        match self.cell_at(&(x, location.1+1)) {
+                                            Cell::Sand | Cell::Stream => {
+                                                break;
+                                            },
+                                            _ => (),
+                                        };
+                                    },
                                     _ => (),
-                                }
+                                };
                                 x -= 1;
                             }
                             if is_trapped {
                                 next_cells.insert(*location, Cell::Water);
+                                self.stream_count -= 1;
+                                self.water_count += 1;
                             }
                         },
                         _ => (),
@@ -182,12 +213,14 @@ impl Game {
                     match cell_left {
                         Cell::Sand => {
                             next_cells.insert(left, Cell::Water);
+                            self.water_count += 1;
                         },
                         _ => (),
                     };
                     match cell_right {
                         Cell::Sand => {
                             next_cells.insert(right, Cell::Water);
+                            self.water_count += 1;
                         },
                         _ => (),
                     };
@@ -214,10 +247,6 @@ fn main() {
                 break;
             }
             last_water_count = water_count;
-
-            if round % 1000 == 0 {
-                println!("Round {}:\n{}", round, game);
-            }
         } else {
             if round >= steps {
                 break;
@@ -226,7 +255,9 @@ fn main() {
         round += 1;
     }
     println!("{}", game);
-    println!("Water count: {}", last_water_count.0 + last_water_count.1);
+    let final_water_count = game.final_water_count();
+    println!("Total water count: {}", final_water_count.0 + final_water_count.1);
+    println!("Standing water count: {}", final_water_count.1);
 }
 
 #[cfg(test)]
@@ -251,7 +282,5 @@ y=13, x=498..504";
         assert_eq!(game.cell_at(&(0,0)), Cell::Sand);
         assert_eq!(game.min_y, 1);
         assert_eq!(game.max_y, 13);
-        assert_eq!(game.cell_in_bounds(&(494,0)), false);
-        assert_eq!(game.cell_in_bounds(&(491,1)), true);
     }
 }
