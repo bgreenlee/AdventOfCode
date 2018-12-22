@@ -67,6 +67,13 @@ fn main() {
     io::stdin().read_to_string(&mut buffer).expect("Error reading from stdin");
     let map = Map::from_string(&buffer);
     println!("Max distance: {}", map.max_distance());
+
+    // Part 2
+    let far_rooms = map.locations.values()
+        .filter(|d| **d >= 1000)
+        .collect::<Vec<_>>()
+        .len();
+    println!("Far rooms: {}", far_rooms);
 }
 
 #[cfg(test)]
