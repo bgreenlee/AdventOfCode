@@ -1,52 +1,93 @@
 #[macro_use] extern crate lazy_static;
 use std::io::{self, Read};
+use std::cmp::Ordering;
 use regex::Regex;
 
-#[derive(Debug,Eq,PartialEq)]
-struct NanoBot {
-    x: i32,
-    y: i32,
-    z: i32,
-    r: i32,
+#[derive(Debug,Copy,Clone)]
+struct Point {
+    x: i128,
+    y: i128,
+    z: i128,
 }
 
-impl NanoBot {
-    fn from_string(input: &str) -> NanoBot {
+impl Point {
+    fn scalar(&self) -> i128 {
+        self.x * self.y * self.z
+    }
+}
+
+impl PartialEq for Point {
+    fn eq(&self, other: &Point) -> bool {
+        self.x == other.x && self.y == other.y && self.y == other.z
+    }
+}
+
+impl Eq for Point {}
+
+
+impl Ord for Point {
+    fn cmp(&self, other: &Point) -> Ordering {
+        self.scalar().partial_cmp(&other.scalar()).unwrap_or(Ordering::Equal)
+    }
+}
+
+impl PartialOrd for Point {
+    fn partial_cmp(&self, other: &Point) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+#[derive(Debug,Eq,PartialEq)]
+struct Bot {
+    point: Point,
+    r: i128,
+}
+
+impl Bot {
+    fn from_string(input: &str) -> Bot {
         lazy_static! {
             // pos=<0,0,0>, r=4
             static ref RE: Regex = Regex::new(r"pos=<(-?\d+),(-?\d+),(-?\d+)>, r=(\d+)").unwrap();
         }
         let caps = RE.captures(input).unwrap().iter()
             .skip(1)
-            .map(|c| c.unwrap().as_str().parse::<i32>().unwrap())
+            .map(|c| c.unwrap().as_str().parse::<i128>().unwrap())
             .collect::<Vec<_>>();
-        NanoBot { x: caps[0], y: caps[1], z: caps[2], r: caps[3]}
+        Bot { point: Point { x: caps[0], y: caps[1], z: caps[2] }, r: caps[3]}
     }
 
-    fn distance(&self, other: &NanoBot) -> i32 {
-        ((self.x - other.x).abs() +
-            (self.y - other.y).abs() +
-            (self.z - other.z).abs())
+    fn start_point(&self) -> Point {
+        Point { x: self.point.x - self.r, y: self.point.y - self.r, z: self.point.z - self.r }
     }
 
-    fn in_range(&self, other: &NanoBot) -> bool {
+    fn end_point(&self) -> Point {
+        Point { x: self.point.x + self.r, y: self.point.y + self.r, z: self.point.z + self.r }
+    }
+
+    fn distance(&self, other: &Bot) -> i128 {
+        ((self.point.x - other.point.x).abs() +
+            (self.point.y - other.point.y).abs() +
+            (self.point.z - other.point.z).abs())
+    }
+
+    fn in_range(&self, other: &Bot) -> bool {
         self.distance(other) <= self.r
     }
 
 }
 
-fn find_max_overlap(starts: &mut Vec<i32>, ends: &mut Vec<i32>) -> ((i32, i32), i32) {
+fn find_max_overlap(starts: &mut Vec<Point>, ends: &mut Vec<Point>) -> ((Point,Point), i128) {
     starts.sort();
     ends.sort();
 
     let mut max_overlap = 0;
-    let mut max_overlap_range = (0,0);
+    let mut max_overlap_range = (Point { x:0,y:0,z:0 }, Point { x:0,y:0,z:0 });
     let mut current_overlap = 0;
 
     let mut i = 0;
     let mut j = 0;
     while i < starts.len() && j < ends.len() {
-        if starts[i] <= ends[j] {
+        if starts[i].scalar() <= ends[j].scalar() {
             current_overlap += 1;
             if current_overlap > max_overlap {
                 max_overlap = current_overlap;
@@ -62,20 +103,20 @@ fn find_max_overlap(starts: &mut Vec<i32>, ends: &mut Vec<i32>) -> ((i32, i32), 
     (max_overlap_range, max_overlap)
 }
 
-fn num_bots_in_range(bots: &Vec<NanoBot>, coord: (i32,i32,i32)) -> usize {
-    bots.iter().filter(|b| {
-        let distance = (b.x - coord.0).abs() +
-                       (b.y - coord.1).abs() +
-                       (b.z - coord.2).abs();
-        distance <= b.r
-    }).count()
-}
+//fn num_bots_in_range(bots: &Vec<Bot>, point: Point) -> usize {
+//    bots.iter().filter(|b| {
+//        let distance = (b.point.x - point.x).abs() +
+//                       (b.point.y - point.y).abs() +
+//                       (b.point.z - point.z).abs();
+//        distance <= b.r
+//    }).count()
+//}
 
 fn main() {
     let mut buffer = String::new();
     io::stdin().read_to_string(&mut buffer).expect("Error reading from stdin");
 
-    let mut bots = buffer.lines().map(|l| NanoBot::from_string(l)).collect::<Vec<_>>();
+    let mut bots = buffer.lines().map(|l| Bot::from_string(l)).collect::<Vec<_>>();
     bots.sort_by(|a,b| a.r.cmp(&b.r));
     let strongest_bot = bots.last().unwrap();
     println!("Strongest: {:?}", strongest_bot);
@@ -84,67 +125,13 @@ fn main() {
         .count();
     println!("In range: {}", in_range);
 
-    let mut starts: Vec<i32> = bots.iter().map(|b| b.x - b.r).collect::<Vec<_>>();
-    let mut ends: Vec<i32> = bots.iter().map(|b| b.x + b.r).collect::<Vec<_>>();
-    let (x_max_overlap_range, max_overlap) = find_max_overlap(&mut starts, &mut ends);
+    let mut starts= bots.iter().map(Bot::start_point).collect::<Vec<_>>();
+    let mut ends = bots.iter().map(Bot::end_point).collect::<Vec<_>>();
+    let (max_overlap_range, max_overlap) = find_max_overlap(&mut starts, &mut ends);
 
-    println!("x max overlap: {}", max_overlap);
-    println!("x max range: {:?}", x_max_overlap_range);
-
-    let mut starts: Vec<i32> = bots.iter().map(|b| b.y - b.r).collect::<Vec<_>>();
-    let mut ends: Vec<i32> = bots.iter().map(|b| b.y + b.r).collect::<Vec<_>>();
-    let (y_max_overlap_range, max_overlap) = find_max_overlap(&mut starts, &mut ends);
-
-    println!("y max overlap: {}", max_overlap);
-    println!("y max range: {:?}", y_max_overlap_range);
-
-    let mut starts: Vec<i32> = bots.iter().map(|b| b.z - b.r).collect::<Vec<_>>();
-    let mut ends: Vec<i32> = bots.iter().map(|b| b.z + b.r).collect::<Vec<_>>();
-    let (z_max_overlap_range, max_overlap) = find_max_overlap(&mut starts, &mut ends);
-
-    println!("z max overlap: {}", max_overlap);
-    println!("z max range: {:?}", z_max_overlap_range);
-
-    let mut max_bots = 0;
-    let mut max_bots_point = (0,0,0);
-
-    let z = z_max_overlap_range.0;
-    for x in x_max_overlap_range.0..=x_max_overlap_range.1 {
-        for y in y_max_overlap_range.0..=y_max_overlap_range.1 {
-//            for z in z_max_overlap_range.0..=z_max_overlap_range.1 {
-                let point = (x,y,z);
-                let num_bots = num_bots_in_range(&bots, point);
-                if num_bots > max_bots {
-                    max_bots = num_bots;
-                    max_bots_point = point;
-                    println!("{} @ {:?}", max_bots, max_bots_point);
-                }
-//            }
-        }
-    }
-    println!("distance: {}", max_bots_point.0.abs() + max_bots_point.1.abs() + max_bots_point.2.abs());
-//    let x = x_max_overlap_range.0 + (x_max_overlap_range.1 - x_max_overlap_range.0) / 2;
-//    let y = y_max_overlap_range.0 + (y_max_overlap_range.1 - y_max_overlap_range.0) / 2;
-//    let z = z_max_overlap_range.0 + (z_max_overlap_range.1 - z_max_overlap_range.0) / 2;
-//
-//    println!("({},{},{})", x, y, z);
-//    println!("distance: {}", x.abs() + y.abs() + z.abs());
-//
-//
-//    let num_bots = num_bots_in_range(&bots, (x_max_overlap_range.0, y_max_overlap_range.0, z_max_overlap_range.0));
-//    println!("num at start: {}", num_bots);
-//    let num_bots = num_bots_in_range(&bots, (x,y,z));
-//    println!("num at mid: {}", num_bots);
-//    let num_bots = num_bots_in_range(&bots, (x_max_overlap_range.1, y_max_overlap_range.1, z_max_overlap_range.1));
-//    println!("num at end: {}", num_bots);
-//    let num_bots = num_bots_in_range(&bots, (12,12,12));
-//    println!("num at answer: {}", num_bots);
-
-//    let mut overlap_starts = vec![x_max_overlap_range.0, y_max_overlap_range.0, z_max_overlap_range.0];
-//    let mut overlap_ends = vec![x_max_overlap_range.1, y_max_overlap_range.1, z_max_overlap_range.1];
-//    let (total_max_overlap_range, total_max_overlap) = find_max_overlap(&mut overlap_starts, &mut overlap_ends);
-//
-//    println!("total max overlap: {}", total_max_overlap);
-//    println!("total max range: {:?}", total_max_overlap_range);
-
+    println!("max overlap: {}", max_overlap);
+    println!("max range: {:?}", max_overlap_range);
+    let start_distance = max_overlap_range.0.x.abs() + max_overlap_range.0.y.abs() + max_overlap_range.0.z.abs();
+    let end_distance = max_overlap_range.1.x.abs() + max_overlap_range.1.y.abs() + max_overlap_range.1.z.abs();
+    println!("distances: {}, {}", start_distance, end_distance);
 }
