@@ -1,9 +1,8 @@
 #[macro_use] extern crate lazy_static;
 use std::io::{self, Read};
-//use std::cmp::Ordering;
 use regex::Regex;
 use std::collections::{HashMap,HashSet};
-//use std::collections::BinaryHeap;
+use std::env;
 
 #[derive(Debug,Copy,Clone,Eq,PartialEq,Hash)]
 enum Attack {
@@ -39,11 +38,12 @@ struct Group {
     attack_type: Attack,
     attack_damage: usize,
     initiative: usize,
+    boost: usize,
 }
 
 impl Group {
     fn effective_power(&self) -> usize {
-        self.units * self.attack_damage
+        self.units * (self.attack_damage + self.boost)
     }
 
     // calculate the amount of damage we'd receive from the attacking group
@@ -121,7 +121,7 @@ impl Army {
                 let attack_damage = caps.name("attack_damage").unwrap().as_str().parse::<usize>().unwrap();
                 let attack_type = Attack::from_string(caps.name("attack_type").unwrap().as_str());
                 let initiative = caps.name("initiative").unwrap().as_str().parse::<usize>().unwrap();
-                groups.insert(id + 1 , Group { id: id + 1, army, units, hp, weaknesses, immunities, attack_type, attack_damage, initiative});
+                groups.insert(id + 1 , Group { id: id + 1, army, units, hp, weaknesses, immunities, attack_type, attack_damage, initiative, boost: 0 });
             }
         }
         Army { name: army, groups }
@@ -132,6 +132,10 @@ impl Army {
             .filter(|&g| g.is_alive())
             .map(|g| g.clone())
             .collect::<Vec<_>>()
+    }
+
+    fn boost(&mut self, amount: usize) {
+        self.groups.values_mut().for_each(|g| g.boost = amount);
     }
 }
 
@@ -204,7 +208,7 @@ impl Battle {
 
     fn advance(&mut self) {
         self.round += 1;
-        println!("Round {}:", self.round);
+//        println!("Round {}:", self.round);
 
         let immune_attack_map = self.select_targets(&self.immune_system, &self.infection);
         let infection_attack_map = self.select_targets(&self.infection, &self.immune_system);
@@ -249,9 +253,14 @@ Infection:
 */
 
 fn main() {
+    let mut boost = 0;
+    if env::args().len() > 1 {
+        boost = env::args().nth(1).unwrap_or("0".to_string()).parse::<usize>().unwrap();
+    }
     let mut buffer = String::new();
     io::stdin().read_to_string(&mut buffer).expect("Error reading from stdin");
     let mut battle = Battle::from_string(&buffer);
+    battle.immune_system.boost(boost);
     //println!("{:?}", battle);
     while battle.immune_system.live_groups().len() > 0 && battle.infection.live_groups().len() > 0 {
         battle.advance();
