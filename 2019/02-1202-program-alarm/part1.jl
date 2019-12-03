@@ -1,4 +1,4 @@
-#!env julia
+#!/usr/bin/env julia
 
 # read the Intcode program from stdin and return an array of Ints
 function readprogram()

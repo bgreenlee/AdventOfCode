@@ -1,4 +1,4 @@
-#!env julia
+#!/usr/bin/env julia
 
 # read in the list of masses from stdin and return an array of Ints
 function readmasses()
