@@ -3,11 +3,11 @@
 function isvalid(n::Int64)::Bool
     has_double = false
 
-    nstr = string(n)
-    for i in 2:length(nstr)
-        if nstr[i] < nstr[i-1]
+    s = string(n)
+    for i in 2:length(s)
+        if s[i] < s[i-1]
             return false
-        elseif nstr[i] == nstr[i-1] && (i < 3 || nstr[i] != nstr[i-2]) && (i == length(nstr) || nstr[i] != nstr[i+1])
+        elseif s[i] == s[i-1] && (i < 3 || s[i] != s[i-2]) && (i == length(s) || s[i] != s[i+1])
             has_double = true
         end
     end
