@@ -22,8 +22,7 @@ function split_opcode(opcode)
     opcode, param_modes
 end
 
-function run_program(mem, phase, input_channel, output_channel)
-    has_phase = false
+function run_program!(mem, input_channel, output_channel)
     ptr = 1
     while ptr <= length(mem)
         opcode, param_modes = split_opcode(mem[ptr])
@@ -39,13 +38,7 @@ function run_program(mem, phase, input_channel, output_channel)
             mem[mem[ptr+3]+1] = p1 * p2
             ptr += 4
         elseif opcode == 3 # input
-            # first input is phase; subsequent comes from the input_channel
-            if has_phase
-                mem[mem[ptr+1]+1] = take!(input_channel)
-            else
-                mem[mem[ptr+1]+1] = phase
-                has_phase = true
-            end
+            mem[mem[ptr+1]+1] = take!(input_channel)
             ptr += 2
         elseif opcode == 4 # output
             p1 = param_modes[1] == 0 ? mem[mem[ptr+1]+1] : mem[ptr+1]
@@ -87,26 +80,23 @@ end
 
 mutable struct Amp
     program::Array{Int}
-    phase::Int
-    input::Channel
-    output::Channel
+    input::Channel{Int}
+    output::Channel{Int}
+    Amp(program) = new(program, Channel{Int}(2), Channel{Int}(2))
 end
 
 function run(amp::Amp)
-    run_program(copy(amp.program), amp.phase, amp.input, amp.output)
+    run_program!(copy(amp.program), amp.input, amp.output)
 end
 
 # return an array of connected amps with the given phase_setting
 function init_amps(program, phase_setting)::Array{Amp}
-    amps = []
-    for phase in phase_setting
-        push!(amps, Amp(program, phase, Channel(1), Channel(1)))
-    end
+    amps = map(_ -> Amp(program), phase_setting) # generate amps
     # hook up the amps to each other
-    for i in 2:length(amps)
-        amps[i].input = amps[i-1].output
+    for i in 1:length(amps)
+        amps[i].input = i == 1 ? amps[end].output : amps[i-1].output
+        put!(amps[i].input, phase_setting[i]) # put the phase setting on the input channel
     end
-    amps[1].input = amps[end].output
     amps
 end
 
@@ -115,15 +105,18 @@ function find_max_output(program)
     max_phase_setting = []
     for phase_setting in permutations(5:9)
         amps = init_amps(program, phase_setting)
-        
-        put!(amps[1].input, 0)  
+
+        # The main run loop. We initialize the first amp with zero,
+        # then kick off each amp async and wait for them to finish
+        put!(amps[1].input, 0)
         @sync for amp in amps
             @async run(amp)
         end
 
-        last_output = take!(amps[end].output)
-        if last_output > max_output
-            max_output = last_output
+        # final output is on the last amp's output channel
+        output = take!(amps[end].output)
+        if output > max_output
+            max_output = output
             max_phase_setting = phase_setting
         end
     end
