@@ -1,6 +1,6 @@
 #!/usr/bin/env julia
 
-include("intcode.jl")
+include("intcode/intcode.jl")
 
 input = ARGS[1]
 if isfile(input)
@@ -11,7 +11,7 @@ computer = Intcode.Computer()
 Intcode.load(computer, input)
 
 put!(computer.input, 2)
-Intcode.run_program!(computer)
+Intcode.runprogram!(computer)
 for o in computer.output
     println(o)
 end
