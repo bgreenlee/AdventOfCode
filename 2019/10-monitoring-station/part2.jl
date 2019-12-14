@@ -18,10 +18,13 @@ struct Asteroid
     slope
 end
 
+# distance between two points
 function distance((x1, y1),(x2, y2))
     sqrt((x2 - x1)^2 + (y2 - y1)^2)
 end
 
+# Return a dict of (x,y) => [asteroid1, asteroid2, ...], with the asteroinds
+# containing the slope of the line between (x,y) and the asteroid
 function calculate_slopes(asteroids)
     asteroid_slopes = Dict() # (x,y) => [asteroid1, asteroid2, ...]
     for (x,y) in asteroids
@@ -34,6 +37,16 @@ function calculate_slopes(asteroids)
         sort!(asteroid_slopes[(x,y)], by=a -> distance((x,y),(a.coord[1], a.coord[2])))
     end
     asteroid_slopes
+end
+
+# Generate a map of (x,y) => n, where n is the number of asteroids visible
+# Visibility is calculated by the number of unique slopes to the other
+# asteroids (since only one asteroid will be visible at a given slope)
+function calculate_visibility(asteroid_slopes)
+    Dict([
+        (coords, length(unique([a.slope for a in asteroids]))) 
+        for (coords, asteroids) in asteroid_slopes
+        ])
 end
 
 # Sorting function to make upper-left quandrant sort last
@@ -68,7 +81,7 @@ end
 input = readlines(ARGS[1])
 map = generate_map(input)
 asteroid_slopes = calculate_slopes(map)
-visibility = Dict([(coords, length(unique([a.slope for a in asteroids]))) for (coords, asteroids) in asteroid_slopes])
+visibility = calculate_visibility(asteroid_slopes)
 (max, coord) = findmax(visibility)
 println("Maxvis: $max at $coord")
 zap_asteroids(asteroid_slopes[coord])
