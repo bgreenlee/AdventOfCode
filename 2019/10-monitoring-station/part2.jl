@@ -36,13 +36,16 @@ function calculate_slopes(asteroids)
     asteroid_slopes
 end
 
+# Sorting function to make upper-left quandrant sort last
 function rotate_slopes(x)
-    # 3rd quadrant should come last
     x >= -pi && x < -pi/2 ? x + 2*pi : x
 end
 
 function zap_asteroids(asteroids, count=200)
     slopes = [a.slope for a in asteroids]
+    # We want our laser to start at the top, but if we do a straight sort
+    # by slope, it will start on the left. So we sort by a special function
+    # that forces the upper-left quadrant to be sorted last
     sort!(slopes, by=rotate_slopes)
     
     num_zapped = 0
