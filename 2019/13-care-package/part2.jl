@@ -2,6 +2,9 @@
 
 include("intcode/intcode.jl")
 
+const ESC = "\u001B"
+gotoANSI(x, y) = print("$ESC[$(y);$(x)H")
+ 
 mutable struct Arcade
     computer::Intcode.Computer
     screen::Dict
@@ -18,6 +21,7 @@ mutable struct Arcade
 end
 
 function display(arcade::Arcade)
+    gotoANSI(1,1)
     println("Score: $(arcade.score)")
     (minx, maxx) = extrema(x -> x[1], keys(arcade.screen))
     (miny, maxy) = extrema(x -> x[2], keys(arcade.screen))
@@ -63,7 +67,6 @@ function play!(arcade::Arcade)
 
             if x == -1 && y == 0
                 arcade.score = tile
-                run(`clear`)
                 display(arcade)
             else
                 arcade.screen[(x,y)] = tile
@@ -79,6 +82,7 @@ if isfile(program)
     program = read(program, String)
 end
 
+run(`clear`)
 arcade = Arcade(program)
 play!(arcade)
 display(arcade)
