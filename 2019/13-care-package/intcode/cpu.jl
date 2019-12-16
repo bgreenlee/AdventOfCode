@@ -19,7 +19,7 @@ function runprogram!(mem::Memory, input_channel, output_channel)
     while ptr <= length(mem)
         op = Operation(readmem(mem, ptr))
         params = getparams(mem, ptr, op.pmodes, 2)
-        #println("$ptr: $op -> $params")
+        # println("$ptr: $op -> $params")
         if op.code == 1 # add
             writemem!(mem, ptr+3, op.pmodes[3], params[1] + params[2])
             ptr += 4
@@ -35,7 +35,7 @@ function runprogram!(mem::Memory, input_channel, output_channel)
         elseif op.code == 5 # jump-if-true
             ptr = params[1] == 0 ? ptr + 3 : params[2] + 1
         elseif op.code == 6 # jump-if-false
-            ptr = params[1] == 0 ? params[2] + 1 : ptr + 3
+            ptr = params[1] != 0 ? ptr + 3 : params[2] + 1
         elseif op.code == 7 # less than
             writemem!(mem, ptr+3, op.pmodes[3], params[1] < params[2] ? 1 : 0)
             ptr += 4
@@ -46,6 +46,7 @@ function runprogram!(mem::Memory, input_channel, output_channel)
             mem.relbase += params[1]
             ptr += 2
         elseif op.code == 99
+            close(input_channel)
             close(output_channel)
             break
         else

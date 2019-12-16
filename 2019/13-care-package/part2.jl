@@ -1,9 +1,6 @@
 #!/usr/bin/env julia
 
 include("intcode/intcode.jl")
-
-const ESC = "\u001B"
-gotoANSI(x, y) = print("$ESC[$(y);$(x)H")
  
 mutable struct Arcade
     computer::Intcode.Computer
@@ -21,7 +18,7 @@ mutable struct Arcade
 end
 
 function display(arcade::Arcade)
-    gotoANSI(1,1)
+    Intcode.Display.goto(1,1)
     println("Score: $(arcade.score)")
     (minx, maxx) = extrema(x -> x[1], keys(arcade.screen))
     (miny, maxy) = extrema(x -> x[2], keys(arcade.screen))
@@ -36,18 +33,11 @@ function display(arcade::Arcade)
     end
 end
 
-function timeout(f, n)
-    sleep(n)
-    f()
-end
-
 function play!(arcade::Arcade)
-    @async Intcode.runprogram!(arcade.computer)
-    # timeout the computer after a bit because it seems to run forever
-    # @async timeout(() -> close(arcade.computer.output), 2)
+    task = @async Intcode.runprogram!(arcade.computer)
     ballx = 0
     paddlex = 0
-    while true
+    while !istaskdone(task)
         try
             # read output
             x = take!(arcade.computer.output)
@@ -62,7 +52,6 @@ function play!(arcade::Arcade)
                 arcade.joystick = cmp(ballx, paddlex)
                 # send joystick position
                 put!(arcade.computer.input, arcade.joystick)
-                # println("ballx: $ballx")
             end
 
             if x == -1 && y == 0
@@ -85,4 +74,4 @@ end
 run(`clear`)
 arcade = Arcade(program)
 play!(arcade)
-display(arcade)
+# display(arcade)

@@ -2,33 +2,18 @@
 
 include("intcode/intcode.jl")
 
-function timeout(f, n)
-    sleep(n)
-    f()
-end
-
 function play!(screen, computer)
-    @async Intcode.runprogram!(computer)
-    # timeout the computer after a bit because it seems to run forever
-    @async timeout(() -> close(computer.output), 5)
-    while true
-        try
-            x = take!(computer.output)
-            y = take!(computer.output)
-            tile = take!(computer.output)
-#            println("($x,$y) = $tile")
-            screen[(x,y)] = tile
-        catch # channel closed
-            break
-        end
+    task = @async Intcode.runprogram!(computer)
+    while !istaskdone(task)
+        x = take!(computer.output)
+        y = take!(computer.output)
+        tile = take!(computer.output)
+        screen[(x,y)] = tile
     end
     screen
 end
 
-input = ARGS[1]
-if isfile(input)
-    input = read(input, String)
-end
+input = read(ARGS[1], String)
 
 computer = Intcode.Computer()
 Intcode.load(computer, input)
