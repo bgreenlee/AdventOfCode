@@ -2,20 +2,11 @@
 include("intcode/intcode.jl")
 
 @enum Direction North East South West
-@enum Turn Left Straight Right Back
 
-global const movementcmd = Dict(
-    North => 1,
-    South => 2,
-    West  => 3,
-    East  => 4,
-)
-global const movements = [
-    [0,-1], # north
-    [ 1,0], # east
-    [0, 1], # south
-    [-1,0], # west
- ]
+# mapping from our ordering to what the computer expects
+global const movementcmd = Dict(North => 1, South => 2, West  => 3, East  => 4)
+
+global const movements = [[0,-1], [1,0], [0, 1], [-1,0]] # north, east, south, west
 
 mutable struct Robot
     computer::Intcode.Computer
@@ -31,92 +22,32 @@ mutable struct Robot
     end
 end
 
-function currentmazepos(robot)
-    robot.maze[robot.position]
+currentmazepos(robot) = robot.maze[robot.position]
+opposite(d::Direction) = Direction((Int(d) + 2) % 4)
+isadjacent(p1, p2) = (p1 - p2) in movements
+
+# helper function to move the robot to an [hopefully] adjacent position
+function move!(robot::Robot, position::Array{Int})
+    movement = position - robot.position
+    idx = findfirst(m -> m == movement, movements)
+    if isnothing(idx)
+        return -1 # Not adjacent
+    end
+    move!(robot, Direction(idx-1))
 end
 
-function move!(robot, direction)
-#    print("Moving $direction...")
+function move!(robot::Robot, direction::Direction)
     put!(robot.computer.input, movementcmd[direction])
     status = take!(robot.computer.output)
     if status != 0 # move robot
         robot.position += movements[Int(direction)+1]
         robot.maze[robot.position] = status
-#        println("ok")
     else
         robot.maze[robot.position + movements[Int(direction)+1]] = 0
-#        println("wall")
     end
+#    println("moved to $(robot.position), status=$status")
     status
 end
-
-function turn(t::Turn, facing::Direction)
-    if t == Left
-        d = Direction((Int(facing) + 3) % 4)
-    elseif t == Straight
-        d = facing
-    elseif t == Right
-        d = Direction((Int(facing) + 1 ) % 4)
-    elseif t == Back
-        d = Direction((Int(facing) + 2) % 4)
-    end
-#    println("turning $t to $d")
-    d
-end
-
-# search using left-hand wall (LSRB) algorithm
-function search(robot)
-    task = @async Intcode.runprogram!(robot.computer)
-    path = ""
-    facing = North
-    steps = 0
-    while !istaskdone(task)
-#        println("facing $facing")
-        if steps % 100 == 0
-            display(robot)
-            println(path)
-        end
-        if currentmazepos(robot) == 2
-            break # found the goal
-        end
-
-        steps += 1
-        # if steps > 10
-        #     break
-        # end
-
-        # see if we can go left
-        f = turn(Left, facing)
-        if move!(robot, f) != 0
-            path *= "L"
-            facing = f
-            continue
-        end
-
-        # try straight
-        f = turn(Straight, facing)
-        if move!(robot, f) != 0
-            path *= "S"
-            continue
-        end
-
-        # try right
-        f = turn(Right, facing)
-        if move!(robot, f) != 0
-            path *= "R"
-            facing = f
-            continue
-        end
-
-        # back
-        f = turn(Back, facing)
-        if move!(robot, South) != 0
-            path *= "B"
-            facing = f
-        end
-    end
-    path
-end     
 
 function display(robot)
 #    Intcode.Display.goto(1,1)
@@ -137,24 +68,89 @@ function display(robot)
     end
 end
 
-# function search(robot)
-#     queue = [robot.position]
-#     while !isempty(queue)
-#         p = popfirst!(queue)
-#         if robot.maze[p] == 2 # found the goal
-#             return
-#         else
-#             for p in neighbors(robot.maze, robot.position)
-#                 if !haskey(robot.maze, p)
-#                     robot.maze[p] = #something
-#                     push!(queue, p)
-#                 end
-#             end
-#         end
-#     end
-# end
+
+
+# return a list of positions that the robot can move to
+function neighbors(robot)
+    neighbors = []
+    for d in [North, East, South, West]
+        status = move!(robot, d)
+        if status != 0
+            push!(neighbors, robot.position)
+            move!(robot, opposite(d)) # move back
+        end
+    end
+    neighbors
+end
+
+function search(robot)
+    task = @async Intcode.runprogram!(robot.computer)
+    start = robot.position
+    queue = [start]
+    discovered = Set([start])
+    parent = Dict()
+    step = 0
+    while !isempty(queue) && !istaskdone(task)
+        # debugging stuff for stepping through
+        # display(robot)
+        # println("position: $(robot.position)")
+        # println("queue: $queue")
+        # readline()
+
+        nextcell = popfirst!(queue)
+        status = move!(robot, nextcell)
+
+        if status == -1 && nextcell != robot.position # not adjacent and not our current position
+            # println("backtracking to $nextcell")
+            # put it back on the queue
+            pushfirst!(queue, nextcell)
+            found = false
+            while !found && robot.position != start
+                back = parent[robot.position]
+                # println("moving to $back")
+                status = move!(robot, back)
+                # see if the robot is back on the path to the next cell in the queue
+                p = nextcell
+                pathback = []
+                while (p = parent[p]) != start
+                    if p == robot.position
+                        found = true
+                        break
+                    else
+                        pushfirst!(pathback, p)
+                    end
+                end
+
+                if found
+                    for cell in pathback
+                        move!(robot, cell)
+                    end
+                end
+            end
+            continue
+        elseif status == 2
+            break # found the goal
+        end
+
+        for cell in neighbors(robot)
+            if !(cell in discovered)
+                push!(discovered, cell)
+                parent[cell] = robot.position
+                push!(queue, cell)
+            end
+        end
+    end
+    # calculate the path back
+    p = robot.position
+    pathback = [p]
+    while (p = parent[p]) != start
+        pushfirst!(pathback, p)
+    end
+    pathback
+end
 
 program = read(ARGS[1], String)
 robot = Robot(program)
 path = search(robot)
-println("path: $path")
+display(robot)
+println(length(path))
