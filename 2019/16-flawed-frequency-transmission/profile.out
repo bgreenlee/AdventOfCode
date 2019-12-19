@@ -1,0 +1,191 @@
+phase 1: 02646580
+phase 2: 68847037
+phase 3: 23808357
+phase 4: 04165976
+phase 5: 61533129
+phase 6: 19793206
+phase 7: 47563655
+phase 8: 39431310
+phase 9: 99819057
+phase 10: 50991331
+phase 11: 40959628
+phase 12: 27586462
+phase 13: 70454337
+phase 14: 28548609
+phase 15: 03015506
+phase 16: 85693457
+phase 17: 34919131
+phase 18: 50428907
+phase 19: 26282537
+phase 20: 36365471
+phase 21: 38513617
+phase 22: 13515767
+phase 23: 21945677
+phase 24: 04794829
+phase 25: 44662196
+phase 26: 68373758
+phase 27: 84001498
+phase 28: 81746914
+phase 29: 38606232
+phase 30: 47565681
+phase 31: 86324667
+phase 32: 45330558
+phase 33: 45460239
+phase 34: 39759028
+phase 35: 42533606
+phase 36: 28254531
+phase 37: 79038485
+phase 38: 99228183
+phase 39: 35031842
+phase 40: 79805758
+phase 41: 37560727
+phase 42: 29837841
+phase 43: 39592674
+phase 44: 29804579
+phase 45: 02856512
+phase 46: 91576862
+phase 47: 09133623
+phase 48: 38147421
+phase 49: 51081637
+phase 50: 02341046
+phase 51: 47453830
+phase 52: 27558242
+phase 53: 29847105
+phase 54: 30594180
+phase 55: 94007501
+phase 56: 42003250
+phase 57: 55632855
+phase 58: 46265295
+phase 59: 91592069
+phase 60: 95597549
+phase 61: 04381463
+phase 62: 03356111
+phase 63: 14124083
+phase 64: 00332516
+phase 65: 26990064
+phase 66: 37846329
+phase 67: 96772625
+phase 68: 63318483
+phase 69: 55286559
+phase 70: 56966789
+phase 71: 50949603
+phase 72: 50924788
+phase 73: 58365659
+phase 74: 34481800
+phase 75: 16841639
+phase 76: 78553860
+phase 77: 12735569
+phase 78: 69594394
+phase 79: 17149830
+phase 80: 97816810
+phase 81: 93092247
+phase 82: 03893522
+phase 83: 34282274
+phase 84: 80447784
+phase 85: 05696065
+phase 86: 65930378
+phase 87: 35075576
+phase 88: 26683308
+phase 89: 08602837
+phase 90: 31671676
+phase 91: 13817352
+phase 92: 78022336
+phase 93: 59968187
+phase 94: 44330939
+phase 95: 25741466
+phase 96: 80411276
+phase 97: 30115069
+phase 98: 54910571
+phase 99: 50157917
+phase 100: 17715204
+ Count File                        Line Function                               
+  2661 ./Base.jl                     31 include(::Module, ::String)            
+   196 ./abstractarray.jl           799 copyto!                                
+   190 ./abstractarray.jl           807 copyto!(::IndexLinear, ::Array{Int8,...
+    43 ./abstractarray.jl           671 similar                                
+    43 ./abstractarray.jl           672 similar                                
+  1377 ./abstractarraymath.jl       333 #repeat#159                            
+   143 ./abstractarraymath.jl       372 _repeat(::Array{Int64,1}, ::Tuple{In...
+    27 ./abstractarraymath.jl       382 _repeat(::Array{Int64,1}, ::Tuple{In...
+  1201 ./abstractarraymath.jl       388 _repeat(::Array{Int64,1}, ::Tuple{In...
+  1377 ./abstractarraymath.jl       342 _repeat_inner_outer                    
+   307 ./abstractarraymath.jl       291 repeat(::Array{Int64,1}, ::Int64)      
+   268 ./array.jl                   498 Array                                  
+    27 ./array.jl                   613 _array_for                             
+    43 ./array.jl                   614 _array_for                             
+    29 ./array.jl                   622 collect(::Base.Generator{UnitRange{I...
+  2382 ./array.jl                   627 collect(::Base.Generator{UnitRange{I...
+  2342 ./array.jl                   667 collect_to!(::Array{Int64,1}, ::Base...
+  2343 ./array.jl                   646 collect_to_with_first!(::Array{Int64...
+   268 ./array.jl                   490 convert                                
+    55 ./array.jl                   744 getindex                               
+    81 ./array.jl                   752 getindex                               
+    59 ./array.jl                   752 getindex(::Array{Int64,1}, ::UnitRan...
+  1010 ./array.jl                   782 setindex!                              
+   449 ./array.jl                   333 similar                                
+   143 ./array.jl                   335 similar                                
+    38 ./array.jl                   130 vect                                   
+   749 ./boot.jl                    404 Array                                  
+   262 ./boot.jl                    413 Array                                  
+    63 ./boot.jl                    707 Int8                                   
+    50 ./boot.jl                    581 checked_trunc_sint                     
+    13 ./boot.jl                    582 checked_trunc_sint                     
+  2661 ./boot.jl                    328 include                                
+    51 ./boot.jl                    582 setindex!                              
+    63 ./boot.jl                    597 toInt8                                 
+  2661 ./client.jl                  460 _start()                               
+  2661 ./client.jl                  287 exec_options(::Base.JLOptions)         
+   172 ...stractinterpretation.jl   581 abstract_apply(::Any, ::Array{Any,1}...
+  2097 ...stractinterpretation.jl   636 abstract_call(::Any, ::Array{Any,1},...
+   172 ...stractinterpretation.jl   637 abstract_call(::Any, ::Array{Any,1},...
+   190 ...stractinterpretation.jl   794 abstract_call(::Any, ::Array{Any,1},...
+  2088 ...stractinterpretation.jl   850 abstract_call(::Any, ::Array{Any,1},...
+   206 ...stractinterpretation.jl    21 abstract_call_gf_by_type(::Any, ::Ar...
+  2149 ...stractinterpretation.jl    93 abstract_call_gf_by_type(::Any, ::Ar...
+   105 ...stractinterpretation.jl   116 abstract_call_gf_by_type(::Any, ::Ar...
+  2146 ...stractinterpretation.jl   396 abstract_call_method(::Method, ::Any...
+    96 ...stractinterpretation.jl   243 abstract_call_method_with_const_args...
+  2303 ...stractinterpretation.jl   949 abstract_eval(::Any, ::Array{Any,1},...
+   206 ...stractinterpretation.jl   877 abstract_eval_call(::Array{Any,1}, :...
+  2097 ...stractinterpretation.jl   879 abstract_eval_call(::Array{Any,1}, :...
+   627 ...stractinterpretation.jl  1194 typeinf_local(::Core.Compiler.Infere...
+  1677 ...stractinterpretation.jl  1208 typeinf_local(::Core.Compiler.Infere...
+  2308 ...stractinterpretation.jl  1264 typeinf_nocycle(::Core.Compiler.Infe...
+   127 ./compiler/optimize.jl       169 optimize(::Core.Compiler.Optimizatio...
+    12 ./compiler/ssair/driver.jl   107 just_construct_ssa(::Core.CodeInfo, ...
+    21 ./compiler/ssair/driver.jl   112 run_passes(::Core.CodeInfo, ::Int64,...
+    80 ./compiler/ssair/driver.jl   116 run_passes(::Core.CodeInfo, ::Int64,...
+    13 ./compiler/ssair/driver.jl   121 run_passes(::Core.CodeInfo, ::Int64,...
+    12 ...piler/ssair/inlining.jl   991 assemble_inline_todo!(::Core.Compile...
+    10 ...piler/ssair/inlining.jl  1029 assemble_inline_todo!(::Core.Compile...
+    71 ...piler/ssair/inlining.jl    71 ssa_inlining_pass!                     
+   190 ./compiler/tfuncs.jl        1445 return_type_tfunc(::Array{Any,1}, ::...
+  2308 ./compiler/typeinfer.jl       12 typeinf(::Core.Compiler.InferenceState)
+   129 ./compiler/typeinfer.jl       33 typeinf(::Core.Compiler.InferenceState)
+  2131 ./compiler/typeinfer.jl      488 typeinf_edge(::Method, ::Any, ::Core...
+   222 ./compiler/typeinfer.jl      574 typeinf_ext(::Core.MethodInstance, :...
+   223 ./compiler/typeinfer.jl      605 typeinf_ext(::Core.MethodInstance, :...
+  2371 ./generator.jl                47 iterate                                
+    85 ./int.jl                      54 *                                      
+    14 ./int.jl                     872 *                                      
+    67 ./int.jl                     874 *                                      
+    11 ./int.jl                      53 +                                      
+    14 ./int.jl                     459 rem                                    
+  2661 ./loading.jl                1105 include_relative(::Module, ::String)   
+    70 ./multidimensional.jl        866 fill!(::SubArray{Int64,1,Array{Int64...
+   934 ./multidimensional.jl        867 fill!(::SubArray{Int64,1,Array{Int64...
+    63 ./number.jl                    7 convert                                
+    32 ./reflection.jl              838 abstract_call_gf_by_type(::Any, ::Ar...
+    39 ./reflection.jl              838 assemble_inline_todo!(::Core.Compile...
+    10 ./strings/io.jl              303 join(::Array{Int64,1})                 
+    10 ./strings/io.jl              101 sprint                                 
+   932 ./subarray.jl                295 setindex!                              
+    41 ...y-transmission/part2.jl     9 buildpattern(::Int64, ::Int64)         
+  1377 ...y-transmission/part2.jl    10 buildpattern(::Int64, ::Int64)         
+   311 ...y-transmission/part2.jl    11 buildpattern(::Int64, ::Int64)         
+   352 ...y-transmission/part2.jl    12 buildpattern(::Int64, ::Int64)         
+   148 ...y-transmission/part2.jl     6 fftdot(::Array{Int64,1}, ::Array{Int...
+  2618 ...y-transmission/part2.jl    18 runfft(::Array{Int8,1}, ::Int64)       
+    20 ...y-transmission/part2.jl    19 runfft(::Array{Int8,1}, ::Int64)       
+    99 ...rAlgebra/src/generic.jl   863 dot                                    
+   144 ...rAlgebra/src/generic.jl   875 dot(::Array{Int64,1}, ::Array{Int8,1}) 
