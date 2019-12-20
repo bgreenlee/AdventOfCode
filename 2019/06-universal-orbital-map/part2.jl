@@ -25,7 +25,7 @@ end
 # ancestors are all nodes above, up to the root
 function ancestors(n::Node)
     a = []
-    while n.parent != nothing
+    while n.parent !== nothing
         push!(a, n.parent)
         n = n.parent
     end

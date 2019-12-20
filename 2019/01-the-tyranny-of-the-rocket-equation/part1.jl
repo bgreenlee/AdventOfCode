@@ -3,7 +3,7 @@
 # read in the list of masses from stdin and return an array of Ints
 function readmasses()
     masses = map(n -> tryparse(Int, n), readlines())
-    filter(n -> n != nothing, masses) # remove any bad input
+    filter(n -> n !== nothing, masses) # remove any bad input
 end
 
 # calculate the fuel required given the mass

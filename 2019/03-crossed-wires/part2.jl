@@ -81,7 +81,7 @@ function find_intersections(path1::Path, path2::Path)::Array{Intersection}
         for line2 in path2.lines
             path2_dist += length(line2)
             intersect = intersection(line1, line2)
-            if intersect != nothing
+            if intersect !== nothing
                 # subtract the distance to the ends of the lines that intersected to get the total distance
                 total_dist = path1_dist + path2_dist - distance(intersect, line1.b) - distance(intersect, line2.b)
                 push!(intersections, Intersection(intersect, total_dist))

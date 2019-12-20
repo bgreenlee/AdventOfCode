@@ -4,7 +4,7 @@
 function readprogram()
     opcodes = split(readline(), ",")
     opcodes = map(n -> tryparse(Int, n), opcodes)
-    filter(n -> n != nothing, opcodes) # remove any bad input
+    filter(n -> n !== nothing, opcodes) # remove any bad input
 end
 
 function findinputs(program) 

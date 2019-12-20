@@ -63,7 +63,7 @@ function find_intersections(path1::Path, path2::Path)::Array{Point}
     for line1 in path1.lines
         for line2 in path2.lines
             intersect = intersection(line1, line2)
-            if intersect != nothing
+            if intersect !== nothing
                 push!(intersections, intersect)
             end
         end

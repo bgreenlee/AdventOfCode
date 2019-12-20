@@ -4,7 +4,7 @@
 function read_program(program_str)
     opcodes = split(program_str, ",")
     opcodes = map(n -> tryparse(Int, n), opcodes)
-    filter(n -> n != nothing, opcodes) # remove any bad input
+    filter(n -> n !== nothing, opcodes) # remove any bad input
 end
 
 # split the opcode into (opcode, param_modes)
