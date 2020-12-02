@@ -2,8 +2,8 @@ import Foundation
 
 // read the numbers into a Set
 var numbers: Set<Int> = []
-if let inputPath = Bundle.module.path(forResource: "input", ofType: "dat") {
-    let data = try String(contentsOfFile: inputPath)
+if let inputURL = Bundle.module.url(forResource: "input", withExtension: "dat") {
+    let data = try String(contentsOf: inputURL)
     let numstrs = data.components(separatedBy: .newlines)
     for numstr in numstrs {
         if let num = Int(numstr) {
