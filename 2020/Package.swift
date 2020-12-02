@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "AdventOfCode2020",
     products: [
-        .executable(name: "reportRepair", targets: ["Day01ReportRepair"]),
+        .executable(name: "reportRepair", targets: ["01-ReportRepair"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -16,7 +16,7 @@ let package = Package(
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
-            name: "Day01ReportRepair",
+            name: "01-ReportRepair",
             dependencies: [],
             resources: [.copy("input.dat")]
 ),
