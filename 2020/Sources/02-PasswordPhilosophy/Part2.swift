@@ -12,8 +12,8 @@ struct Part2 {
             let policyParts = policy.components(separatedBy: " ")
             let positions = policyParts[0]
                                 .components(separatedBy: "-")
-                                .map { Int($0) ?? 0 }
-                                .filter { $0 > 0 }
+                                .map { Int($0) ?? 0 } // convert to Ints
+                                .filter { $0 > 0 } // only positive values are valid
             let character = Character(policyParts[1])
                         
             if positions.filter({ $0 <= password.count && password[$0 - 1] == character }).count == 1 {
