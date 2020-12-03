@@ -17,4 +17,15 @@ struct Toboggan {
         position.x += slope.right
         position.y += slope.down
     }
+    
+    mutating func run(on map: Map) -> Int {
+        var numTrees = 0
+        while map.isInBounds(point: position) {
+            if map.hasTree(at: position) {
+                numTrees += 1
+            }
+            move()
+        }
+        return numTrees
+    }
 }
