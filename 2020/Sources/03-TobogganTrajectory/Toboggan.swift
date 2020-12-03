@@ -1,5 +1,3 @@
-import Foundation
-
 struct Slope {
     var right: Int
     var down: Int
