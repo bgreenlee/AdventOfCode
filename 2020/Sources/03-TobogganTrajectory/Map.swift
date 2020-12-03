@@ -38,7 +38,7 @@ struct Map {
         return trees.contains(wrappedPoint)
     }
     
-    func isInBounds(point: Point) -> Bool {
+    func isInBounds(at point: Point) -> Bool {
         return point.y < height
     }
 }

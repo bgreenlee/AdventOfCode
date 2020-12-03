@@ -20,7 +20,7 @@ struct Toboggan {
     
     mutating func run(on map: Map) -> Int {
         var numTrees = 0
-        while map.isInBounds(point: position) {
+        while map.isInBounds(at: position) {
             if map.hasTree(at: position) {
                 numTrees += 1
             }
