@@ -1,6 +1,6 @@
 import Foundation
 
-if let inputURL = Bundle.module.url(forResource: "input", withExtension: "dat") {
+if let inputURL = Bundle.module.url(forResource: "input", withExtension: "dat", subdirectory: "data") {
     let data = try String(contentsOf: inputURL)
     let map = Map(data: data)
     

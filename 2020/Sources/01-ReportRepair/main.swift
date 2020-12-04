@@ -2,7 +2,7 @@ import Foundation
 
 // read the numbers into a Set
 var numbers: Set<Int> = []
-if let inputURL = Bundle.module.url(forResource: "input", withExtension: "dat") {
+if let inputURL = Bundle.module.url(forResource: "input", withExtension: "dat", subdirectory: "data") {
     let data = try String(contentsOf: inputURL)
     let numstrs = data.components(separatedBy: .newlines)
     for numstr in numstrs {

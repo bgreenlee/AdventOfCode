@@ -1,7 +1,7 @@
 import Foundation
 
 var input: [String] = []
-if let inputURL = Bundle.module.url(forResource: "input", withExtension: "dat") {
+if let inputURL = Bundle.module.url(forResource: "input", withExtension: "dat", subdirectory: "data") {
     let data = try String(contentsOf: inputURL)
     input = data.components(separatedBy: .newlines)
 }

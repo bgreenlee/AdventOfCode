@@ -15,8 +15,8 @@ let package = Package(
         // .package(url: /* package url */, from: "1.0.0"),
     ],
     targets: [
-        .target(name: "01-ReportRepair",       resources: [.copy("input.dat")]),
-        .target(name: "02-PasswordPhilosophy", resources: [.copy("input.dat"), .copy("test.dat")]),
-        .target(name: "03-TobogganTrajectory", resources: [.copy("input.dat"), .copy("test.dat")]),
+        .target(name: "01-ReportRepair",       resources: [.copy("data")]),
+        .target(name: "02-PasswordPhilosophy", resources: [.copy("data")]),
+        .target(name: "03-TobogganTrajectory", resources: [.copy("data")]),
     ]
 )
