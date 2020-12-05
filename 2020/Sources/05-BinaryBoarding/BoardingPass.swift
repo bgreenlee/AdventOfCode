@@ -1,11 +1,7 @@
-struct BoardingPass: Comparable, CustomStringConvertible {
+struct BoardingPass {
     let code: String
     let id: Int
-    
-    var description: String {
-        return "\(code) (\(id))"
-    }
-    
+
     init?(_ code: String) {
         self.code = code
 
@@ -21,14 +17,4 @@ struct BoardingPass: Comparable, CustomStringConvertible {
             return nil
         }
     }
-    
-    // comparison functions for Comparable
-    static func < (lhs: BoardingPass, rhs: BoardingPass) -> Bool {
-        lhs.id < rhs.id
-    }
-    
-    static func == (lhs: BoardingPass, rhs: BoardingPass) -> Bool {
-        lhs.id == rhs.id
-    }
-    
 }
