@@ -10,6 +10,7 @@ let package = Package(
         .executable(name: "passwordPhilosophy", targets: ["02-PasswordPhilosophy"]),
         .executable(name: "tobogganTrajectory", targets: ["03-TobogganTrajectory"]),
         .executable(name: "passportProcessing", targets: ["04-PassportProcessing"]),
+        .executable(name: "binaryBoarding",     targets: ["05-BinaryBoarding"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -20,5 +21,6 @@ let package = Package(
         .target(name: "02-PasswordPhilosophy", resources: [.copy("data")]),
         .target(name: "03-TobogganTrajectory", resources: [.copy("data")]),
         .target(name: "04-PassportProcessing", resources: [.copy("data")]),
+        .target(name: "05-BinaryBoarding",     resources: [.copy("data")]),
     ]
 )
