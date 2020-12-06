@@ -3,6 +3,7 @@ struct Part1 {
         var groups:[Set<Character>] = []
         var currentGroup:Set<Character> = []
 
+        // lazily assumes a blank line at the end
         for line in lines {
             if line == "" {
                 groups.append(currentGroup)

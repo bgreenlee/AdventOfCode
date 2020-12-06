@@ -3,7 +3,7 @@ struct Part2 {
         var groups:[Set<Character>] = []
         var currentGroup:[Set<Character>] = []
 
-        // assumes a blank line at the end
+        // lazily assumes a blank line at the end
         for line in lines {
             if line == "" {
                 let common = currentGroup.reduce(Set(currentGroup.first!)) { (acc, list) in acc.intersection(list) }
