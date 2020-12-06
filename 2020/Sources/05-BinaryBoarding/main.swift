@@ -1,7 +1,6 @@
 import Foundation
 
-if let inputURL = Bundle.module.url(forResource: "input", withExtension: "dat", subdirectory: "data") {
-    let input = try String(contentsOf: inputURL)
+if let input = try Bundle.readFile("data/input.dat") {
     let boardingPassIds:[Int] = input.components(separatedBy: .newlines)
         .compactMap {
             let binary = $0.replacingOccurrences(of: "F", with: "0")
