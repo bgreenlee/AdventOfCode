@@ -1,3 +1,5 @@
+import Shared
+
 struct Part2 {
     static func run(with input: [String]) {
         var numGood = 0

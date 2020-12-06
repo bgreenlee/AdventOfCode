@@ -1,6 +1,7 @@
 import Foundation
+import Shared
 
-if let input = try Bundle.readFile("data/input.dat") {
+if let input = try Bundle.module.readFile("data/input.dat") {
     let boardingPassIds:[Int] = input.components(separatedBy: .newlines)
         .compactMap {
             let binary = $0.replacingOccurrences(of: "F", with: "0")

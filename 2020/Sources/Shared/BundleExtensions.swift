@@ -9,7 +9,7 @@ import Foundation
 
 extension Bundle {
     // File-reading simplified
-    static func readFile(_ path: String) throws -> String? {
+    public func readFile(_ path: String) throws -> String? {
         var dir = ""
         var filename = path
         if let idx = path.lastIndex(of: "/") {
@@ -17,7 +17,7 @@ extension Bundle {
             filename = String(path[path.index(after: idx)...])
         }
 
-        if let inputURL = Bundle.module.url(forResource: filename, withExtension: "", subdirectory: dir) {
+        if let inputURL = self.url(forResource: filename, withExtension: "", subdirectory: dir) {
             return try String(contentsOf: inputURL)
         }
         return nil
