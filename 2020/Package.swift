@@ -12,6 +12,7 @@ let package = Package(
         .executable(name: "passportProcessing", targets: ["04-PassportProcessing"]),
         .executable(name: "binaryBoarding",     targets: ["05-BinaryBoarding"]),
         .executable(name: "customCustoms",      targets: ["06-CustomCustoms"]),
+        .executable(name: "handyHaversacks",    targets: ["07-HandyHaversacks"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -19,23 +20,12 @@ let package = Package(
     ],
     targets: [
         .target(name: "Shared"),
-        .target(name: "01-ReportRepair",
-                dependencies: ["Shared"],
-                resources: [.copy("data")]),
-        .target(name: "02-PasswordPhilosophy",
-                dependencies: ["Shared"],
-                resources: [.copy("data")]),
-        .target(name: "03-TobogganTrajectory",
-                dependencies: ["Shared"],
-                resources: [.copy("data")]),
-        .target(name: "04-PassportProcessing",
-                dependencies: ["Shared"],
-                resources: [.copy("data")]),
-        .target(name: "05-BinaryBoarding",
-                dependencies: ["Shared"],
-                resources: [.copy("data")]),
-        .target(name: "06-CustomCustoms",
-                dependencies: ["Shared"],
-                resources: [.copy("data")]),
+        .target(name: "01-ReportRepair",       dependencies: ["Shared"], resources: [.copy("data")]),
+        .target(name: "02-PasswordPhilosophy", dependencies: ["Shared"], resources: [.copy("data")]),
+        .target(name: "03-TobogganTrajectory", dependencies: ["Shared"], resources: [.copy("data")]),
+        .target(name: "04-PassportProcessing", dependencies: ["Shared"], resources: [.copy("data")]),
+        .target(name: "05-BinaryBoarding",     dependencies: ["Shared"], resources: [.copy("data")]),
+        .target(name: "06-CustomCustoms",      dependencies: ["Shared"], resources: [.copy("data")]),
+        .target(name: "07-HandyHaversacks",    dependencies: ["Shared"], resources: [.copy("data")]),
     ]
 )
