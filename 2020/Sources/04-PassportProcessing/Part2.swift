@@ -1,4 +1,5 @@
 import Foundation
+import Shared
 
 struct Part2 {
     static func run(with records: [String]) {
