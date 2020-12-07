@@ -1,9 +1,22 @@
 import Foundation
 import Shared
 
-if let input = try Bundle.module.readFile("data/input.dat") {
-    var allBags: Set<Bag> = []
+struct BagSet {
+    var num: Int
+    var color: String
+}
 
+var allBags: Dictionary<String, [BagSet]> = [:]
+
+func descendants(_ color: String) -> [String] {
+    if let children = allBags[color] {
+        let decs = Set(children.map { $0.color }).union(children.flatMap { descendants($0.color) })
+        return Array(decs)
+    }
+    return []
+}
+
+if let input = try Bundle.module.readFile("data/test.dat") {
     let bagsOuterRegex = try! RegEx(pattern: #"^(.*?) bags contain (.*?)\.$"#)
     let bagsInnerRegex = try! RegEx(pattern: #"(\d+|no) (.*?) bag"#)
 
@@ -14,29 +27,28 @@ if let input = try Bundle.module.readFile("data/input.dat") {
             continue
         }
         let color = matches[0][0]
-        let children = matches[0][1]
-        var (_, parent) = allBags.insert(Bag(color))
-        let childMatches = bagsInnerRegex.matchGroups(in: children)
+        let childrenString = matches[0][1]
+        let childMatches = bagsInnerRegex.matchGroups(in: childrenString)
         for childMatch in childMatches {
             let quantity = childMatch[0]
-            let color = childMatch[1]
+            let childColor = childMatch[1]
 
             if quantity == "no" {
+                allBags[color] = []
                 continue
             }
 
-            var (_, child) = allBags.insert(Bag(color))
-            child.parents.update(with: parent)
-            parent.children.update(with: child)
-            allBags.update(with: child)
-            allBags.update(with: parent)
+            let bagSet = BagSet(num: Int(quantity) ?? 0, color: childColor)
+            if allBags[color] != nil {
+                allBags[color]!.append(bagSet)
+            } else {
+                allBags[color] = [bagSet]
+            }
         }
     }
 
-    if let targetBag = allBags.first(where: {$0 == Bag("shiny gold")}) {
-//        print(targetBag)
-        print(targetBag.ancestors.map { $0.color })
-    }
+    let ancestors = allBags.keys.filter { descendants($0).contains("shiny gold") }
+    print("Part 1: \(ancestors.count)")
 }
 
 
