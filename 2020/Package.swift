@@ -13,6 +13,7 @@ let package = Package(
         .executable(name: "binaryBoarding",     targets: ["05-BinaryBoarding"]),
         .executable(name: "customCustoms",      targets: ["06-CustomCustoms"]),
         .executable(name: "handyHaversacks",    targets: ["07-HandyHaversacks"]),
+        .executable(name: "handheldHalting",    targets: ["08-HandheldHalting"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -27,5 +28,6 @@ let package = Package(
         .target(name: "05-BinaryBoarding",     dependencies: ["Shared"], resources: [.copy("data")]),
         .target(name: "06-CustomCustoms",      dependencies: ["Shared"], resources: [.copy("data")]),
         .target(name: "07-HandyHaversacks",    dependencies: ["Shared"], resources: [.copy("data")]),
+        .target(name: "08-HandheldHalting",    dependencies: ["Shared"], resources: [.copy("data")]),
     ]
 )
