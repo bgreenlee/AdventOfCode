@@ -1,7 +1,7 @@
 import Foundation
 
 struct Part1 {
-    static func run(preamble: Int, numbers: [Int]) -> Int? {
+    static func solve(preamble: Int, numbers: [Int]) -> Int? {
         var sums: Dictionary<Int,Int> = [:]
 
         // populate sums with initial preamble
