@@ -29,10 +29,10 @@ struct Part2 {
        0 3 6
 
      Note that since the first and last numbers are always required, the only numbers that
-     matter are the middle, and what we're doing is calculating the power set of those numbers,
-     which has a size of 2**n.
+     matter are the middle, and what we're doing is calculating the power set (set of all subsets,
+     which includes the empty set) of those numbers, which has a size of 2**n.
 
-     It gets a bit tricky once we have a run of more than four numbers, as some elements of the
+     It gets a bit tricky once we have a run of more than three numbers, as some elements of the
      power set will be illegal, having a difference of more than three between numbers. We can
      adjust for this by subtracting the power set of n - 3. So the formula is:
 
