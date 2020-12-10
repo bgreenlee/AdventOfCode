@@ -10,27 +10,27 @@ struct Part2 {
      The only time we have more than one option in a set of numbers is when we have a run of
      at least three consecutive numbers. E.g. if we have:
 
-       0 1 4
+       0 1
 
      we have only one combination. But if we have:
 
-       0 1 2 5
+       0 1 2
 
      we have two combinations:
 
-       0 1 2 5
-       0 2 5
+       0 1 2
+       0 2
 
      If we have a run of four numbers, we have four combinations:
 
-       0 1 2 3 6
-       0 1 3 6
-       0 2 3 6
-       0 3 6
+       0 1 2 3
+       0 1 3
+       0 2 3
+       0 3
 
      Note that since the first and last numbers are always required, the only numbers that
      matter are the middle, and what we're doing is calculating the power set (set of all subsets,
-     which includes the empty set) of those numbers, which has a size of 2**n.
+     which includes the empty set) of those middle numbers, which has a size of 2**n.
 
      It gets a bit tricky once we have a run of more than three numbers, as some elements of the
      power set will be illegal, having a difference of more than three between numbers. We can
