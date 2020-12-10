@@ -15,6 +15,7 @@ let package = Package(
         .executable(name: "handyHaversacks",    targets: ["07-HandyHaversacks"]),
         .executable(name: "handheldHalting",    targets: ["08-HandheldHalting"]),
         .executable(name: "encodingError",      targets: ["09-EncodingError"]),
+        .executable(name: "adapterArray",       targets: ["10-AdapterArray"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -31,5 +32,6 @@ let package = Package(
         .target(name: "07-HandyHaversacks",    dependencies: ["Shared"], resources: [.copy("data")]),
         .target(name: "08-HandheldHalting",    dependencies: ["Shared"], resources: [.copy("data")]),
         .target(name: "09-EncodingError",      dependencies: ["Shared"], resources: [.copy("data")]),
+        .target(name: "10-AdapterArray",      dependencies: ["Shared"], resources: [.copy("data")]),
     ]
 )
