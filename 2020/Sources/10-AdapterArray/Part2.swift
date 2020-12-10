@@ -40,7 +40,7 @@ struct Part2 {
      2**n - 2**(n-3) for n >= 3
 
      So that gives us the number of combinations for each run of numbers. All we have to do next
-     is return the product of each of these combinations.
+     is return the product of all of these combinations.
      */
     static func solve(_ numbers: [Int]) -> Int {
         var runs: [Int] = []
