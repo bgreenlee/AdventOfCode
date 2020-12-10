@@ -32,7 +32,7 @@ struct Part2 {
      matter are the middle, and what we're doing is calculating the power set (set of all subsets,
      which includes the empty set) of those middle numbers, which has a size of 2**n.
 
-     It gets a bit tricky once we have a run of more than three numbers, as some elements of the
+     It gets a bit tricky once we have a run of more than four numbers, as some elements of the
      power set will be illegal, having a difference of more than three between numbers. We can
      adjust for this by subtracting the power set of n - 3. So the formula is:
 
