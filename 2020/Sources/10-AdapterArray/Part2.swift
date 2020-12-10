@@ -2,6 +2,46 @@ import Foundation
 import Shared
 
 struct Part2 {
+    /**
+     We want to count the number of legal combinations. Our problem is simplified somewhat
+     by the observation from part 1 that each number in the sorted list of numbers differs
+     from the previous number by either 1 or 3.
+
+     The only time we have more than one option in a set of numbers is when we have a run of
+     at least three consecutive numbers. E.g. if we have:
+
+       0 1 4
+
+     we have only one combination. But if we have:
+
+       0 1 2 5
+
+     we have two combinations:
+
+       0 1 2 5
+       0 2 5
+
+     If we have a run of four numbers, we have four combinations:
+
+       0 1 2 3 6
+       0 1 3 6
+       0 2 3 6
+       0 3 6
+
+     Note that since the first and last numbers are always required, the only numbers that
+     matter are the middle, and what we're doing is calculating the power set of those numbers,
+     which has a size of 2**n.
+
+     It gets a bit tricky once we have a run of more than four numbers, as some elements of the
+     power set will be illegal, having a difference of more than three between numbers. We can
+     adjust for this by subtracting the power set of n - 3. So the formula is:
+
+     2**n for n < 3
+     2**n - 2**(n-3) for n >= 3
+
+     So that gives us the number of combinations for each run of numbers. All we have to do next
+     is return the product of each of these combinations.
+     */
     static func solve(_ numbers: [Int]) -> Int {
         var runs: [Int] = []
         var curRun = 0
