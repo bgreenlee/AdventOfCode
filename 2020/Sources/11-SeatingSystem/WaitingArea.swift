@@ -40,14 +40,14 @@ struct WaitingArea {
 
     func immediatelyAdjacent(to point: Point) -> [Point] {
         let possiblyAdjacent = [
-            Point(point.x,   point.y-1),
-            Point(point.x+1, point.y-1),
-            Point(point.x+1, point.y),
-            Point(point.x+1, point.y+1),
-            Point(point.x,   point.y+1),
-            Point(point.x-1, point.y+1),
-            Point(point.x-1, point.y),
-            Point(point.x-1, point.y-1),
+            Point(point.x,   point.y-1), // north
+            Point(point.x+1, point.y-1), // northeast
+            Point(point.x+1, point.y),   // west
+            Point(point.x+1, point.y+1), // southeast
+            Point(point.x,   point.y+1), // south
+            Point(point.x-1, point.y+1), // southwest
+            Point(point.x-1, point.y),   // west
+            Point(point.x-1, point.y-1), // northwest
         ]
         return possiblyAdjacent.filter { seats[$0] != nil }
     }
