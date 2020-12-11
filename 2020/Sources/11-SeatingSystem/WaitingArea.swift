@@ -24,7 +24,8 @@ struct WaitingArea {
     var height: Int
     var seats: Dictionary<Point, Bool> = [:]
     var state: Int { seats.hashValue }
-
+    var numOccupied: Int { seats.filter { $0.value == true }.count }
+    
     init(_ rows:[String]) {
         width = rows[0].count
         height = rows.count
@@ -145,7 +146,10 @@ struct WaitingArea {
         seats[point] == true
     }
 
-    mutating func cycle(immediate: Bool, occupiedThreshold: Int) {
+    // Cycle the state of the waiting area
+    // Returns true if the state changed
+    mutating func cycle(immediate: Bool, occupiedThreshold: Int) -> Bool {
+        let lastState = state
         var updatedSeats: Dictionary<Point, Bool> = [:]
         for (point, occupied) in seats {
             let adj = immediate ? immediatelyAdjacent(to: point) : visiblyAdjacent(to: point)
@@ -156,6 +160,7 @@ struct WaitingArea {
             }
         }
         seats.merge(updatedSeats, uniquingKeysWith: { (_, new) in new })
+        return state != lastState
     }
 
     func render() {
