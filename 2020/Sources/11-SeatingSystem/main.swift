@@ -6,8 +6,10 @@ if let input = try Bundle.module.readFile("data/input.dat") {
                        .filter { $0.count > 1 }
 
     var waitingArea = WaitingArea(rows)
-    print("Part 1: \(Part1.solve(&waitingArea))")
+    while waitingArea.cycle(immediate: true, occupiedThreshold: 4) {}
+    print("Part 1: \(waitingArea.numOccupied)")
 
     waitingArea = WaitingArea(rows)
-    print("Part 2: \(Part2.solve(&waitingArea))")
+    while waitingArea.cycle(immediate: false, occupiedThreshold: 5) {}
+    print("Part 2: \(waitingArea.numOccupied)")
 }
