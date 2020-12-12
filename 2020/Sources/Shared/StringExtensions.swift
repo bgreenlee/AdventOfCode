@@ -1,15 +1,3 @@
-//extension StringProtocol {
-//    // make indexing into Strings less annoying
-//    public subscript(offset: Int) -> Character {
-//        self[index(startIndex, offsetBy: offset)]
-//    }
-//
-//    public subscript(bounds: Range<Int>) -> String {
-//        return String(self[index(bounds.lowerBound)..<index(bounds.upperBound)])
-//    }
-//}
-//
-
 extension StringProtocol {
     public subscript(offset: Int) -> Character { self[index(startIndex, offsetBy: offset)] }
     public subscript(range: Range<Int>) -> SubSequence {
