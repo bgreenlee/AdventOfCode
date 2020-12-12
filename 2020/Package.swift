@@ -17,6 +17,7 @@ let package = Package(
         .executable(name: "encodingError",      targets: ["09-EncodingError"]),
         .executable(name: "adapterArray",       targets: ["10-AdapterArray"]),
         .executable(name: "seatingSystem",      targets: ["11-SeatingSystem"]),
+        .executable(name: "rainRisk",           targets: ["12-RainRisk"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -33,7 +34,8 @@ let package = Package(
         .target(name: "07-HandyHaversacks",    dependencies: ["Shared"], resources: [.copy("data")]),
         .target(name: "08-HandheldHalting",    dependencies: ["Shared"], resources: [.copy("data")]),
         .target(name: "09-EncodingError",      dependencies: ["Shared"], resources: [.copy("data")]),
-        .target(name: "10-AdapterArray",      dependencies: ["Shared"], resources: [.copy("data")]),
+        .target(name: "10-AdapterArray",       dependencies: ["Shared"], resources: [.copy("data")]),
         .target(name: "11-SeatingSystem",      dependencies: ["Shared"], resources: [.copy("data")]),
+        .target(name: "12-RainRisk",           dependencies: ["Shared"], resources: [.copy("data")]),
     ]
 )
