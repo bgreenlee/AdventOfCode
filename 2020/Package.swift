@@ -18,10 +18,12 @@ let package = Package(
         .executable(name: "adapterArray",       targets: ["10-AdapterArray"]),
         .executable(name: "seatingSystem",      targets: ["11-SeatingSystem"]),
         .executable(name: "rainRisk",           targets: ["12-RainRisk"]),
+        .executable(name: "shuttleSearch",      targets: ["13-ShuttleSearch"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
         // .package(url: /* package url */, from: "1.0.0"),
+        .package(url: "https://github.com/attaswift/BigInt.git", from: "5.2.1")
     ],
     targets: [
         .target(name: "Shared"),
@@ -37,5 +39,6 @@ let package = Package(
         .target(name: "10-AdapterArray",       dependencies: ["Shared"], resources: [.copy("data")]),
         .target(name: "11-SeatingSystem",      dependencies: ["Shared"], resources: [.copy("data")]),
         .target(name: "12-RainRisk",           dependencies: ["Shared"], resources: [.copy("data")]),
+        .target(name: "13-ShuttleSearch",      dependencies: ["Shared", "BigInt"], resources: [.copy("data")]),
     ]
 )
