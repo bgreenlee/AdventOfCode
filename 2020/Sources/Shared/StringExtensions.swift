@@ -24,4 +24,11 @@ public extension StringProtocol {
     subscript(range: PartialRangeUpTo<Int>) -> SubSequence {
         self[..<index(startIndex, offsetBy: range.upperBound)]
     }
+    
+    func replaceCharacter(at index: Int, with newChar: Character) -> String {
+        var chars = Array(self)
+        chars[index] = newChar
+        let modifiedString = String(chars)
+        return modifiedString
+    }
 }

@@ -19,6 +19,7 @@ let package = Package(
         .executable(name: "seatingSystem",      targets: ["11-SeatingSystem"]),
         .executable(name: "rainRisk",           targets: ["12-RainRisk"]),
         .executable(name: "shuttleSearch",      targets: ["13-ShuttleSearch"]),
+        .executable(name: "dockingData",        targets: ["14-DockingData"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -40,5 +41,6 @@ let package = Package(
         .target(name: "11-SeatingSystem",      dependencies: ["Shared"], resources: [.copy("data")]),
         .target(name: "12-RainRisk",           dependencies: ["Shared"], resources: [.copy("data")]),
         .target(name: "13-ShuttleSearch",      dependencies: ["Shared", "BigInt"], resources: [.copy("data")]),
+        .target(name: "14-DockingData",        dependencies: ["Shared"], resources: [.copy("data")]),
     ]
 )
