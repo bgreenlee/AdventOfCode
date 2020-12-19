@@ -24,6 +24,7 @@ let package = Package(
         .executable(name: "ticketTranslation",      targets: ["16-TicketTranslation"]),
         .executable(name: "conwayCubes",            targets: ["17-ConwayCubes"]),
         .executable(name: "operationOrder",         targets: ["18-OperationOrder"]),
+        .executable(name: "monsterMessages",        targets: ["19-MonsterMessages"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -50,5 +51,6 @@ let package = Package(
         .target(name: "16-TicketTranslation",      dependencies: ["Shared"], resources: [.copy("data")]),
         .target(name: "17-ConwayCubes",            dependencies: ["Shared"], resources: [.copy("data")]),
         .target(name: "18-OperationOrder",         dependencies: ["Shared"], resources: [.copy("data")]),
+        .target(name: "19-MonsterMessages",        dependencies: ["Shared"], resources: [.copy("data")]),
     ]
 )
