@@ -26,6 +26,7 @@ let package = Package(
         .executable(name: "operationOrder",         targets: ["18-OperationOrder"]),
         .executable(name: "monsterMessages",        targets: ["19-MonsterMessages"]),
         .executable(name: "jurassicJigsaw",         targets: ["20-JurassicJigsaw"]),
+        .executable(name: "allergenAssessment",     targets: ["21-AllergenAssessment"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -54,5 +55,6 @@ let package = Package(
         .target(name: "18-OperationOrder",         dependencies: ["Shared"], resources: [.copy("data")]),
         .target(name: "19-MonsterMessages",        dependencies: ["Shared"], resources: [.copy("data")]),
         .target(name: "20-JurassicJigsaw",         dependencies: ["Shared"], resources: [.copy("data")]),
+        .target(name: "21-AllergenAssessment",     dependencies: ["Shared"], resources: [.copy("data")]),
     ]
 )
