@@ -10,8 +10,7 @@ print("Part 1: \(crabCups.part1Solution())")
 
 crabCups = CrabCups(input, embiggen: 1000000)
 let start = CFAbsoluteTimeGetCurrent()
-crabCups.cycle(1000)
-print("Part 2: \(crabCups.part2Solution())")
-print("\(CFAbsoluteTimeGetCurrent() - start) sec")
+crabCups.cycle(10000000)
+print("Part 2: \(crabCups.part2Solution()) (\(CFAbsoluteTimeGetCurrent() - start) sec)")
 
 
