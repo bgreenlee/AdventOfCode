@@ -1,105 +1,71 @@
 import Foundation
 
 struct CrabCups {
-    var labelToIndex:[Int]
-    var indexToLabel:[Int]
-    var size:Int
+    var cups:[Int]
     var min:Int
     var max:Int
-    var current = 0
+    var current:Int
 
     init(_ input:String, embiggen:Int = 0) {
-        let cups = input.map {Int(String($0))!}
-        size = [cups.count, embiggen].max()!
-        labelToIndex = Array(repeating: 0, count: size+1)
-        indexToLabel = Array(repeating: 0, count: size+1)
+        let inputCups = input.map {Int(String($0))!}
 
-        for (i, cup) in cups.enumerated() {
-            labelToIndex[cup] = i
-            indexToLabel[i] = cup
+        // create "linked list" array where the value of each index
+        // is the next cup label clockwise
+        let size = [inputCups.count, embiggen].max()!
+        cups = Array(repeating: 0, count: size+1)
+        for i in 0..<inputCups.count-1 {
+            cups[inputCups[i]] = inputCups[i+1]
         }
-        if embiggen > cups.count {
-            for i in cups.count..<embiggen {
-                labelToIndex[i + 1] = i
-                indexToLabel[i] = i + 1
+        cups[inputCups.last!] = inputCups.first! // link the end back to the beginning
+
+        if embiggen > inputCups.count {
+            cups[inputCups.last!] = inputCups.count + 1
+            for i in inputCups.count + 1..<embiggen {
+                cups[i] = i + 1
             }
+            cups[embiggen] = inputCups.first!
         }
-        min = 1 // labelToIndex.keys.min()!
-        max = embiggen > cups.count ? embiggen : cups.max()! // labelToIndex.keys.max()!
-    }
 
-    func index(_ i:Int) -> Int {
-        return i % size
-    }
-
-    mutating func store(label:Int, at:Int) {
-        labelToIndex[label] = at
-        indexToLabel[at] = label
+        min = 1
+        max = embiggen > inputCups.count ? embiggen : inputCups.max()!
+        current = inputCups[0]
     }
 
     mutating func cycle(_ n:Int = 1) {
-        var start = CFAbsoluteTimeGetCurrent()
+        for _ in 1...n {
+            // pick the next three cups
+            let pick = [cups[current], cups[cups[current]], cups[cups[cups[current]]]]
 
-        for round in 1...n {
-//            render()
-            if round % 10000 == 0 {
-                print("cycle \(round): \(part2Solution()) (\(CFAbsoluteTimeGetCurrent() - start) sec)")
-                start = CFAbsoluteTimeGetCurrent()
+            // find destination cup
+            // if it is one of the cups we picked up, decrease target and try again
+            var dest = current - 1 < min ? max : current - 1
+            while pick.contains(dest) {
+                dest = dest - 1 < min ? max : dest - 1
             }
-            let pick = (1...3).map { indexToLabel[index(current + $0)] }
-            let dest = findDestination()
+
             // move the picked cups to after the destination
-            var ptr = index(current + 1)
-            while true {
-                store(label: indexToLabel[index(ptr + 3)], at: ptr)
-                if index(ptr + 3) == dest {
-                    break
-                }
-                ptr = index(ptr + 1)
-            }
-            (1...3).forEach { store(label: pick[$0 - 1], at: index(ptr + $0)) }
-            current = index(current + 1)
+            cups[current] = cups[pick[2]]
+            cups[pick[2]] = cups[dest]
+            cups[dest] = pick[0]
+            cups[pick[0]] = pick[1]
+            cups[pick[1]] = pick[2]
+
+            current = cups[current] // move pointer
         }
-    }
-
-    func lower(_ target:Int) -> Int {
-        return target - 1 < min ? max : target - 1
-    }
-
-    func findDestination() -> Int {
-        var targetLabel = lower(indexToLabel[current])
-        var destIdx = labelToIndex[targetLabel]
-
-        // if it is one of the cups we picked up, decrease target and try again
-        while destIdx == index(current + 1) || destIdx == index(current + 2) || destIdx == index(current + 3) {
-            targetLabel = lower(targetLabel)
-            destIdx = labelToIndex[targetLabel]
-        }
-        return destIdx
-    }
-
-    func render() {
-        for i in 0..<[size, 100].min()! {
-            if i == current {
-                print("(\(indexToLabel[i])) ", terminator: "")
-            } else {
-                print("\(indexToLabel[i]) ", terminator: "")
-            }
-        }
-        print()
     }
 
     func part1Solution() -> String {
-        var result = ""
-        for i in 1..<size {
-            result += String(indexToLabel[(labelToIndex[1] + i) % size])
+        var i = 1
+        var result = String(cups[i])
+        i = cups[i]
+        while cups[i] != 1 {
+            result += String(cups[i])
+            i = cups[i]
         }
         return result
     }
 
     func part2Solution() -> Int {
-        let oneIdx = labelToIndex[1]
-        return indexToLabel[index(oneIdx+1)] * indexToLabel[index(oneIdx+2)]
+        return cups[1] * cups[cups[1]]
     }
-
 }
