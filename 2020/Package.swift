@@ -30,6 +30,7 @@ let package = Package(
         .executable(name: "crabCombat",             targets: ["22-CrabCombat"]),
         .executable(name: "crabCups",               targets: ["23-CrabCups"]),
         .executable(name: "lobbyLayout",            targets: ["24-LobbyLayout"]),
+        .executable(name: "comboBreaker",           targets: ["25-ComboBreaker"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
@@ -62,5 +63,6 @@ let package = Package(
         .target(name: "22-CrabCombat",             dependencies: ["Shared"], resources: [.copy("data")]),
         .target(name: "23-CrabCups",               dependencies: ["Shared"], resources: [.copy("data")]),
         .target(name: "24-LobbyLayout",            dependencies: ["Shared"], resources: [.copy("data")]),
+        .target(name: "25-ComboBreaker",           dependencies: ["Shared"], resources: [.copy("data")]),
     ]
 )
