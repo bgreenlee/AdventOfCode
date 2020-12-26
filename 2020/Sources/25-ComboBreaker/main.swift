@@ -32,9 +32,8 @@ func encryptionKey(publicKey: Int, loopSize: Int) -> Int {
     return value
 }
 
+var encKey = 0
 let cardLoopSize = loopSize(publicKey: cardPublicKey)
-print("card loop size: \(cardLoopSize)")
-let doorLoopSize = loopSize(publicKey: doorPublicKey)
-print("door loop size: \(doorLoopSize)")
-let encKey = encryptionKey(publicKey: doorPublicKey, loopSize: cardLoopSize)
+// let doorLoopSize = loopSize(publicKey: doorPublicKey)
+encKey = encryptionKey(publicKey: doorPublicKey, loopSize: cardLoopSize)
 print("encryption key: \(encKey)")
