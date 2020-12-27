@@ -1,12 +1,11 @@
 import Foundation
-import simd
 
 typealias vec = SIMD3<Int>
 
 // Construct a grammar and string match using the CYK algorithm
 // Because I'm lazy, assumes the grammar is already in Chomsky Normal Form
 struct Grammar {
-    var nonterminals: Dictionary<Int, [[Int]]> = [:] // ruleno -> [[rules]]
+    var nonterminals: Dictionary<Int, [(Int,Int)]> = [:] // ruleno -> [(rule1,rule2)]
     var terminals: Dictionary<String, [Int]> = [:] // terminal -> [rules]
 
     init(with ruleStrings:[String]) {
@@ -27,7 +26,7 @@ struct Grammar {
                         }
                     }
                     if !nonterminalOption.isEmpty {
-                        nonterminals[ruleno, default: []].append(nonterminalOption)
+                        nonterminals[ruleno, default: []].append((nonterminalOption[0], nonterminalOption[1]))
                     }
                 }
             }
@@ -51,9 +50,7 @@ struct Grammar {
             for s in 1...n - len + 1 {
                 for p in 1...len - 1 {
                     for (ruleno, options) in nonterminals {
-                        for option in options {
-                            let b = option[0]
-                            let c = option[1]
+                        for (b,c) in options {
                             if P[vec(p, s, b), default: false] && P[vec(len - p, s + p, c), default: false] {
                                 P[vec(len, s, ruleno)] = true
                             }
