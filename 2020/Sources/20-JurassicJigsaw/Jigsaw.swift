@@ -46,8 +46,8 @@ struct Tile: Hashable {
     static func sideToInt(_ side:String) -> Int {
         let binary = side.replacingOccurrences(of: ".", with: "0")
                          .replacingOccurrences(of: "#", with: "1")
-        let num = Int(binary, radix: 2) ?? -1
-        let numReversed = Int(String(binary.reversed()), radix: 2) ?? -1
+        let num = Int(binary, radix: 2)!
+        let numReversed = Int(String(binary.reversed()), radix: 2)!
         return num * numReversed * (num ^ numReversed)
     }
 
