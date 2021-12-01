@@ -12,7 +12,28 @@ npm install typescript @types/node ts-node --save-dev
 npx tsc --init --rootDir src --outDir lib --esModuleInterop --resolveJsonModule --lib es6,dom  --module commonjs
 echo "node_modules" >> .gitignore
 ```
+Update the "scripts" section of your `package.json` to look like:
 
-Run with `ts-node`. E.g.:
+```
+  "scripts": {
+    "start":  "ts-node"
+  },
+```
 
-`cat src/01-sonar-sweep/input.dat | ts-node src/01-sonar-sweep/part2.ts1`
+Run like so:
+
+`cat src/01-sonar-sweep/input.dat | npm start src/01-sonar-sweep/part2.ts1`
+
+### Quickstart Development
+
+Here's a program that will read from stdin and output an array of lines:
+
+```
+import * as fs from 'fs';
+
+let input = fs.readFileSync(process.stdin.fd, 'utf-8');
+let lines = input.split('\n');
+
+console.log(lines);
+```
+
