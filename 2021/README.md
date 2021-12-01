@@ -5,10 +5,13 @@
 ### Setup
 
 Install node
-`npm init -y`
-`npm install typescript @types/node ts-node --save-dev`
-`npx tsc --init --rootDir src --outDir lib --esModuleInterop --resolveJsonModule --lib es6,dom  --module commonjs`
-`echo "node_modules" >> .gitignore`
+
+```
+npm init -y
+npm install typescript @types/node ts-node --save-dev
+npx tsc --init --rootDir src --outDir lib --esModuleInterop --resolveJsonModule --lib es6,dom  --module commonjs
+echo "node_modules" >> .gitignore
+```
 
 Run with `ts-node`. E.g.:
 
