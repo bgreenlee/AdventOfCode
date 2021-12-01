@@ -7,7 +7,7 @@ let numbers = input.split('\n')
 let lastSum = numbers.slice(0, 3).reduce((acc, n) => acc + n, 0);
 let count = 0;
 for (let i = 1; i < numbers.length - 2; i++) {
-    let currSum = numbers.slice(i, i+3).reduce((acc, n) => acc + n, 0);
+    let currSum = lastSum + numbers[i+2] - numbers[i-1];
     if (currSum > lastSum) {
         count++;
     }
