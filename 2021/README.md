@@ -4,7 +4,11 @@
 
 ### Setup
 
-Install node
+I'm setting this up so there's one top-level package.json, and then each day will be a different folder under src. This makes sure there is only one node_modules directory.
+
+First install node if you haven't already.
+
+Then:
 
 ```
 npm init -y
