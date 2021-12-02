@@ -69,7 +69,7 @@ fn main() -> io::Result<()>  {
     let mut buffer = String::new();
     io::stdin().read_to_string(&mut buffer)?;
     let commands = buffer.lines()
-        .map(|l| Command::new(l))
+        .map(Command::new)
         .collect();
 
     part1(&commands);
