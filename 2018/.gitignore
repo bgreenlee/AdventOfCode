@@ -9,3 +9,4 @@ deps/
 exampleProject
 testData
 .DS_Store
+Cargo.lock
