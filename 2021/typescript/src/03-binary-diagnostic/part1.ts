@@ -43,7 +43,7 @@ for (let i = 0; i < bitSize; i++) {
     let [gamma, _] = getGammaEpsilon(o2numbers);
     let mask = 1 << (bitSize - i - 1);
     let target = gamma & mask;
-    o2numbers = o2numbers.filter((n) => (n & mask) === target);
+    o2numbers = o2numbers.filter(n => (n & mask) === target);
     if (o2numbers.length === 1) {
         break;
     }
@@ -55,7 +55,7 @@ for (let i = 0; i < bitSize; i++) {
     let [_, epsilon] = getGammaEpsilon(co2numbers);
     let mask = 1 << (bitSize - i - 1);
     let target = epsilon & mask;
-    co2numbers = co2numbers.filter((n) => (n & mask) === target);
+    co2numbers = co2numbers.filter(n => (n & mask) === target);
     if (co2numbers.length === 1) {
         break;
     }
