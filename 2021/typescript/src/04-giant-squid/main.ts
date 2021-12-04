@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import { Bingo } from './bingo';
 
 let input = fs.readFileSync(process.stdin.fd, 'utf-8');
-// let input = fs.readFileSync('/Users/brad/Code/AdventOfCode/2021/typescript/src/04-giant-squid/test.dat', 'utf-8');
 
 let bingo = new Bingo(input);
 

@@ -1,4 +1,5 @@
 import { Board } from './board';
+import { log } from './log';
 
 export class Bingo {
     private numbers: number[];
@@ -26,16 +27,18 @@ export class Bingo {
     }
 
     clear() {
-        for (let board of this.boards) {
-            board.clear();
-        }
+        this.boards.forEach(b => b.clear());
     }
 
     getFirstWinner(): Board | undefined {
         this.clear();
         for (let num of this.numbers) {
+            log(`Mark: ${num}`);
+
             for (let board of this.boards) {
                 board.mark(num);
+
+                log(board.toString() + "\n");
 
                 if (board.isWinner()) {
                     return board;
@@ -46,17 +49,16 @@ export class Bingo {
 
     getAllWinners(): Board[] {
         this.clear();
-        let boards: Board[] = [];
+        let winners: Board[] = [];
         for (let num of this.numbers) {
-            for (let board of this.boards) {
-                if (!board.isWinner()) {
-                    board.mark(num);
-                    if (board.isWinner()) {
-                        boards.push(board);
-                    }
+            let remainingBoards = this.boards.filter(b => !b.isWinner())
+            for (let board of remainingBoards) {
+                board.mark(num);
+                if (board.isWinner()) {
+                    winners.push(board);
                 }
             }
         }
-        return boards;
+        return winners;
     }
 }
