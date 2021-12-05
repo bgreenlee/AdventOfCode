@@ -78,13 +78,13 @@ impl Line {
     // return all the points on a line
     fn points(&self) -> Vec<Point> {
         let distance = self.start.distance_to(&self.end);
-        let xstep = (self.end.x - self.start.x) as f32 / distance as f32;
-        let ystep = (self.end.y - self.start.y) as f32 / distance as f32;
+        let xstep = ((self.end.x - self.start.x) as f32 / distance as f32).round() as i32;
+        let ystep = ((self.end.y - self.start.y) as f32 / distance as f32).round() as i32;
         let mut points: Vec<Point> = Vec::new();
         let mut curpoint = self.start;
         while curpoint != self.end {
             points.push(curpoint);
-            curpoint = curpoint.add(xstep.round() as i32, ystep.round() as i32);
+            curpoint = curpoint.add(xstep, ystep);
         }
         points.push(self.end);
         points
