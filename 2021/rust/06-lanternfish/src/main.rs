@@ -8,7 +8,7 @@ fn main() {
     // initialize an array with the counts of fish at each age
     let mut counts: [u64; 9] = [0; 9];
     for fish in fishes {
-        counts[fish] = counts[fish] + 1;
+        counts[fish] += 1;
     }
 
     println!("Part 1: {}", calculate_population(counts, 80));
@@ -25,7 +25,7 @@ fn calculate_population(mut counts: [u64; 9], days: i32) -> u64 {
             counts[i] = counts[i+1];
         }
         counts[8] = new_fish; // welcome, new fish!
-        counts[6] = counts[6] + new_fish; // fish formerly at 0 are now at 6
+        counts[6] += new_fish; // fish formerly at 0 are now at 6
     }
     return counts.iter().sum();
 }
