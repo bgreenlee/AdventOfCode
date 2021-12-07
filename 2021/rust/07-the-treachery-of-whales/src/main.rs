@@ -8,32 +8,27 @@ fn main() {
         .map(|n| n.trim().parse::<i32>().unwrap_or(0))
         .collect();
     positions.sort();
+
     let first = *positions.first().unwrap();
     let last = *positions.last().unwrap();
 
     // part 1
-    let mut min_score: i32 = i32::MAX;
-    for i in first..=last {
-        let score = positions.iter()
-            .fold(0, |acc, p| acc + (p - i).abs());
-        if score < min_score {
-            min_score = score;
-        }
-    }
-    println!("Part 1: {}", min_score);
+    let score = (first..=last).map(|i| 
+            positions.iter()
+                .fold(0, |acc, p| acc + (p - i).abs())
+        )
+        .min()
+        .unwrap();
+    println!("Part 1: {}", score);
 
     // part 2
-    min_score = i32::MAX;
-    for i in first..=last {
-        let score = positions.iter()
-            .fold(0, |acc, p| {
-                let dist = (p - i).abs();
-                return acc + dist * (dist + 1) / 2;
-            });
-        if score < min_score {
-            min_score = score;
-        }
-    }
-    println!("Part 2: {}", min_score);
+    let score = (first..=last).map(|i|
+            positions.iter()
+                .fold(0, |acc, p| acc + (p - i).abs() * ((p - i).abs() + 1) / 2 )
+        )
+        .min()
+        .unwrap();
+
+    println!("Part 2: {}", score);
 }
 
