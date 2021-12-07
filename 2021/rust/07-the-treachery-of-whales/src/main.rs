@@ -50,10 +50,10 @@ fn median_and_mean(positions: &[i32]) {
     println!("Part 1: {}", score);
 
     // part 2
-    let score = (0..=1).map(|i|
+    let score = [mean - 0.5, mean + 0.5].into_iter().map(|i|
         positions.iter()
             .fold(0, |acc, p| {
-                let diff = (p - (mean + i as f32 - 0.5) as i32).abs();
+                let diff = (p - i as i32).abs();
                 return acc + diff * (diff + 1) / 2;
             })
         )
