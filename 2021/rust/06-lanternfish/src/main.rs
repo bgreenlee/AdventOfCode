@@ -18,7 +18,7 @@ fn main() {
 // given an array with counts of fish at each age, run a simulation for the
 // given number of days, and then return the total number of fish
 fn calculate_population(mut counts: [u64; 9], days: i32) -> u64 {
-    for _ in 1..=days {
+    for _ in 0..days {
         let new_fish = counts[0]; // fish at 0 create new fish
         // age the fish by moving them down one slot in our array
         for i in 0..8 {
