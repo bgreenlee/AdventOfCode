@@ -28,7 +28,6 @@ fn main() {
         )
         .min()
         .unwrap();
-
     println!("Part 2: {}", score);
 }
 
