@@ -4,6 +4,7 @@ use std::ops::Deref;
 use std::hash::{Hash, Hasher};
 use std::cmp::{Eq, PartialEq};
 
+// create a type for segments, which is just a set of chars
 struct Segments(HashSet<char>);
 
 // this gives us HashSet's methods
