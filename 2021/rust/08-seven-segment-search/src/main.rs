@@ -37,7 +37,8 @@ fn main() {
         .expect("Error reading from stdin");
     let lines: Vec<&str> = buffer.lines().collect();
 
-    let mut total: u32 = 0;
+    let mut part1_total: u32 = 0;
+    let mut part2_total: u32 = 0;
     for line in lines {
         let parts: Vec<&str> = line.split(" | ").collect();
 
@@ -49,11 +50,16 @@ fn main() {
             .map(|s| Segments(HashSet::from_iter(s.chars())))
             .collect();
 
+        part1_total += output_segments.iter()
+            .filter(|s| s.len() < 5 || s.len() > 6)
+            .count() as u32;
+
         let mapping = generate_mapping(&input_segments);
-        total += segments_to_number(&output_segments, &mapping);
+        part2_total += segments_to_number(&output_segments, &mapping);
     }
 
-    println!("{}", total);
+    println!("Part 1: {}", part1_total);
+    println!("Part 2: {}", part2_total);
 }
 
 fn generate_mapping(input_segments: &Vec<Segments>) -> HashMap<&Segments, u8> {
