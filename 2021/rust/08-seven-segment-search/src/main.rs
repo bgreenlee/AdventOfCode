@@ -62,6 +62,7 @@ fn main() {
     println!("Part 2: {}", part2_total);
 }
 
+// given a vector of input segments, produce a mapping of segment -> number
 fn generate_mapping(segments: &Vec<Segments>) -> HashMap<&Segments, u8> {
     // find our base set of {1,4,7,8}
     let one = segments.iter().find(|s| s.len() == 2).unwrap();
@@ -95,7 +96,6 @@ fn generate_mapping(segments: &Vec<Segments>) -> HashMap<&Segments, u8> {
         s.is_subset(six))
         .unwrap();
         
-    // we use a string as our key because HashSet isn't hashable
     let mut mapping: HashMap<&Segments, u8> = HashMap::new();
     mapping.insert(zero, 0);
     mapping.insert(one, 1);
@@ -111,6 +111,7 @@ fn generate_mapping(segments: &Vec<Segments>) -> HashMap<&Segments, u8> {
     return mapping;
 }
 
+// Convert a vector of segments to its number representation
 fn segments_to_number(segments: &Vec<Segments>, mapping: &HashMap<&Segments, u8>) -> u32 {
     let digits: Vec<u8> = segments.iter()
         .map(|s| *mapping.get(&s).unwrap())
