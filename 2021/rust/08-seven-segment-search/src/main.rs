@@ -62,39 +62,37 @@ fn main() {
     println!("Part 2: {}", part2_total);
 }
 
-fn generate_mapping(input_segments: &Vec<Segments>) -> HashMap<&Segments, u8> {
+fn generate_mapping(segments: &Vec<Segments>) -> HashMap<&Segments, u8> {
     // find our base set of {1,4,7,8}
-    let one = input_segments.iter().find(|s| s.len() == 2).unwrap();
-    let four = input_segments.iter().find(|s| s.len() == 4).unwrap();
-    let seven = input_segments.iter().find(|s| s.len() == 3).unwrap();
-    let eight = input_segments.iter().find(|s| s.len() == 7).unwrap();
+    let one = segments.iter().find(|s| s.len() == 2).unwrap();
+    let four = segments.iter().find(|s| s.len() == 4).unwrap();
+    let seven = segments.iter().find(|s| s.len() == 3).unwrap();
+    let eight = segments.iter().find(|s| s.len() == 7).unwrap();
 
     // find the rest
-    let zero = input_segments.iter().find(|s|
+    let zero = segments.iter().find(|s|
         s.len() == 6 && 
-        s.is_superset(one) && s.is_superset(seven) && !s.is_superset(four))
+        !s.is_superset(four) && s.is_superset(seven))
         .unwrap();
-    let three = input_segments.iter().find(|s|
+    let three = segments.iter().find(|s|
         s.len() == 5 && 
-        s.is_superset(one) && s.is_superset(seven))
+        s.is_superset(seven))
         .unwrap();
-    let six = input_segments.iter().find(|s|
+    let six = segments.iter().find(|s|
         s.len() == 6 && 
         !s.is_superset(one))
         .unwrap();
-    let nine = input_segments.iter().find(|s|
+    let nine = segments.iter().find(|s|
         s.len() == 6 && 
         s.is_superset(one) && s.is_superset(four))
         .unwrap();
-    let two = input_segments.iter().find(|s|
+    let two = segments.iter().find(|s|
         s.len() == 5 && 
-        !s.is_subset(six) &&
-        !s.is_superset(one))
+        !s.is_superset(one) && !s.is_subset(six))
         .unwrap();
-    let five = input_segments.iter().find(|s|
+    let five = segments.iter().find(|s|
         s.len() == 5 && 
-        s.is_subset(six) &&
-        !s.is_superset(one))
+        s.is_subset(six))
         .unwrap();
         
     // we use a string as our key because HashSet isn't hashable
