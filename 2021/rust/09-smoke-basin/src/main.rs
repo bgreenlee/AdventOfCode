@@ -46,9 +46,9 @@ fn main() {
             return size;
         })
         .collect();
-    basin_sizes.sort_by(|a, b| b.cmp(a));
 
-    let score = basin_sizes[0] * basin_sizes[1] * basin_sizes[2];
+    basin_sizes.sort_by(|a, b| b.cmp(a)); // sort descending
+    let score = basin_sizes[0..3].iter().product::<u32>();
     println!("Part 2: {}", score);
 }
 
