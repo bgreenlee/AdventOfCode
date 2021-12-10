@@ -11,9 +11,9 @@ fn main() {
     let mut part2_scores: Vec<u64> = Vec::new();
     for line in lines {
         let mut stack: Vec<char> = Vec::new();
-        let (corrupted, s) = is_corrupted(&mut stack, line);
-        if corrupted {
-            part1_score += s
+        let score = corruption_score(&mut stack, line);
+        if score > 0 {
+            part1_score += score
         } else {
             part2_scores.push(complete(&mut stack));
         }
@@ -26,47 +26,44 @@ fn main() {
     println!("Part 2: {}", part2_score);
 }
 
-fn is_corrupted(stack: &mut Vec<char>, line: &str) -> (bool, i32) {
-    let mut valid = false;
-    let mut score = 0;
+fn corruption_score(stack: &mut Vec<char>, line: &str) -> i32 {
     for c in line.chars() {
         match c {
+            // open character, put it on the stack
             '(' | '[' | '{' | '<' => stack.push(c),
+            // close character, check that we have a matching open on the stack
             ')' | ']' | '}' | '>' => {
-                let x = stack.pop();
-                valid = match x {
-                    Some('(') if c == ')' => true,
-                    Some('[') if c == ']' => true,
-                    Some('{') if c == '}' => true,
-                    Some('<') if c == '>' => true,
-                    _ => false,
-                };
-                if !valid {
-                    score += match c {
+                match stack.pop() {
+                    // if we have a matching open, move on
+                    Some('(') if c == ')' => {},
+                    Some('[') if c == ']' => {},
+                    Some('{') if c == '}' => {},
+                    Some('<') if c == '>' => {},
+                    // non-matching character, so we have corruption; return the score
+                    _ => return match c {
                         ')' => 3,
                         ']' => 57,
                         '}' => 1197,
                         '>' => 25137,
-                        _ => 0,
-                    };
-                    break;
-                }
+                        _ => panic!(), // bad input
+                    }
+                };
             },
-            _ => panic!()
+            _ => panic!(), // bad input
         }
     }
-    return (!valid, score)
+    return 0; // all good
 }
 
 fn complete(stack: &mut Vec<char>) -> u64 {
     let mut score = 0;
     loop {
         let next = stack.pop();
-        match next {
-            Some('(') => score = score * 5 + 1,
-            Some('[') => score = score * 5 + 2,
-            Some('{') => score = score * 5 + 3,
-            Some('<') => score = score * 5 + 4,
+        score = score * 5 + match next {
+            Some('(') => 1,
+            Some('[') => 2,
+            Some('{') => 3,
+            Some('<') => 4,
             _ => break,
         }
     }
