@@ -1,6 +1,34 @@
 use std::collections::{HashMap, HashSet};
 use std::io::{self, Read};
 
+struct Node {
+    name: String,
+    connections: HashSet<String>,
+}
+
+impl Node {
+    fn new(name: &str) -> Node {
+        Node {
+            name: String::from(name),
+            connections: HashSet::new(),
+        }
+    }
+
+    fn is_small(name: &str) -> bool {
+        name.chars().count() > 0 && name.chars().nth(0).unwrap().is_lowercase()
+    }
+    
+    fn is_start(name: &str) -> bool {
+        name == "start"
+    }
+    
+    fn is_end(name: &str) -> bool {
+        name == "end"
+    }
+}
+
+
+
 struct Map {
     map: HashMap<String, Node>,
 }
@@ -20,33 +48,30 @@ impl Map {
         Map { map }
     }
 
-    fn paths(&mut self, start: &str, end: &str, extra_visit: bool) -> Vec<Vec<String>> {
+    fn paths(&self, start: &str, end: &str, extra_visit: bool) -> Vec<Vec<String>> {
         let mut current_path: Vec<String> = Vec::new();
         let mut simple_paths: Vec<Vec<String>> = Vec::new();
 
-        Self::depth_first_search(self, start, end,
-            &mut current_path, &mut simple_paths, extra_visit);
+        self.depth_first_search(start, end, &mut current_path, &mut simple_paths, extra_visit);
 
         simple_paths
     }
 
-    fn depth_first_search(map: &Map, from: &str, to: &str,
+    fn depth_first_search(&self, from: &str, to: &str,
         current_path: &mut Vec<String>, simple_paths: &mut Vec<Vec<String>>, extra_visit: bool)
     {
-        let node = map.map.get(from).unwrap();
-        if node.is_small() && current_path.contains(&from.to_string()) {
-            if !extra_visit || node.is_start() || node.is_end() {
+        if Node::is_small(from) && current_path.contains(&from.to_string()) {
+            if !extra_visit || Node::is_start(from) || Node::is_end(from) {
                 return
             }
         
             // a whole lotta work to see if we've already had our extra visit
             let mut visit_counts: HashMap<String, u8> = HashMap::new();
-            let small_caves = current_path.into_iter()
-                .filter(|n| n.chars().nth(0).unwrap() >= 'a')
-                .map(|n| n.to_string())
-                .collect::<Vec<String>>();
-            for small_cave in small_caves {
-                *visit_counts.entry(small_cave).or_default() += 1;
+            for i in 0..current_path.len() {
+                let cave = &current_path[i];
+                if Node::is_small(cave) && !Node::is_start(cave) && !Node::is_end(cave) {
+                    *visit_counts.entry(cave.to_string()).or_default() += 1;
+                }
             }
             if visit_counts.values().max().unwrap_or(&0) > &1 {
                 return;
@@ -61,40 +86,15 @@ impl Map {
             return;
         }
 
+        let node = self.map.get(from).unwrap();
         for connection in &node.connections {
-            Self::depth_first_search(map, connection, to,
-                current_path, simple_paths, extra_visit);
+            self.depth_first_search(connection, to, current_path, simple_paths, extra_visit);
         }
 
         current_path.pop();
     }
 }
 
-struct Node {
-    name: String,
-    connections: HashSet<String>,
-}
-
-impl Node {
-    fn new(name: &str) -> Node {
-        Node {
-            name: String::from(name),
-            connections: HashSet::new(),
-        }
-    }
-
-    fn is_small(&self) -> bool {
-        self.name.chars().nth(0).unwrap() >= 'a'
-    }
-
-    fn is_start(&self) -> bool {
-        self.name == "start"
-    }
-
-    fn is_end(&self) -> bool {
-        self.name == "end"
-    }
-}
 
 fn main() {
     let mut buffer = String::new();
@@ -103,7 +103,7 @@ fn main() {
         .expect("Error reading from stdin");
     let lines: Vec<&str> = buffer.lines().collect();
 
-    let mut map = Map::new(lines);
+    let map = Map::new(lines);
     let part1_paths = map.paths("start", "end", false);
     println!("{}", part1_paths.len());
 
