@@ -40,24 +40,20 @@ fn main() {
             match *point {
                 (x, y) if axis == 'x' && x > value => *point = (2 * value - x, y),
                 (x, y) if axis == 'y' && y > value => *point = (x, 2 * value - y),
-                _ => {},
+                _ => {}
             }
         }
         map = points.into_iter().collect();
         println!("fold {:?} => {}", (axis, value), map.len());
     }
 
-    // get max x and y
-    let mut max_x = 0;
-    let mut max_y = 0;
-    for (x, y) in map.iter() {
-        if *x > max_x {
-            max_x = *x
-        }
-        if *y > max_y {
-            max_y = *y
-        }
-    }
+    // find the max x and y so we know what to iterate to when we display
+    let (max_x, max_y) = map.iter().fold((0, 0), |acc, (x, y)| {
+        (
+            if *x > acc.0 { *x } else { acc.0 },
+            if *y > acc.1 { *y } else { acc.1 },
+        )
+    });
 
     // display
     for y in 0..=max_y {
