@@ -37,14 +37,10 @@ fn main() {
     for (axis, value) in folds {
         let mut points: Vec<(i32, i32)> = map.into_iter().collect();
         for point in points.iter_mut() {
-            if axis == 'x' {
-                if point.0 > value {
-                    *point = (2 * value - point.0, point.1);
-                }
-            } else {
-                if point.1 > value {
-                    *point = (point.0, 2 * value - point.1);
-                }
+            match *point {
+                (x, y) if axis == 'x' && x > value => *point = (2 * value - x, y),
+                (x, y) if axis == 'y' && y > value => *point = (x, 2 * value - y),
+                _ => {},
             }
         }
         map = points.into_iter().collect();
@@ -66,7 +62,7 @@ fn main() {
     // display
     for y in 0..=max_y {
         for x in 0..=max_x {
-            let char = if map.contains(&(x,y)) { "#" } else { " " };
+            let char = if map.contains(&(x, y)) { "#" } else { " " };
             print!("{}", char);
         }
         println!();
