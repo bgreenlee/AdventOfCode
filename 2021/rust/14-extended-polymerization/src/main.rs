@@ -8,13 +8,17 @@ fn main() {
         .expect("Error reading from stdin");
     let lines: Vec<&str> = buffer.lines().collect();
 
+    // map of consecutive pairs of letters to their count in the "string"
     let mut pair_counts: HashMap<(char, char), u64> = HashMap::new();
+    // map of substitution rules
     let mut rules: HashMap<(char, char), char> = HashMap::new();
 
+    // get the pairs from our initial template string
     let initial: Vec<char> = lines[0].chars().collect();
     for i in 0..initial.len() - 1 {
         *pair_counts.entry((initial[i], initial[i + 1])).or_default() += 1;
     }
+    // parse the rules
     for i in 2..lines.len() {
         let parts: Vec<_> = lines[i].split(" -> ").collect();
         let pair_chars: Vec<_> = parts[0].chars().collect();
