@@ -1,5 +1,5 @@
 use std::cmp::Ordering;
-use std::collections::{BinaryHeap, HashMap};
+use std::collections::{BinaryHeap, HashMap, HashSet};
 use std::io::{self, Read};
 
 type Point = (usize, usize);
@@ -108,6 +108,9 @@ fn a_star(map: &Vec<Vec<u32>>, start: Point, goal: Point) -> Option<Vec<Point>> 
         location: start,
         fscore: map[0][0],
     });
+    // keep separate set of points in open_set so we can test for inclusion efficiently
+    let mut open_set_points: HashSet<Point> = HashSet::new();
+    open_set_points.insert((0,0));
 
     // For node n, came_from[n] is the node immediately preceding it on the cheapest path from start
     // to n currently known.
@@ -123,7 +126,9 @@ fn a_star(map: &Vec<Vec<u32>>, start: Point, goal: Point) -> Option<Vec<Point>> 
     fscore.insert(start, heuristic(start, goal));
 
     while let Some(current) = open_set.pop() {
+        open_set_points.remove(&current.location);
         if current.location == goal {
+            // we found our goal! Return with the complete path
             return Some(reconstruct_path(&came_from, current.location));
         }
         for neighbor in neighbors(map, current.location) {
@@ -136,24 +141,19 @@ fn a_star(map: &Vec<Vec<u32>>, start: Point, goal: Point) -> Option<Vec<Point>> 
                 gscore.insert(neighbor, tentative_gscore);
                 fscore.insert(neighbor, tentative_gscore + heuristic(neighbor, goal));
 
-                let open_set_points: Vec<_> = open_set
-                    .clone()
-                    .into_vec()
-                    .iter()
-                    .map(|cell| cell.location)
-                    .collect();
                 if !open_set_points.contains(&neighbor) {
                     let cell = Cell {
                         location: neighbor,
                         fscore: *fscore.get(&neighbor).unwrap_or(&max_val),
                     };
                     open_set.push(cell);
+                    open_set_points.insert(cell.location);
                 }
             }
         }
     }
 
-    return None;
+    return None; // we didn't reach the goal :(
 }
 
 #[cfg(test)]
