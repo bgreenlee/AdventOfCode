@@ -8,6 +8,7 @@ struct Packet {
 }
 
 impl Packet {
+    // Given a VecDeque of bits, construct a Packet
     fn new(bits: &mut VecDeque<char>) -> Packet {
         let version = Self::pop_value(bits, 3) as u8;
         let type_id = Self::pop_value(bits, 3) as u8;
@@ -50,6 +51,7 @@ impl Packet {
         packets
     }
 
+    // parse a literal type, returning an integer
     fn parse_literal(bits: &mut VecDeque<char>) -> u64 {
         let mut val_bits: Vec<char> = Vec::new();
         loop {
@@ -65,6 +67,7 @@ impl Packet {
         u64::from_str_radix(bitstr, 2).unwrap()
     }
 
+    // parse an operator type, returning a Vec of Packets
     fn parse_operator(bits: &mut VecDeque<char>) -> Vec<Packet> {
         let mut subpackets: Vec<Packet>;
         let length_type_id = bits.pop_front().unwrap();
@@ -82,11 +85,13 @@ impl Packet {
         subpackets
     }
 
+    // pop the given number of bits off our queue and return the integer representation
     fn pop_value(bits: &mut VecDeque<char>, num_bits: usize) -> u64 {
         let strval = bits.drain(0..num_bits).collect::<String>();
         u64::from_str_radix(&strval, 2).unwrap()
     }
 
+    // convert a hex string into a VecDequeu of char binary digits
     fn hex_to_binary(hexstr: &str) -> VecDeque<char> {
         let mut binary: VecDeque<char> = VecDeque::new();
         for c in hexstr.chars() {
@@ -96,6 +101,7 @@ impl Packet {
         binary
     }
 
+    // sum of this packet's version and all its subpackets version_sums
     fn version_sum(&self) -> u64 {
         let mut sum = self.version as u64;
         for subpacket in &self.subpackets {
