@@ -3,43 +3,30 @@ use std::ops::RangeInclusive;
 fn main() {
     let target_area = (85..=145, -163..=-108);
 
-    let (best_velocity, max_height) = find_max_height(&target_area);
-    println!("Part 1: {} at {:?}", max_height, best_velocity);
-
-    let velocities = find_all_velocities(&target_area);
+    let mut velocities = find_all_velocities(&target_area);
+    velocities.sort_by(|a, b| b.max_height.cmp(&a.max_height)); // sort by descending max height
+    println!("Part 1: {} at {:?}", velocities[0].max_height, velocities[0].velocity);
     println!("Part 2: {}", velocities.len());
 }
 
 type TargetArea = (RangeInclusive<i32>, RangeInclusive<i32>);
 type Velocity = (i32, i32);
 
-fn find_max_height(target_area: &TargetArea) -> (Velocity, i32) {
-    let mut max_height = i32::MIN;
-    let mut best_velocity = (0,0);
-
-    for vx in 1..=*target_area.0.end() {
-        for vy in *target_area.1.start()..=200 { // nothing very scientific about the end range here
-            match fire((vx, vy), &target_area) {
-                Some(h) => {
-                    if h > max_height {
-                        max_height = h;
-                        best_velocity = (vx, vy);
-                    }
-                },
-                None => {}
-            }
-        }
-    }
-    (best_velocity, max_height)
+struct Firing {
+    velocity: Velocity,
+    max_height: i32,
 }
 
-fn find_all_velocities(target_area: &TargetArea) -> Vec<Velocity> {
+// find all velocities that hit the target
+// return a list of velocities along with their max height
+fn find_all_velocities(target_area: &TargetArea) -> Vec<Firing> {
     let mut velocities = Vec::new();
 
     for vx in 1..=*target_area.0.end() {
-        for vy in *target_area.1.start()..=200 {
-            match fire((vx, vy), &target_area) {
-                Some(_) => velocities.push((vx, vy)),
+        for vy in *target_area.1.start()..=200 { // nothing scientific about this end range
+            let velocity = (vx, vy);
+            match fire(velocity, &target_area) {
+                Some(max_height) => velocities.push(Firing{velocity, max_height}),
                 None => {}
             }
         }
@@ -47,6 +34,8 @@ fn find_all_velocities(target_area: &TargetArea) -> Vec<Velocity> {
     velocities
 }
 
+// fire with the given velocity
+// if we hit the target area, return Some(max height), None otherwise
 fn fire(velocity: Velocity, target_area: &TargetArea) -> Option<i32> {
     let (mut vx, mut vy) = velocity;
     let mut px = 0;
