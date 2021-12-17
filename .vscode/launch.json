@@ -5,17 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "node",
+            "type": "lldb",
             "request": "launch",
-            "name": "Launch Program",
-            "skipFiles": [
-                "<node_internals>/**"
-            ],
-            "program": "${file}",
-            "outFiles": [
-                "${workspaceFolder}/**/*.js"
-            ],
-            "preLaunchTask": "tsc: build - 2021/typescript/tsconfig.json",
+            // "preLaunchTask": "cargo build",
+            "name": "Debug unit tests in library 'packet-decoder'",
+            "cwd": "${workspaceFolder}/2021/rust/16-packet-decoder",
+            "program": "${workspaceFolder}/2021/rust/16-packet-decoder/target/debug/packet-decoder",
+            "args": [],
+            "stopAtEntry": false
         }
     ]
 }
