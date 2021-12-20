@@ -26,7 +26,7 @@ fn main() {
     for _ in 0..50 {
         enhance(&mut input_image, &mut background_lit, &algo);
     }
-    display(&input_image);
+    // display(&input_image);
     println!("{}", input_image.iter().count());
 }
 
@@ -36,12 +36,13 @@ fn enhance(image: &mut HashSet<Point>, background_lit: &mut bool, algo: &Vec<cha
     for y in miny-1..=maxy+1 {
         for x in minx-1..=maxx+1 {
             let mut algo_idx = 0;
-            for offset_y in -1..=1 {
-                for offset_x in -1..=1 {
+            for offset_y in y-1..=y+1 {
+                for offset_x in x-1..=x+1 {
                     algo_idx <<= 1;
-                    let (ox, oy) = (x + offset_x, y + offset_y);
                     // if the background is lit and we're looking outside our image, consider the pixel on
-                    if *background_lit && !((minx..=maxx).contains(&ox) && (miny..=maxy).contains(&oy)) || image.contains(&(ox, oy)) {
+                    if *background_lit && !((minx..=maxx).contains(&offset_x) && (miny..=maxy).contains(&offset_y)) ||
+                        image.contains(&(offset_x, offset_y))
+                    {
                         algo_idx |= 1;
                     }
                 }
