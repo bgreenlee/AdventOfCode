@@ -20,6 +20,9 @@ fn main() {
             m[4].parse::<i32>().unwrap() .. m[5].parse::<i32>().unwrap() + 1,
             m[6].parse::<i32>().unwrap() .. m[7].parse::<i32>().unwrap() + 1
         );
+        // for each previous "on" cuboid, we subtract the current cuboid
+        // this gives us zero to six new "on" cuboids
+        // then if this is an on cuboid, we add it to the list
         cuboids = cuboids.iter()
             .flat_map(|c| c.subtract(&cuboid))
             .collect::<Vec<Cuboid>>();
@@ -139,7 +142,9 @@ impl Cuboid {
         if !self.overlaps(other) {
             return vec![*self];
         }
+        // we know this must intersect because it overlaps
         let intersection = self.intersection(other).unwrap();
+        // generate our sub-cuboids
         let new_cuboids = vec![
             Cuboid {
                 xrange: Range::new(self.xrange.start..intersection.xrange.start),
