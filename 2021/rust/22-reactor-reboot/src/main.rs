@@ -2,7 +2,6 @@ use std::io::{self, Read};
 use regex::Regex;
 use std::cmp::{Eq, PartialEq};
 
-
 fn main() {
     let mut buffer = String::new();
     io::stdin()
