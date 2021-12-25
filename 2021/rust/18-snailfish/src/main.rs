@@ -1,176 +1,121 @@
-use std::ops;
-use std::cmp::{Eq, PartialEq};
-// use std::io::{self, Read};
+use std::io::{self, Read};
 
-#[derive(Clone, Debug)]
-enum Element {
-    Number(Box<Number>),
-    Int(u32),
+// cribbed from https://github.com/timvisee/advent-of-code-2021/blob/master/day18a/src/main.rs
+
+// Snailfish sequence: `[(depth, n)]`
+type Num = Vec<(u8, u8)>;
+
+pub fn main() {
+    let mut buffer = String::new();
+    io::stdin()
+        .read_to_string(&mut buffer)
+        .expect("Error reading from stdin");
+
+    let nums = parse(&buffer);
+    println!("Part 1: {}", magnitude(&nums));
+    println!("Part 2: {}", max_magnitude(&nums));
 }
 
-#[derive(Clone, Debug)]
-struct Number {
-    left: Element,
-    right: Element,
+fn parse(buffer: &String) -> Vec<Num> {
+    buffer.lines()
+        .map(|line| {
+            line.chars()
+                .fold((0, Vec::new()), |(mut depth, mut num), c| {
+                    match c {
+                        '[' => depth += 1,
+                        ']' => depth -= 1,
+                        '0'..='9' => num.push((depth, c as u8 - '0' as u8)),
+                        _ => {}
+                    }
+                    (depth, num)
+                })
+                .1 // return vector from tuple
+        })
+        .collect::<Vec<_>>()
 }
 
-impl ops::Add<Number> for Number {
-    type Output = Number;
+// return final magnitude after adding and reducing
+fn magnitude(nums: &Vec<Num>) -> u16 {
+    let mut nums = nums.clone();
+    while nums.len() > 1 {
+        let mut other = nums.remove(1);
+        let num = &mut nums[0];
+        add(num, &mut other);
+        reduce(num, 0);
+    }
 
-    fn add(self, rhs: Number) -> Number {
-        Number {
-            left: Element::Number(Box::new(Number{ left: self.left, right: self.right})),
-            right: Element::Number(Box::new(Number{ left: rhs.left, right: rhs.right})),
+    mag(&mut 0, 1, &nums[0])
+}
+
+// return the max magnitude of adding any two numbers
+fn max_magnitude(nums: &Vec<Num>) -> u16 {
+    let mut max = 0;
+    for i in 0..nums.len() - 1 {
+        for j in i + 1..nums.len() {
+            // we have to add each pair twice, since addition is non-commutative
+            let (mut a1, mut b1) = (nums[i].clone(), nums[j].clone());
+            let (mut a2, mut b2) = (a1.clone(), b1.clone());
+
+            add(&mut a2, &mut b1);
+            reduce(&mut a2, 0);
+            max = mag(&mut 0, 1, &a2).max(max);
+
+            add(&mut b2, &mut a1);
+            reduce(&mut b2, 0);
+            max = mag(&mut 0, 1, &b2).max(max);
+        }
+    }
+    max
+}
+
+// add two snailfish numbers
+// we append their arrays and increase all the depths by one
+fn add(nums: &mut Num, other: &mut Num) {
+    nums.append(other);
+    nums.iter_mut().for_each(|(d, _)| *d += 1);
+}
+
+// reduce a snailfish number
+// we alternatively explode and split until we can't anymore
+fn reduce(nums: &mut Num, i: usize) {
+    // explode
+    for i in i..nums.len() - 1 {
+        // If any pair is nested inside four pairs, the leftmost such pair explodes.
+        if nums[i].0 == 5 {
+            let (left, right) = (nums[i].1, nums[i + 1].1);
+            nums[i] = (4, 0);
+            nums.remove(i + 1);
+            if i > 0 {
+                nums.get_mut(i - 1).map(|n| n.1 += left);
+            }
+            nums.get_mut(i + 1).map(|n| n.1 += right);
+            return reduce(nums, i);
+        }
+    }
+    // split
+    for i in 0..nums.len() {
+        let (depth, n) = nums[i];
+        // If any regular number is 10 or greater, the leftmost such regular number splits.
+        if n >= 10 {
+            nums[i] = (depth + 1, n / 2);
+            nums.insert(i + 1, (depth + 1, (n + 1) / 2));
+            return reduce(nums, i);
         }
     }
 }
 
-impl PartialEq for Number {
-    fn eq(&self, other: &Number) -> bool {
-        match (self, other) {
-            ( Number{left: Element::Int(al), right: Element::Int(ar)},
-              Number{left: Element::Int(bl), right: Element::Int(br)} ) => al == bl && ar == br,
-            ( Number{left: Element::Int(al), right: Element::Number(ar)},
-              Number{left: Element::Int(bl), right: Element::Number(br)} ) => al == bl && ar == br,
-            ( Number{left: Element::Number(al), right: Element::Int(ar)},
-              Number{left: Element::Number(bl), right: Element::Int(br)} ) => al == bl && ar == br,
-            ( Number{left: Element::Number(al), right: Element::Number(ar)},
-              Number{left: Element::Number(bl), right: Element::Number(br)} ) => al == bl && ar == br,
-            _ => false
-        }
+// recursively calculate the magnitude of this number
+fn mag(i: &mut usize, depth: u8, num: &Num) -> u16 {
+    3 * if num[*i].0 == depth {
+        *i += 1;
+        num[*i - 1].1 as u16
+    } else {
+        mag(i, depth + 1, num)
     }
-}
-
-impl Eq for Number {}
-
-impl Number {
-    fn reduce(&mut self) {
-        // if any pair is nested inside four pairs, the leftmost such pair explodes
-        // if self.depth() >= 4 {
-        //     let mut leftmost = self.leftmost();
-        // }
-    }
-
-    // depth is how many levels of nesting this number has
-    // [1,2] has a depth of 0
-    // [[1,2],3] has a depth of 1, etc.
-    fn depth(&self) -> u32 {
-        return match self {
-            Number{left: Element::Int(_), right: Element::Int(_)} => return 0,
-            Number{left: Element::Number(a), right: Element::Int(_)} => a.depth() + 1,
-            Number{left: Element::Int(_), right: Element::Number(b)} => return b.depth() + 1,
-            Number{left: Element::Number(a), right: Element::Number(b)} => return u32::max(a.depth(), b.depth()) + 1,
-        }
-    }
-
-    fn leftmost(&self) -> &Number {
-        return match self {
-            Number{left: Element::Int(_), right: Element::Int(_)} => self,
-            Number{left: Element::Number(a), right: Element::Int(_)} => a.leftmost(),
-            Number{left: Element::Int(_), right: Element::Number(b)} => b.leftmost(),
-            Number{left: Element::Number(a), right: Element::Number(b)} => 
-                if b.depth() > a.depth() { b.leftmost() } else { a.leftmost() }
-        }        
-    }
-
-    fn rightmost(&self) -> &Number {
-        return match self {
-            Number{left: Element::Int(_), right: Element::Int(_)} => self,
-            Number{left: Element::Number(a), right: Element::Int(_)} => a.rightmost(),
-            Number{left: Element::Int(_), right: Element::Number(b)} => b.rightmost(),
-            Number{left: Element::Number(a), right: Element::Number(b)} => 
-                if a.depth() < b.depth() { a.rightmost() } else { b.rightmost() }
-        }        
-    }
-}
-
-fn main() {
-    // let mut buffer = String::new();
-    // io::stdin()
-    //     .read_to_string(&mut buffer)
-    //     .expect("Error reading from stdin");
-    // let lines: Vec<&str> = buffer.lines().collect();
-    let number = parse("[9,[8,7]]");
-    dbg!(number);
-    let n1 = parse("[1,2]");
-    let n2 = parse("[[3,4],5]");
-    dbg!(n1 + n2);
-}
-
-fn parse(line: &str) -> Number {
-    let mut stack: Vec<Element> = Vec::new();
-    for char in line.chars() {
-        match char {
-            ']' => {
-                let right = stack.pop().unwrap();
-                let left = stack.pop().unwrap();
-                stack.push(Element::Number(Box::new(Number{left, right})));
-            },
-            num if num.is_ascii_digit() => stack.push(Element::Int(num.to_digit(10).unwrap())),
-            _ => {},
-        }
-    }
-
-    // should have just one Element::Number on the stack
-    match stack[0].clone() {
-        Element::Number(number) => *number,
-        _ => panic!(),
-    }
-}
-
-#[allow(unused_macros)]
-macro_rules! dbg {
-    ($x:expr) => {
-        println!("{} = {:?}",stringify!($x),$x);
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_parse() {
-        let number = parse("[[1,2],3]");
-
-        match number.left {
-            Element::Number(num) => {
-                match num.left {
-                    Element::Int(n) => assert_eq!(n, 1),
-                    _ => panic!(),
-                };
-                match num.right {
-                    Element::Int(n) => assert_eq!(n, 2),
-                    _ => panic!(),
-                };
-            },
-            _ => panic!(),
-        };
-
-        match number.right {
-            Element::Int(n) => assert_eq!(n, 3),
-            _ => panic!(),
-        };
-    }
-
-    #[test]
-    fn test_equality() {
-        assert_eq!(parse("[[1,2],3]"), parse("[[1,2],3]"));
-        assert_ne!(parse("[1,2]"), parse("[[1,2],3]"));
-    }
-
-    #[test]
-    fn test_depth() {
-        assert_eq!(parse("[1,2]").depth(), 0);
-        assert_eq!(parse("[[1,2],3]").depth(), 1);
-        assert_eq!(parse("[[1,2],[[3,4],5]]").depth(), 2);
-        assert_eq!(parse("[[[[[9,8],1],2],3],4]").depth(), 4);
-    }
-
-    #[test]
-    fn test_leftmost() {
-        assert_eq!(*parse("[1,2]").leftmost(), parse("[1,2]"));
-        assert_eq!(*parse("[[[[[9,8],1],2],3],4]").leftmost(), parse("[9,8]"));
-        assert_eq!(*parse("[7,[6,[5,[4,[3,2]]]]]").leftmost(), parse("[3,2]"));
+    + 2 * if num[*i].0 == depth {
+        *i += 1;
+        num[*i - 1].1 as u16
+    } else {
+        mag(i, depth + 1, num)
     }
 }
