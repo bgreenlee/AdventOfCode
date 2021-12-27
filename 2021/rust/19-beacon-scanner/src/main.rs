@@ -4,117 +4,135 @@ use std::cmp::{Eq, PartialEq};
 use std::hash::{Hash, Hasher};
 use std::fmt;
 use std::ops::{Add, Sub, Neg};
-use petgraph::graph::{NodeIndex, UnGraph};
-use petgraph::algo::astar;
+
+// cribbed from https://github.com/prscoelho/aoc2021/blob/main/a19.rs
 
 fn main() {
     let mut buffer = String::new();
-    io::stdin()
-        .read_to_string(&mut buffer)
+    io::stdin().read_to_string(&mut buffer)
         .expect("Error reading from stdin");
-    let lines: Vec<&str> = buffer.lines().collect();
 
-    let mut scanner_points: Vec<Vec<Point>> = Vec::new();
-    let mut current_list: Vec<Point> = Vec::new();
+    let beacons = parse_beacons(&buffer);
+    let (all_beacons, scanner_locations) = normalize_beacons(beacons);
+    println!("Part 1: {}", all_beacons.len());
+    println!("Part 2: {}", max_distance(scanner_locations));
+}
 
-    for line in lines {
-        if line.starts_with("---") {
-            continue;
+type Distances = HashMap<Point, HashSet<u32>>;
+
+// Parse our input text into beacons
+fn parse_beacons(input: &str) -> Vec<HashSet<Point>> {
+    let mut beacons = Vec::new();
+    for scanner_text in input.split("\n\n") {
+        let mut current_set = HashSet::new();
+        for line in scanner_text.split("\n").skip(1) {
+            current_set.insert(Point::new_from_str(line));
         }
-        if line.len() == 0 {
-            scanner_points.push(current_list);
-            current_list = Vec::new();
-            continue;
-        }
-        current_list.push(Point::new_from_str(line));
+        beacons.push(current_set);
     }
-    scanner_points.push(current_list);
+    beacons
+}
 
-    // for each point, generate a set of distances to all other points
-    // points from different scanners that have a lot of overlap will likely be the same points
-    let mut scanner_point_distances: Vec<HashMap<Point, HashSet<u32>>> = Vec::new();
-    for points in scanner_points.iter() {
-        let mut point_distances: HashMap<Point, HashSet<u32>> = HashMap::new();
-        for i in 0..points.len() {
-            let mut distance_set: HashSet<u32> = HashSet::new();
-            for j in 0..points.len() {
-                if i == j {
-                    continue;
-                }
-                distance_set.insert(points[i].distance(&points[j]));
+// Normalize all beacons to the origin (scanner 0)
+// Return the set of normalized beacons and list of scanner locations
+fn normalize_beacons(mut beacons: Vec<HashSet<Point>>) -> (HashSet<Point>, Vec<Point>) {
+    let mut scanner_locations = vec![Point::new(0, 0, 0)];
+    let mut origin_beacons = beacons.remove(0);
+
+    let mut beacon_distances = beacons.iter().map(distances).collect::<Vec<_>>();
+
+    while !beacons.is_empty() {
+        let origin_distances = distances(&origin_beacons);
+        let (origin_center, other_center, scanner_idx) = find_center_pair(origin_distances, &beacon_distances).unwrap();
+        let (translated_center, translated_points) = match_orientation(
+            &origin_beacons,
+            &beacons[scanner_idx],
+            origin_center,
+            other_center,
+        )
+        .unwrap();
+
+        origin_beacons.extend(translated_points);
+        scanner_locations.push(translated_center);
+
+        beacon_distances.remove(scanner_idx);
+        beacons.remove(scanner_idx);        
+    }
+
+    (origin_beacons, scanner_locations)
+}
+
+// Return a mapping of each point to the set of manhattan distances to all other points
+fn distances(beacons: &HashSet<Point>) -> Distances {
+    let mut result = Distances::with_capacity(beacons.len());
+    for from_beacon in beacons {
+        let mut dists = HashSet::new();
+        for to_beacon in beacons {
+            if from_beacon == to_beacon {
+                continue;
             }
-            point_distances.insert(points[i], distance_set);
+            dists.insert(from_beacon.distance(to_beacon));
         }
-        scanner_point_distances.push(point_distances);
+        result.insert(*from_beacon, dists);
     }
+    result
+}
 
-    // mapping of transformation from a to b
-    let mut mappings: HashMap<(usize, usize), Transform> = HashMap::new();
-    let mut edges: Vec<(NodeIndex, NodeIndex)> = Vec::new();
-    for a in 0..scanner_point_distances.len()-1 {
-        for b in a+1..scanner_point_distances.len() {
-            let map_a = &scanner_point_distances[a];
-            let map_b = &scanner_point_distances[b];
-            let mut point_pairs: Vec<(Point, Point)> = Vec::new();
-            for (point_a, set_a) in map_a {
-                for (point_b, set_b) in map_b {
-                    let intersection_count = set_a.intersection(&set_b).count();
-                    if intersection_count > 6 {
-                        point_pairs.push((*point_a, *point_b)); // these points map to each other somehow
-                    }
-                }
-            }
-            if point_pairs.len() == 12 {
-                // these two scanners overlap
-                // figure out how their points translate
-                // For each translation we attempt, generate a set of diffs of point_b - point_a.
-                // When the set has only one element, we've found our translation.
-                for direction in [Direction::Pos, Direction::Neg] {
-                    for axis in [Axis::X, Axis::Y, Axis::Z] {
-                        for rotation in [0, 90, 180, 270] {
-                            let mut diffset: HashSet<Point> = HashSet::new();
-                            for (point_a, point_b) in &point_pairs {
-                                let trans_point_b = point_b.translate(direction, axis, rotation);
-                                diffset.insert(trans_point_b - *point_a);
-                            }
-                            if diffset.len() == 1 { // we have our mapping
-                                let diff = diffset.into_iter().next().unwrap();
-                                mappings.insert((b,a), Transform { diff, direction, axis, rotation, is_rev: false });
-                                mappings.insert((a,b), Transform { diff, direction, axis, rotation, is_rev: true });
-                                edges.push((NodeIndex::new(a), NodeIndex::new(b)));
-                            }
-                        }
-                    }
+// Given two sets of point -> distance mappings, find two points that have 12 or more
+// overlapping distances. This indicates that they are most likely the same point in
+// different coordinate systems.
+// Return the two points along with the index of the matched set in beacon_distances.
+fn find_center_pair(origin_distances: Distances, beacon_distances: &Vec<Distances>) -> Option<(Point, Point, usize)> {
+    for (origin_center, origin_dists) in origin_distances {
+        for (idx, scanner) in beacon_distances.iter().enumerate() {
+            for (other_center, other_dists) in scanner {
+                // if we have at least 12 overlapping distances to other points, these are most
+                // likely the same point in different coordinate systems
+                if origin_dists.intersection(other_dists).count() >= 12 {
+                    return Some((origin_center, *other_center, idx));
                 }
             }
         }
     }
+    None
+}
 
-    // finally, generate our set of all beacons, starting with beacons from scanner 0
-    let mut beacons: HashSet<Point> = HashSet::from_iter(scanner_points[0].iter().cloned());
-
-    // create an undirected graph between scanners so we can find the path from each scanner to scanner 0
-    // with this path, we can generate a list of transforms to get from scanner n to scanner 0
-    let graph = UnGraph::<usize, ()>::from_edges(edges.iter());
-
-    for i in 1..scanner_points.len() {
-        let (_, path) = astar(&graph, (i as u32).into(), |end| end == 0.into(), |_| 1, |_| 0).unwrap();
-        dbg!(&path);
-        let mut transforms: Vec<Transform> = Vec::new();
-        for p in 0..path.len()-1 {
-            let map = (path[p].index(), path[p+1].index());
-            transforms.push(*mappings.get(&map).unwrap());
-        }
-        dbg!(&transforms);
-        for point in scanner_points[i].iter() {
-            beacons.insert(point.transform(&transforms));
+// find an orientation that allows us to map other_beacons to origin_beacons
+// return the location of the other scanner and the translated other points
+fn match_orientation(
+    origin_beacons: &HashSet<Point>, other_beacons: &HashSet<Point>,
+    origin_center: Point, other_center: Point,
+) -> Option<(Point, HashSet<Point>)> {
+    for direction in [Direction::Pos, Direction::Neg] {
+        for axis in [Axis::X, Axis::Y, Axis::Z] {
+            for rotation in [0, 90, 180, 270] {
+                let translated_center = other_center.translate(direction, axis, rotation);
+                let center_diff = translated_center - origin_center;
+                let translated_set: HashSet<Point> = other_beacons
+                    .iter()
+                    .map(|p| p.translate(direction, axis, rotation) - center_diff)
+                    .collect();
+                if origin_beacons.intersection(&translated_set).count() >= 12 {
+                    return Some((-center_diff, translated_set));
+                }
+            }
         }
     }
 
-    let mut beacon_list: Vec<_> = beacons.into_iter().collect();
-    beacon_list.sort_by(|a,b| if a.x == b.x { a.y.cmp(&b.y) } else { a.x.cmp(&b.x) });
-    // dbg!(&beacon_list);
-    println!("Part 1: {}", beacon_list.len());
+    None
+}
+
+// find the maximum distance between any two scanners
+fn max_distance(scanner_locations: Vec<Point>) -> u32 {
+    let mut distances = Vec::new();
+    for a in scanner_locations.iter() {
+        for b in scanner_locations.iter() {
+            if a != b {
+                distances.push(a.distance(b));
+            }
+        }
+    }
+    distances.into_iter().max().unwrap()
 }
 
 #[derive(Clone,Copy)]
@@ -184,18 +202,6 @@ impl Point {
 
             _ => panic!(),
         }
-    }
-
-    fn transform(&self, transforms: &Vec<Transform>) -> Point {
-        let mut point = *self;
-        for transform in transforms {
-            if transform.is_rev {
-                point = (point + transform.diff).translate(transform.direction, transform.axis, transform.rotation);
-            } else {
-                point = point.translate(transform.direction, transform.axis, transform.rotation) - transform.diff;
-            }
-        }
-        point
     }
 }
 
@@ -287,29 +293,11 @@ impl Neg for Direction {
 }
 
 #[derive(Clone,Copy,Debug)]
-enum Axis {
-    X,
-    Y,
-    Z,
-}
+enum Axis { X, Y, Z }
+
 impl fmt::Display for Axis {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{:?}", self)
-    }
-}
-
-#[derive(Clone,Copy)]
-struct Transform {
-    diff: Point,
-    direction: Direction,
-    axis: Axis,
-    rotation: u32,
-    is_rev: bool,
-}
-
-impl fmt::Debug for Transform {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "{}, {}, {}, {}", self.diff, self.direction, self.axis, self.rotation)
     }
 }
 

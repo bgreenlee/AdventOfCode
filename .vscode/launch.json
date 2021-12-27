@@ -8,9 +8,9 @@
             "type": "lldb",
             "request": "launch",
             // "preLaunchTask": "cargo build",
-            "name": "Debug unit tests in library 'packet-decoder'",
-            "cwd": "${workspaceFolder}/2021/rust/16-packet-decoder",
-            "program": "${workspaceFolder}/2021/rust/16-packet-decoder/target/debug/packet-decoder",
+            "name": "Debug 'beacon-scanner'",
+            "cwd": "${workspaceFolder}/2021/rust/19-beacon-scanner",
+            "program": "${workspaceFolder}/2021/rust/19-beacon-scanner/target/debug/beacon-scanner",
             "args": [],
             "stopAtEntry": false
         }
