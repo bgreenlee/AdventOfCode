@@ -8,43 +8,35 @@ import (
 	"strconv"
 )
 
-func part1(lines []string) int {
-	maxCount := 0
-	currentCount := 0
-	for _, line := range lines {
-		if line == "" {
-			if currentCount > maxCount {
-				maxCount = currentCount
-			}
-			currentCount = 0
-		} else {
-			num, _ := strconv.Atoi(line)
-			currentCount += num
+func part1(sums []int) int {
+	max := 0
+	for _, s := range sums {
+		if s > max {
+			max = s
 		}
 	}
-	if currentCount > maxCount {
-		maxCount = currentCount
-	}
-
-	return maxCount
+	return max
 }
 
-func part2(lines []string) int {
-	var counts []int
+func part2(sums []int) int {
+	sort.Sort(sort.Reverse(sort.IntSlice(sums)))
+
+	return sums[0] + sums[1] + sums[2]
+}
+
+func makeSums(lines []string) []int {
+	var sums []int
 	currentCount := 0
 	for _, line := range lines {
 		if line == "" {
-			counts = append(counts, currentCount)
+			sums = append(sums, currentCount)
 			currentCount = 0
 		} else {
 			num, _ := strconv.Atoi(line)
 			currentCount += num
 		}
 	}
-	counts = append(counts, currentCount)
-	sort.Sort(sort.Reverse(sort.IntSlice(counts)))
-
-	return counts[0] + counts[1] + counts[2]
+	return append(sums, currentCount)
 }
 
 func main() {
@@ -59,6 +51,7 @@ func main() {
 		os.Exit(-1)
 	}
 
-	fmt.Printf("Part 1: %d\n", part1(lines))
-	fmt.Printf("Part 2: %d\n", part2(lines))
+	sums := makeSums(lines)
+	fmt.Printf("Part 1: %d\n", part1(sums))
+	fmt.Printf("Part 2: %d\n", part2(sums))
 }
