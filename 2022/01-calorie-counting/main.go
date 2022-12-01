@@ -28,17 +28,17 @@ func part2(sums []int) int {
 // return an array of sums of each group of numbers in the input
 func makeSums(lines []string) []int {
 	var sums []int
-	currentCount := 0
+	sum := 0
 	for _, line := range lines {
 		if line == "" {
-			sums = append(sums, currentCount)
-			currentCount = 0
+			sums = append(sums, sum)
+			sum = 0
 		} else {
 			num, _ := strconv.Atoi(line)
-			currentCount += num
+			sum += num
 		}
 	}
-	return append(sums, currentCount)
+	return append(sums, sum)
 }
 
 func main() {
@@ -47,11 +47,6 @@ func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
-	}
-
-	if err := scanner.Err(); err != nil {
-		fmt.Println(err)
-		os.Exit(-1)
 	}
 
 	sums := makeSums(lines)
