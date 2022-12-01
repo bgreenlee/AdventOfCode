@@ -8,6 +8,7 @@ import (
 	"strconv"
 )
 
+// return the max sum
 func part1(sums []int) int {
 	max := 0
 	for _, s := range sums {
@@ -18,9 +19,9 @@ func part1(sums []int) int {
 	return max
 }
 
+// return the sum of the top three sums
 func part2(sums []int) int {
 	sort.Sort(sort.Reverse(sort.IntSlice(sums)))
-
 	return sums[0] + sums[1] + sums[2]
 }
 
@@ -40,6 +41,7 @@ func makeSums(lines []string) []int {
 }
 
 func main() {
+	// read input from stdin
 	var lines []string
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
