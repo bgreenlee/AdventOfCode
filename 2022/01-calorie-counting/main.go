@@ -25,6 +25,7 @@ func part2(sums []int) int {
 	return sums[0] + sums[1] + sums[2]
 }
 
+// return an array of sums of each group of numbers in the input
 func makeSums(lines []string) []int {
 	var sums []int
 	currentCount := 0
