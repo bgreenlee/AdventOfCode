@@ -1,0 +1,1 @@
+import sys; nums = sorted(map(lambda lines: sum(map(lambda line: int(line), lines.split("\n"))), sys.stdin.read().split("\n\n")), reverse=True); print(nums[0]); print(sum(nums[0:3]))
