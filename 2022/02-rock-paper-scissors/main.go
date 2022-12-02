@@ -10,23 +10,23 @@ func part1(lines []string) int {
 	score := 0
 	for _, line := range lines {
 		switch line {
-		case "A X":
+		case "A X": // rock draws rock (1 + 3)
 			score += 4
-		case "A Y":
+		case "A Y": // paper defeats rock (2 + 6)
 			score += 8
-		case "A Z":
+		case "A Z": // scissors loses to rock (3 + 0)
 			score += 3
-		case "B X":
+		case "B X": // rock loses to paper (1 + 0)
 			score += 1
-		case "B Y":
+		case "B Y": // paper draws paper (2 + 3)
 			score += 5
-		case "B Z":
+		case "B Z": // scissors defeats paper (3 + 6)
 			score += 9
-		case "C X":
+		case "C X": // rock defeats scissors (1 + 6)
 			score += 7
-		case "C Y":
+		case "C Y": // paper loses to scissors (2 + 0)
 			score += 2
-		case "C Z":
+		case "C Z": // scissors draws scissors (3 + 3)
 			score += 6
 		}
 	}
