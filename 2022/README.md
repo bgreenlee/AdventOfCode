@@ -6,3 +6,4 @@ Solutions in Go
 
 [Day 2: Rock Paper Scissors](02-rock-paper-scissors/)
 
+[Day 3: Rucksack Reorganization](03-rucksack-reorganization/)
