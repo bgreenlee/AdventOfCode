@@ -9,7 +9,7 @@ import (
 )
 
 func scoreItem(item rune) int {
-	if item >= 'a' {
+	if item >= 'a' { // lowercase letters come after uppercase in ASCII, so no need to check for <= 'z'
 		return int(item) - int('a') + 1
 	} else {
 		return int(item) - int('A') + 27
