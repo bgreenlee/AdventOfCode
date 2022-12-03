@@ -9,7 +9,7 @@ import (
 )
 
 func scoreItem(item rune) int {
-	if item >= 'a' && item <= 'z' {
+	if item >= 'a' {
 		return int(item) - int('a') + 1
 	} else {
 		return int(item) - int('A') + 27
