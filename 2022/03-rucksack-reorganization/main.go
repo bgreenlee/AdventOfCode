@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/bgreenlee/AdventOfCode/tree/main/2022/util"
-	mapset "github.com/deckarep/golang-set/v2"
+	set "github.com/deckarep/golang-set/v2"
 )
 
 func scoreItem(item rune) int {
@@ -20,8 +20,8 @@ func part1(lines []string) int {
 	score := 0
 	for _, line := range lines {
 		runes := []rune(line)
-		ruck1 := mapset.NewSet(runes[:len(runes)/2]...)
-		ruck2 := mapset.NewSet(runes[len(runes)/2:]...)
+		ruck1 := set.NewSet(runes[:len(runes)/2]...)
+		ruck2 := set.NewSet(runes[len(runes)/2:]...)
 		common, _ := ruck1.Intersect(ruck2).Pop()
 		score += scoreItem(common)
 	}
@@ -30,14 +30,14 @@ func part1(lines []string) int {
 
 func part2(lines []string) int {
 	score := 0
-	var rucks [3]mapset.Set[rune]
+	var rucks [3]set.Set[rune]
 	for i := 0; i < 3; i++ {
-		rucks[i] = mapset.NewSet[rune]()
+		rucks[i] = set.NewSet[rune]()
 	}
 
 	for lineno, line := range lines {
 		runes := []rune(line)
-		rucks[lineno%3] = mapset.NewSet(runes...)
+		rucks[lineno%3] = set.NewSet(runes...)
 		if lineno%3 == 2 {
 			common, _ := rucks[0].Intersect(rucks[1]).Intersect(rucks[2]).Pop()
 			score += scoreItem(common)
