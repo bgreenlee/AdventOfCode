@@ -20,9 +20,9 @@ func part1(lines []string) int {
 	score := 0
 	for _, line := range lines {
 		runes := []rune(line)
-		ruck1 := set.NewSet(runes[:len(runes)/2]...)
-		ruck2 := set.NewSet(runes[len(runes)/2:]...)
-		common, _ := ruck1.Intersect(ruck2).Pop()
+		ruck1 := set.NewSet(runes[:len(runes)/2]...) // first half
+		ruck2 := set.NewSet(runes[len(runes)/2:]...) // second half
+		common, _ := ruck1.Intersect(ruck2).Pop()    // get the common item
 		score += scoreItem(common)
 	}
 	return score
@@ -35,7 +35,7 @@ func part2(lines []string) int {
 	for lineno, line := range lines {
 		runes := []rune(line)
 		rucks[lineno%3] = set.NewSet(runes...)
-		if lineno%3 == 2 {
+		if lineno%3 == 2 { // if this is the last ruck in the group, look for the common element
 			common, _ := rucks[0].Intersect(rucks[1]).Intersect(rucks[2]).Pop()
 			score += scoreItem(common)
 		}
