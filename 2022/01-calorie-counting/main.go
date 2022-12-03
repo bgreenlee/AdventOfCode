@@ -1,11 +1,12 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"sort"
 	"strconv"
+
+	"github.com/bgreenlee/AdventOfCode/tree/main/2022/util"
 )
 
 // return the max sum
@@ -42,12 +43,7 @@ func makeSums(lines []string) []int {
 }
 
 func main() {
-	// read input from stdin
-	var lines []string
-	scanner := bufio.NewScanner(os.Stdin)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
+	lines := util.ReadLines(os.Stdin)
 
 	sums := makeSums(lines)
 	fmt.Printf("Part 1: %d\n", part1(sums))
