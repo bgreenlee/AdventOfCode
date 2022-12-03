@@ -1,9 +1,10 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"os"
+
+	"github.com/bgreenlee/AdventOfCode/tree/main/2022/util"
 
 	mapset "github.com/deckarep/golang-set/v2"
 )
@@ -62,12 +63,7 @@ func part2(lines []string) int {
 }
 
 func main() {
-	// read input from stdin
-	var lines []string
-	scanner := bufio.NewScanner(os.Stdin)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
+	lines := util.ReadLines(os.Stdin)
 
 	fmt.Printf("Part 1: %d\n", part1(lines))
 	fmt.Printf("Part 2: %d\n", part2(lines))
