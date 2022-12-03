@@ -31,9 +31,6 @@ func part1(lines []string) int {
 func part2(lines []string) int {
 	score := 0
 	var rucks [3]set.Set[rune]
-	for i := 0; i < 3; i++ {
-		rucks[i] = set.NewSet[rune]()
-	}
 
 	for lineno, line := range lines {
 		runes := []rune(line)
