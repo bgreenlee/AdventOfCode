@@ -9,10 +9,12 @@ import (
 	"github.com/bgreenlee/AdventOfCode/tree/main/2022/util"
 )
 
+// count number of ranges that are completely contained by the other range
 func part1(lines []string) int {
 	count := 0
 	sep := regexp.MustCompile("[,-]")
 	for _, line := range lines {
+		// convert line to an array of ints "2-4,6-8" -> [2,4,6,8]
 		n := util.Map(sep.Split(line, -1), func(s string) int {
 			i, _ := strconv.Atoi(s)
 			return i
@@ -24,10 +26,12 @@ func part1(lines []string) int {
 	return count
 }
 
+// count number of ranges that overlap
 func part2(lines []string) int {
 	count := 0
 	sep := regexp.MustCompile("[,-]")
 	for _, line := range lines {
+		// convert line to an array of ints "2-4,6-8" -> [2,4,6,8]
 		n := util.Map(sep.Split(line, -1), func(s string) int {
 			i, _ := strconv.Atoi(s)
 			return i
