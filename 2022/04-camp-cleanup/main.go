@@ -9,17 +9,21 @@ import (
 	"github.com/bgreenlee/AdventOfCode/tree/main/2022/util"
 )
 
+var sepRE = regexp.MustCompile("[,-]")
+
+// count the number of lines that satisfy the given overlap function
 func countOverlaps(lines []string, comparisonFn func(n []int) bool) int {
-	sep := regexp.MustCompile("[,-]")
-	// filter down to lines that satisfy the comparison function
 	return len(util.Filter(lines, func(line string) bool {
-		// convert line to an array of ints "2-4,6-8" -> [2,4,6,8]
-		n := util.Map(sep.Split(line, -1), func(s string) int {
-			i, _ := strconv.Atoi(s)
-			return i
-		})
-		return comparisonFn(n)
+		return comparisonFn(parseLine(line))
 	}))
+}
+
+// convert line to an array of ints "2-4,6-8" -> [2,4,6,8]
+func parseLine(line string) []int {
+	return util.Map(sepRE.Split(line, -1), func(s string) int {
+		i, _ := strconv.Atoi(s)
+		return i
+	})
 }
 
 // ranges in which one completely covers the other
