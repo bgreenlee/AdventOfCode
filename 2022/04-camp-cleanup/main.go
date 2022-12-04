@@ -3,23 +3,21 @@ package main
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strconv"
-	"strings"
 
 	"github.com/bgreenlee/AdventOfCode/tree/main/2022/util"
 )
 
 func part1(lines []string) int {
 	count := 0
+	sep := regexp.MustCompile("[,-]")
 	for _, line := range lines {
-		elves := strings.Split(line, ",")
-		p1 := strings.Split(elves[0], "-")
-		p2 := strings.Split(elves[1], "-")
-		s1, _ := strconv.Atoi(p1[0])
-		e1, _ := strconv.Atoi(p1[1])
-		s2, _ := strconv.Atoi(p2[0])
-		e2, _ := strconv.Atoi(p2[1])
-		if s1 <= s2 && e1 >= e2 || s2 <= s1 && e2 >= e1 {
+		n := util.Map(sep.Split(line, -1), func(s string) int {
+			i, _ := strconv.Atoi(s)
+			return i
+		})
+		if (n[0] <= n[2] && n[1] >= n[3]) || (n[2] <= n[0] && n[3] >= n[1]) {
 			count += 1
 		}
 	}
@@ -28,15 +26,13 @@ func part1(lines []string) int {
 
 func part2(lines []string) int {
 	count := 0
+	sep := regexp.MustCompile("[,-]")
 	for _, line := range lines {
-		elves := strings.Split(line, ",")
-		p1 := strings.Split(elves[0], "-")
-		p2 := strings.Split(elves[1], "-")
-		s1, _ := strconv.Atoi(p1[0])
-		e1, _ := strconv.Atoi(p1[1])
-		s2, _ := strconv.Atoi(p2[0])
-		e2, _ := strconv.Atoi(p2[1])
-		if e1 >= s2 && s1 <= e2 || e2 >= s1 && s2 <= e1 {
+		n := util.Map(sep.Split(line, -1), func(s string) int {
+			i, _ := strconv.Atoi(s)
+			return i
+		})
+		if (n[1] >= n[2] && n[0] <= n[3]) || (n[3] >= n[0] && n[2] <= n[1]) {
 			count += 1
 		}
 	}
