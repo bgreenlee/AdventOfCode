@@ -44,7 +44,7 @@ func part2(lines []string) int {
 }
 
 func main() {
-	lines := util.ReadLines(os.Stdin)
+	lines, _ := util.ReadLines(os.Stdin)
 
 	fmt.Printf("Part 1: %d\n", part1(lines))
 	fmt.Printf("Part 2: %d\n", part2(lines))

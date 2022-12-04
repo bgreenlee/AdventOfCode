@@ -18,7 +18,7 @@ func calculateScore(lines []string, lookup []int) int {
 }
 
 func main() {
-	lines := util.ReadLines(os.Stdin)
+	lines, _ := util.ReadLines(os.Stdin)
 
 	fmt.Printf("Part 1: %d\n", calculateScore(lines, []int{4, 8, 3, 1, 5, 9, 7, 2, 6}))
 	fmt.Printf("Part 2: %d\n", calculateScore(lines, []int{3, 4, 8, 1, 5, 9, 2, 6, 7}))

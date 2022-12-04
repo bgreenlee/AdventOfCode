@@ -40,7 +40,7 @@ func countOverlaps(lines []string, fn comparisonFunc) int {
 }
 
 func main() {
-	lines := util.ReadLines(os.Stdin)
+	lines, _ := util.ReadLines(os.Stdin)
 
 	fmt.Printf("Part 1: %d\n", countOverlaps(lines, isCompleteOverlap))
 	fmt.Printf("Part 2: %d\n", countOverlaps(lines, isPartialOverlap))

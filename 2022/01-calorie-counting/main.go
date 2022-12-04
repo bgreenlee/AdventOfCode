@@ -43,7 +43,7 @@ func makeSums(lines []string) []int {
 }
 
 func main() {
-	lines := util.ReadLines(os.Stdin)
+	lines, _ := util.ReadLines(os.Stdin)
 
 	sums := makeSums(lines)
 	fmt.Printf("Part 1: %d\n", part1(sums))
