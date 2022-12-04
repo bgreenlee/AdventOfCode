@@ -23,18 +23,18 @@ func countOverlaps(lines []string, comparisonFn func(n []int) bool) int {
 }
 
 // ranges in which one completely covers the other
-func overlapComplete(n []int) bool {
+func isCompleteOverlap(n []int) bool {
 	return (n[0] <= n[2] && n[1] >= n[3]) || (n[2] <= n[0] && n[3] >= n[1])
 }
 
 // ranges that overlap partially
-func overlapPartial(n []int) bool {
+func isPartialOverlap(n []int) bool {
 	return (n[1] >= n[2] && n[0] <= n[3]) || (n[3] >= n[0] && n[2] <= n[1])
 }
 
 func main() {
 	lines := util.ReadLines(os.Stdin)
 
-	fmt.Printf("Part 1: %d\n", countOverlaps(lines, overlapComplete))
-	fmt.Printf("Part 2: %d\n", countOverlaps(lines, overlapPartial))
+	fmt.Printf("Part 1: %d\n", countOverlaps(lines, isCompleteOverlap))
+	fmt.Printf("Part 2: %d\n", countOverlaps(lines, isPartialOverlap))
 }
