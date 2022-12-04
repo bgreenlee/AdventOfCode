@@ -37,3 +37,14 @@ func TestFilter(t *testing.T) {
 		t.Fatalf("got %v, expected %v", out, expect)
 	}
 }
+
+func TestFilterMapStringInt(t *testing.T) {
+	in := []string{"one", "two", "three", "four", "five"}
+	out := FilterMap(in, func(s string) (int, bool) {
+		return len(s), len(s)%2 == 0
+	})
+	expect := []int{4, 4}
+	if !reflect.DeepEqual(out, expect) {
+		t.Fatalf("got %v, expected %v", out, expect)
+	}
+}
