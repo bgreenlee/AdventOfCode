@@ -11,6 +11,8 @@ import (
 
 var sepRE = regexp.MustCompile("[,-]")
 
+// signature for function that takes an array of ints representing the ranges,
+// and returns true if those ranges satisfy the comparison function
 type comparisonFunc func([]int) bool
 
 // ranges in which one completely covers the other
