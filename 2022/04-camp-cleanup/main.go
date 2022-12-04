@@ -11,11 +11,16 @@ import (
 
 var sepRE = regexp.MustCompile("[,-]")
 
-// count the number of lines that satisfy the given overlap function
-func countOverlaps(lines []string, comparisonFn func(n []int) bool) int {
-	return len(util.Filter(lines, func(line string) bool {
-		return comparisonFn(parseLine(line))
-	}))
+type comparisonFunc func([]int) bool
+
+// ranges in which one completely covers the other
+func isCompleteOverlap(n []int) bool {
+	return (n[0] <= n[2] && n[1] >= n[3]) || (n[2] <= n[0] && n[3] >= n[1])
+}
+
+// ranges that overlap partially
+func isPartialOverlap(n []int) bool {
+	return (n[1] >= n[2] && n[0] <= n[3]) || (n[3] >= n[0] && n[2] <= n[1])
 }
 
 // convert line to an array of ints "2-4,6-8" -> [2,4,6,8]
@@ -26,14 +31,10 @@ func parseLine(line string) []int {
 	})
 }
 
-// ranges in which one completely covers the other
-func isCompleteOverlap(n []int) bool {
-	return (n[0] <= n[2] && n[1] >= n[3]) || (n[2] <= n[0] && n[3] >= n[1])
-}
-
-// ranges that overlap partially
-func isPartialOverlap(n []int) bool {
-	return (n[1] >= n[2] && n[0] <= n[3]) || (n[3] >= n[0] && n[2] <= n[1])
+// count the number of lines that satisfy the given overlap function
+func countOverlaps(lines []string, fn comparisonFunc) int {
+	ranges := util.Map(lines, parseLine)
+	return len(util.Filter(ranges, fn))
 }
 
 func main() {
