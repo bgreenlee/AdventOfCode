@@ -9,13 +9,13 @@ import (
 	"github.com/bgreenlee/AdventOfCode/tree/main/2022/util"
 )
 
+type Stack = util.Deque[rune]
+
 type Move struct {
 	num  int
 	from int
 	to   int
 }
-
-type Stack = util.Deque[rune]
 
 func parseProblem(lines []string) ([]Stack, []Move) {
 	// parse stacks
