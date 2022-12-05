@@ -15,48 +15,9 @@ type Move struct {
 	to   int
 }
 
-func part1(lines []string) string {
-	stacks, moves := parseProblem(lines)
-	for _, move := range moves {
-		for i := 0; i < move.num; i++ {
-			item, _ := stacks[move.from-1].PopBack()
-			stacks[move.to-1].PushBack(item)
-		}
-	}
-	// get top of each stack
-	var tops []rune
-	for _, stack := range stacks {
-		top, _ := stack.PopBack()
-		tops = append(tops, top)
-	}
-	return string(tops)
-}
-
-func part2(lines []string) string {
-	stacks, moves := parseProblem(lines)
-	for _, move := range moves {
-		var items util.Deque[rune]
-		for i := 0; i < move.num; i++ {
-			item, _ := stacks[move.from-1].PopBack()
-			items.PushBack(item)
-		}
-		for !items.IsEmpty() {
-			item, _ := items.PopBack()
-			stacks[move.to-1].PushBack(item)
-		}
-	}
-	// get top of each stack
-	var tops []rune
-	for _, stack := range stacks {
-		top, _ := stack.PopBack()
-		tops = append(tops, top)
-	}
-	return string(tops)
-}
-
 func parseProblem(lines []string) ([]util.Deque[rune], []Move) {
-	var stacks []util.Deque[rune]
 	// parse stacks
+	var stacks []util.Deque[rune]
 	var lineno int
 	for lineno = 0; lineno < len(lines); lineno++ {
 		runes := []rune(lines[lineno])
@@ -74,10 +35,12 @@ func parseProblem(lines []string) ([]util.Deque[rune], []Move) {
 
 		for i := 1; i < len(runes); i += 4 {
 			if runes[i] != ' ' {
-				stacks[(i-1)/4].PushFront(runes[i])
+				stacks[(i-1)/4].Prepend(runes[i])
 			}
 		}
 	}
+
+	// parse moves
 	var moves []Move
 	var moveRE = regexp.MustCompile(`move (\d+) from (\d+) to (\d+)`)
 	for i := lineno + 2; i < len(lines); i++ {
@@ -91,6 +54,39 @@ func parseProblem(lines []string) ([]util.Deque[rune], []Move) {
 	}
 
 	return stacks, moves
+}
+
+func part1(lines []string) string {
+	stacks, moves := parseProblem(lines)
+	for _, move := range moves {
+		for i := 0; i < move.num; i++ {
+			// move items one at a time
+			item, _ := stacks[move.from-1].Pop()
+			stacks[move.to-1].Append(item)
+		}
+	}
+	// get top of each stack
+	var tops []rune
+	for _, stack := range stacks {
+		top, _ := stack.Last()
+		tops = append(tops, top)
+	}
+	return string(tops)
+}
+
+func part2(lines []string) string {
+	stacks, moves := parseProblem(lines)
+	for _, move := range moves {
+		items := stacks[move.from-1].PopN(move.num)
+		stacks[move.to-1].Append(items...)
+	}
+	// get top of each stack
+	var tops []rune
+	for _, stack := range stacks {
+		top, _ := stack.Last()
+		tops = append(tops, top)
+	}
+	return string(tops)
 }
 
 func main() {
