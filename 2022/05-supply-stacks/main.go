@@ -15,9 +15,11 @@ type Move struct {
 	to   int
 }
 
-func parseProblem(lines []string) ([]util.Deque[rune], []Move) {
+type Stack = util.Deque[rune]
+
+func parseProblem(lines []string) ([]Stack, []Move) {
 	// parse stacks
-	var stacks []util.Deque[rune]
+	var stacks []Stack
 	var lineno int
 	for lineno = 0; lineno < len(lines); lineno++ {
 		runes := []rune(lines[lineno])
@@ -30,7 +32,7 @@ func parseProblem(lines []string) ([]util.Deque[rune], []Move) {
 			if len(stacks) > (len(runes)-1)/4 {
 				break
 			}
-			stacks = append(stacks, util.Deque[rune]{})
+			stacks = append(stacks, Stack{})
 		}
 
 		for i := 1; i < len(runes); i += 4 {
