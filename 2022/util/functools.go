@@ -1,20 +1,5 @@
 package util
 
-import (
-	"bufio"
-	"io"
-)
-
-// Read input from Reader, return as an array of strings
-func ReadLines(r io.Reader) ([]string, error) {
-	var lines []string
-	scanner := bufio.NewScanner(r)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-	return lines, scanner.Err()
-}
-
 // Map transforms the input slice to an output slice by applying the given
 // function to each element
 func Map[A any, B any](items []A, fn func(A) B) []B {
@@ -47,3 +32,4 @@ func FilterMap[A any, B any](items []A, fn func(A) (B, bool)) []B {
 	}
 	return out
 }
+

@@ -9,3 +9,5 @@ Solutions in Go
 [Day 3: Rucksack Reorganization](03-rucksack-reorganization/)
 
 [Day 4: Camp Cleanup](04-camp-cleanup/)
+
+[Day 5: Supply Stacks](05-supply-stacks/)
