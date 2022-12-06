@@ -5,15 +5,19 @@ import (
 	"os"
 
 	"github.com/bgreenlee/AdventOfCode/tree/main/2022/util"
-	set "github.com/deckarep/golang-set/v2"
 )
 
 func solve(line string, num int) int {
 	runes := []rune(line)
-	for i := 0; i < len(runes)-num; i++ {
-		charset := set.NewSet(runes[i : i+num]...)
-		if charset.Cardinality() == num {
-			return i + num
+	runemap := make(map[rune]int) // map of runes to the last position we saw them
+	for i := 0; i < len(runes); i++ {
+		if last_i, found := runemap[runes[i]]; found {
+			runemap = make(map[rune]int) // clear the map
+			i = last_i + 1               // skip ahead of the last dup
+		}
+		runemap[runes[i]] = i
+		if len(runemap) == num {
+			return i
 		}
 	}
 	return 0
