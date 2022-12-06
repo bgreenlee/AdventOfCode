@@ -11,3 +11,5 @@ Solutions in Go
 [Day 4: Camp Cleanup](04-camp-cleanup/)
 
 [Day 5: Supply Stacks](05-supply-stacks/)
+
+[Day 6: Tuning Trouble](06-tuning-trouble/)
