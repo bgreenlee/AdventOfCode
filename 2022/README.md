@@ -13,3 +13,5 @@ Solutions in Go
 [Day 5: Supply Stacks](05-supply-stacks/)
 
 [Day 6: Tuning Trouble](06-tuning-trouble/)
+
+[Day 7: No Space Left on Device](07-no-space-left-on-device/)
