@@ -1,17 +1,19 @@
 # Advent of Code 2022
 
-Solutions in Go
+Solutions in Go and/or Python
 
-[Day 1: Calorie Counting](01-calorie-counting/)
+[Day 1: Calorie Counting (Go, Python)](01-calorie-counting/)
 
-[Day 2: Rock Paper Scissors](02-rock-paper-scissors/)
+[Day 2: Rock Paper Scissors (Go)](02-rock-paper-scissors/)
 
-[Day 3: Rucksack Reorganization](03-rucksack-reorganization/)
+[Day 3: Rucksack Reorganization (Go)](03-rucksack-reorganization/)
 
-[Day 4: Camp Cleanup](04-camp-cleanup/)
+[Day 4: Camp Cleanup (Go)](04-camp-cleanup/)
 
-[Day 5: Supply Stacks](05-supply-stacks/)
+[Day 5: Supply Stacks (Go)](05-supply-stacks/)
 
-[Day 6: Tuning Trouble](06-tuning-trouble/)
+[Day 6: Tuning Trouble (Go)](06-tuning-trouble/)
 
-[Day 7: No Space Left on Device](07-no-space-left-on-device/)
+[Day 7: No Space Left on Device (Go, Python)](07-no-space-left-on-device/)
+
+[Day 8: Treetop Tree House (Python)](08-treetop-tree-house/)
