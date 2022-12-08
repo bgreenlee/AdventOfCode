@@ -1,5 +1,7 @@
 package util
 
+import "golang.org/x/exp/constraints"
+
 // Map transforms the input slice to an output slice by applying the given
 // function to each element
 func Map[A any, B any](items []A, fn func(A) B) []B {
@@ -33,3 +35,11 @@ func FilterMap[A any, B any](items []A, fn func(A) (B, bool)) []B {
 	return out
 }
 
+// Sum all elements
+func Sum[T constraints.Ordered](items []T) T {
+	var sum T
+	for _, x := range items {
+		sum += x
+	}
+	return sum
+}
