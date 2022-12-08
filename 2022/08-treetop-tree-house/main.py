@@ -1,9 +1,10 @@
 import sys
 
+
 def part1(forest: list[list[int]]) -> int:
     size = len(forest[0])
     # array of maxes from each direction (E, W, N, S)
-    maxes = [[[0,0,0,0] for x in range(size)] for y in range(size)]
+    maxes = [[[0, 0, 0, 0] for x in range(size)] for y in range(size)]
 
     for y in range(1, size-1):
         # calculate maxes from east
@@ -24,13 +25,14 @@ def part1(forest: list[list[int]]) -> int:
             maxes[y][x][3] = max(maxes[y+1][x][3], forest[y+1][x])
 
     # visible trees are those that are greater than the max from any direction
-    visible = (size-1)*4 # edges
-    for y in range(1,size-1):
-        for x in range(1,size-1):
+    visible = (size-1)*4  # edges
+    for y in range(1, size-1):
+        for x in range(1, size-1):
             if forest[y][x] > min(maxes[y][x]):
                 visible += 1
 
     return visible
+
 
 def part2(forest: list[list[int]]) -> int:
     size = len(forest[0])
