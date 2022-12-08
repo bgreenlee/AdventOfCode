@@ -3,7 +3,7 @@ import sys
 def part1(forest: list[list[int]]) -> int:
     size = len(forest[0])
     # array of maxes from each direction (E, W, N, S)
-    maxes = [[[0 for d in range(4)] for x in range(size)] for y in range(size)]
+    maxes = [[[0,0,0,0] for x in range(size)] for y in range(size)]
 
     for y in range(1, size-1):
         # calculate maxes from east
