@@ -1,5 +1,4 @@
 import sys
-import operator
 
 Point = tuple[int, int]
 
@@ -35,7 +34,6 @@ def display(points: set[Point]):
                 print('.', end='')
         print()
 
-
 def solve(moves: list[tuple[str, int]], size: int) -> int:
     start = (0, 0)
     segments = [start] * size
@@ -45,7 +43,7 @@ def solve(moves: list[tuple[str, int]], size: int) -> int:
     for direction, steps in moves:
         for i in range(steps):            
             # move head
-            segments[0] = tuple(map(operator.add, segments[0], stepdir[direction])) # adding tuples is ugly in Python
+            segments[0] = (segments[0][0] + stepdir[direction][0], segments[0][1] + stepdir[direction][1])
             # move the rest of the body
             for i in range(size-1):
                 segments[i+1], v = move(segments[i], segments[i+1])
