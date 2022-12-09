@@ -1,26 +1,11 @@
 import sys
+import operator
 
-# Point = tuple[int, int]
-class Point:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-    def __eq__(self, other):
-        return self.x == other.x and self.y == other.y
-    
-    def __hash__(self):
-        return hash((self.x, self.y))
-
-    def __add__(self, other):
-        return Point(self.x + other.x, self.y + other.y)
-
-    def __repr__(self):
-        return f"({self.x}, {self.y})"
+Point = tuple[int, int]
 
 # return true if the two points are adjacent
 def adjacent(a: Point, b: Point) -> bool:
-    return abs(a.x - b.x) <= 1 and abs(a.y - b.y) <= 1
+    return abs(a[0] - b[0]) <= 1 and abs(a[1] - b[1]) <= 1
 
 # return the sign (-1, 0, or 1) of the given number
 def sign(n: int) -> int:
@@ -32,19 +17,19 @@ def move(head: Point, tail: Point) -> tuple[Point, set[Point]]:
     visited = set([tail])
 
     while not adjacent(head, tail):
-        dx, dy = head.x - tail.x, head.y - tail.y
-        tail = Point(tail.x + sign(dx), tail.y + sign(dy))
+        dx, dy = head[0] - tail[0], head[1] - tail[1]
+        tail = (tail[0] + sign(dx), tail[1] + sign(dy))
         visited.add(tail)
 
     return tail, visited
 
 # print out the visited points
 def display(points: set[Point]):
-    min_x, min_y = min(p.x for p in points), min(p.y for p in points)
-    max_x, max_y = max(p.x for p in points), max(p.y for p in points)
+    min_x, min_y = min(p[0] for p in points), min(p[1] for p in points)
+    max_x, max_y = max(p[0] for p in points), max(p[1] for p in points)
     for y in range(min_y, max_y + 1):
         for x in range(min_x, max_x + 1):
-            if Point(x, y) in points:
+            if (x, y) in points:
                 print('#', end='')
             else:
                 print('.', end='')
@@ -52,15 +37,15 @@ def display(points: set[Point]):
 
 
 def solve(moves: list[tuple[str, int]], size: int) -> int:
-    start = Point(0, 0)
+    start = (0, 0)
     segments = [start] * size
     visited = set([start])
-    stepdir = {'R': Point(1, 0), 'L': Point(-1, 0), 'D': Point(0, 1), 'U': Point(0, -1)}
+    stepdir = {'R': (1, 0), 'L': (-1, 0), 'D': (0, 1), 'U': (0, -1)}
 
     for direction, steps in moves:
         for i in range(steps):            
             # move head
-            segments[0] += stepdir[direction]
+            segments[0] = tuple(map(operator.add, segments[0], stepdir[direction])) # adding tuples is ugly in Python
             # move the rest of the body
             for i in range(size-1):
                 segments[i+1], v = move(segments[i], segments[i+1])
@@ -68,7 +53,6 @@ def solve(moves: list[tuple[str, int]], size: int) -> int:
 
     display(visited)
     return len(visited)
-
 
 #
 # main
