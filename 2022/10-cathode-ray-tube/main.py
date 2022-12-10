@@ -7,23 +7,16 @@ class Cpu:
     Callback = Callable[[Self], None]
     x = 1
     cycle = 0
-    precycleCallbacks: list[Callback] = []
-    postcycleCallbacks: list[Callback] = []
+    callbacks: list[Callback] = []
 
-    def registerPrecycleCallback(self, callback: Callback):
-        self.precycleCallbacks.append(callback)
-
-    def registerPostcycleCallback(self, callback: Callback):
-        self.postcycleCallbacks.append(callback)
+    def registerCallback(self, callback: Callback):
+        self.callbacks.append(callback)
 
     def tick(self):
-        for precycle in self.precycleCallbacks:
-            precycle(self)
-
         self.cycle += 1
 
-        for postcycle in self.postcycleCallbacks:
-            postcycle(self)
+        for callback in self.callbacks:
+            callback(self)
 
     def run(self, commands: list[str]):
         for cmd in commands:
@@ -43,7 +36,7 @@ def part1(commands: list[str]) -> int:
             total += cpu.cycle * cpu.x
 
     cpu = Cpu()
-    cpu.registerPostcycleCallback(sumCycles)
+    cpu.registerCallback(sumCycles)
     cpu.run(commands)
 
     return total
@@ -51,12 +44,12 @@ def part1(commands: list[str]) -> int:
 
 def part2(commands: list[str]):
     def renderPixel(cpu: Cpu):
-        print('#' if abs(cpu.x - cpu.cycle % 40) < 2 else ' ', end='')
-        if cpu.cycle % 40 == 39:
+        print('#' if abs(cpu.x - (cpu.cycle - 1) % 40) < 2 else ' ', end='')
+        if cpu.cycle % 40 == 0:
             print()
 
     cpu = Cpu()
-    cpu.registerPrecycleCallback(renderPixel)
+    cpu.registerCallback(renderPixel)
     cpu.run(commands)
 
 
