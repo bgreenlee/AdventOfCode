@@ -1,10 +1,7 @@
 import sys
-from collections.abc import Callable
-from typing import Self
 
 
 class Cpu:
-    Callback = Callable[[Self], None]
     x = 1
     cycle = 0
 
