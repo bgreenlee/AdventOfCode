@@ -1,47 +1,49 @@
 import sys
     
-def part1(commands) -> int:
-    def nextCycle(cycle, x, sum):
-        cycle += 1
-        if cycle in [20, 60, 100, 140, 180, 220]:
-            sum += cycle * x
-        return cycle, x, sum
+def cycleAndSum(cycle, x, sum):
+    cycle += 1
+    if cycle in [20, 60, 100, 140, 180, 220]:
+        sum += cycle * x
+    return cycle, x, sum
 
+
+def part1(commands) -> int:
     cycle = 0
     x = 1
     sum = 0
 
     for cmd in commands:
-        cycle, x, sum = nextCycle(cycle, x, sum)
+        cycle, x, sum = cycleAndSum(cycle, x, sum)
         match cmd.split():
             case ["addx", val]:
-                cycle, x, sum = nextCycle(cycle, x, sum)
+                cycle, x, sum = cycleAndSum(cycle, x, sum)
                 x += int(val)
 
     return sum
+
+
+def cycleAndRender(cycle, x) -> int:
+    if abs(x - (cycle % 40)) < 2:
+        print('#', end='')
+    else:
+        print(' ', end='')
+    
+    cycle += 1
+    if cycle % 40 == 0:
+        print()
+
+    return cycle
+
 
 def part2(commands):
     cycle = 0
     x = 1
 
-    def nextCycle(cycle) -> int:
-        if abs(x - (cycle % 40)) < 2:
-            print('#', end='')
-        else:
-            print(' ', end='')
-        
-        cycle += 1
-        if cycle % 40 == 0:
-            print()
-
-        return cycle
-
-
     for cmd in commands:
-        cycle = nextCycle(cycle)
+        cycle = cycleAndRender(cycle, x)
         match cmd.split():
             case ["addx", val]:
-                cycle = nextCycle(cycle)
+                cycle = cycleAndRender(cycle, x)
                 x += int(val)
 
 
