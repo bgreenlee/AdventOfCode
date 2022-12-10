@@ -1,53 +1,71 @@
 import sys
+from collections.abc import Callable
+from typing import Self
 
-def cycleAndSum(cycle, x, sum):
-    cycle += 1
-    if cycle % 40 == 20:
-        sum += cycle * x
-    return cycle, x, sum
-
-
-def part1(commands) -> int:
-    cycle = 0
+class Cpu:
+    Callback = Callable[[Self], None]
     x = 1
-    sum = 0
-
-    for cmd in commands:
-        cycle, x, sum = cycleAndSum(cycle, x, sum)
-        match cmd.split():
-            case ["addx", val]:
-                cycle, x, sum = cycleAndSum(cycle, x, sum)
-                x += int(val)
-
-    return sum
+    cycle = 0
+    precycleCallbacks: list[Callback] = []
+    postcycleCallbacks: list[Callback] = []
 
 
-def cycleAndRender(cycle, x) -> int:
-    print('#' if abs(x - cycle % 40) < 2 else ' ', end='')
+    def registerPrecycleCallback(self, callback: Callback):
+        self.precycleCallbacks.append(callback)
 
-    cycle += 1
-    if cycle % 40 == 0:
-        print()
 
-    return cycle
+    def registerPostcycleCallback(self, callback: Callback):
+        self.postcycleCallbacks.append(callback)
+
+
+    def tick(self):
+        for precycle in self.precycleCallbacks:
+            precycle(self)
+
+        self.cycle += 1
+
+        for postcycle in self.postcycleCallbacks:
+            postcycle(self)
+
+    def run(self, commands: list[str]):
+        for cmd in commands:
+            self.tick()
+            match cmd.split():
+                case ["addx", val]:
+                    self.tick()
+                    self.x += int(val)
+
+
+def part1(commands: list[str]) -> int:
+    total = 0
+    def sumCycles(cpu: Cpu):
+        nonlocal total
+        if cpu.cycle % 40 == 20:
+            total += cpu.cycle * cpu.x
+
+    cpu = Cpu()
+    cpu.registerPostcycleCallback(sumCycles)
+    cpu.run(commands)
+
+    return total
 
 
 def part2(commands):
-    cycle = 0
-    x = 1
+    def renderPixel(cpu: Cpu):
+        print('#' if abs(cpu.x - cpu.cycle % 40) < 2 else ' ', end='')
+        if cpu.cycle % 40 == 39:
+            print()
 
-    for cmd in commands:
-        cycle = cycleAndRender(cycle, x)
-        match cmd.split():
-            case ["addx", val]:
-                cycle = cycleAndRender(cycle, x)
-                x += int(val)
+    cpu = Cpu()
+    cpu.registerPrecycleCallback(renderPixel)
+    cpu.run(commands)
 
 
 #
 # main
 #
 commands = [line.rstrip() for line in sys.stdin]
+
 print("Part 1: ", part1(commands))
 print("Part 2:")
 part2(commands)
