@@ -23,7 +23,7 @@ def part1(commands) -> int:
 
 
 def cycleAndRender(cycle, x) -> int:
-    if abs(x - (cycle % 40)) < 2:
+    if abs(x - cycle % 40) < 2:
         print('#', end='')
     else:
         print(' ', end='')
