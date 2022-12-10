@@ -17,9 +17,8 @@ class Cpu:
 
 
 def part1(commands: list[str]) -> int:
-    cpu = Cpu()
     total = 0
-    for runtime in cpu.run(commands):
+    for runtime in Cpu().run(commands):
         if runtime.cycle % 40 == 20:
             total += runtime.cycle * runtime.x
 
@@ -27,8 +26,7 @@ def part1(commands: list[str]) -> int:
 
 
 def part2(commands: list[str]):
-    cpu = Cpu()
-    for runtime in cpu.run(commands):
+    for runtime in Cpu().run(commands):
         print('#' if abs(runtime.x - (runtime.cycle - 1) % 40) < 2 else ' ', end='')
         if runtime.cycle % 40 == 0:
             print()
