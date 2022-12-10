@@ -1,8 +1,8 @@
 import sys
-    
+
 def cycleAndSum(cycle, x, sum):
     cycle += 1
-    if cycle in [20, 60, 100, 140, 180, 220]:
+    if cycle % 40 == 20:
         sum += cycle * x
     return cycle, x, sum
 
