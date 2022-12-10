@@ -2,6 +2,7 @@ import sys
 from collections.abc import Callable
 from typing import Self
 
+
 class Cpu:
     Callback = Callable[[Self], None]
     x = 1
@@ -9,14 +10,11 @@ class Cpu:
     precycleCallbacks: list[Callback] = []
     postcycleCallbacks: list[Callback] = []
 
-
     def registerPrecycleCallback(self, callback: Callback):
         self.precycleCallbacks.append(callback)
 
-
     def registerPostcycleCallback(self, callback: Callback):
         self.postcycleCallbacks.append(callback)
-
 
     def tick(self):
         for precycle in self.precycleCallbacks:
@@ -38,6 +36,7 @@ class Cpu:
 
 def part1(commands: list[str]) -> int:
     total = 0
+
     def sumCycles(cpu: Cpu):
         nonlocal total
         if cpu.cycle % 40 == 20:
@@ -61,9 +60,7 @@ def part2(commands):
     cpu.run(commands)
 
 
-#
 # main
-#
 commands = [line.rstrip() for line in sys.stdin]
 
 print("Part 1: ", part1(commands))
