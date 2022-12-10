@@ -49,7 +49,7 @@ def part1(commands: list[str]) -> int:
     return total
 
 
-def part2(commands):
+def part2(commands: list[str]):
     def renderPixel(cpu: Cpu):
         print('#' if abs(cpu.x - cpu.cycle % 40) < 2 else ' ', end='')
         if cpu.cycle % 40 == 39:
