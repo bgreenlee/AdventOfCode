@@ -41,12 +41,12 @@ def solve(moves: list[tuple[str, int]], size: int) -> int:
     stepdir = {'R': (1, 0), 'L': (-1, 0), 'D': (0, 1), 'U': (0, -1)}
 
     for direction, steps in moves:
-        for i in range(steps):            
+        for _ in range(steps):            
             # move head
             segments[0] = (segments[0][0] + stepdir[direction][0], segments[0][1] + stepdir[direction][1])
             # move the rest of the body
-            for i in range(size-1):
-                segments[i+1], v = move(segments[i], segments[i+1])
+            for j in range(size-1):
+                segments[j+1], v = move(segments[j], segments[j+1])
             visited |= v  # only update for tail
 
     display(visited)
