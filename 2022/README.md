@@ -17,3 +17,7 @@ Solutions in Go and/or Python
 [Day 7: No Space Left on Device (Go, Python)](07-no-space-left-on-device/)
 
 [Day 8: Treetop Tree House (Python)](08-treetop-tree-house/)
+
+[Day 9: Rope Bridge (Python)](09-rope-bridge/)
+
+[Day 10: Cathode-Ray Tube (Python)](10-cathode-ray-tube/)
