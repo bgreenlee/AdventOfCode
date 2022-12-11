@@ -4,13 +4,12 @@ import math
 from dataclasses import dataclass
 from collections import deque
 from copy import deepcopy
+from typing import Callable
 
 @dataclass
 class Monkey:
-    id: int
     items: deque[int]
-    op: str
-    operand: str
+    operation: Callable[[int], int]
     test: int
     if_true: int
     if_false: int
@@ -18,21 +17,14 @@ class Monkey:
 
     def inspect_item(self, item: int, divisor: int, modulo: int) -> tuple[int, int]:
         self.inspect_count += 1
-        scalar = item if self.operand == "old" else int(self.operand)
-        worry_level = 0
-        match self.op:
-            case '+':
-                worry_level = item + scalar
-            case '*':
-                worry_level = item * scalar
-
-        worry_level //= divisor
-        worry_level %= modulo
+        worry_level = (self.operation(item) // divisor) % modulo
         return worry_level, self.if_true if worry_level % self.test == 0 else self.if_false
 
+
 def solve(monkies: list[Monkey], num_rounds: int, divisor: int = 1) -> int:
-    monkies = deepcopy(monkies) # so we don't modify the original
-    modulo = math.prod([m.test for m in monkies]) # our modulus is the product of all the divisor tests
+    monkies = deepcopy(monkies)  # so we don't modify the original
+    # our modulus is the product of all the divisor tests
+    modulo = math.prod([m.test for m in monkies])
     for round in range(num_rounds):
         for monkey in monkies:
             while monkey.items:
@@ -43,25 +35,23 @@ def solve(monkies: list[Monkey], num_rounds: int, divisor: int = 1) -> int:
     monkies.sort(key=lambda m: m.inspect_count, reverse=True)
     return monkies[0].inspect_count * monkies[1].inspect_count
 
+
 #
 # main
 #
 monkies: list[Monkey] = []
 
 data = sys.stdin.read()
-monkey_re = re.compile(r"""
-        Monkey\ (?P<id>\d+):\n
-        \s+Starting\ items:\ (?P<items>[\d, ]+)\n
+monkey_re = re.compile(r"""Starting\ items:\ (?P<items>[\d, ]+)\n
         \s+Operation:\ new\ =\ old\ (?P<op>.)\ (?P<operand>\w+)\n
         \s+Test:\ divisible\ by\ (?P<test>\d+)\n
         \s+If\ true:\ throw\ to\ monkey\ (?P<if_true>\d+)\n
         \s+If\ false:\ throw\ to\ monkey\ (?P<if_false>\d+)""", re.X)
 
 for m in monkey_re.finditer(data):
-    monkey = Monkey(id=int(m.group('id')),
-                    items=deque([int(i) for i in m.group('items').split(', ')]),
-                    op=m.group('op'),
-                    operand=m.group('operand'),
+    operand = "x" if m.group('operand') == "old" else m.group('operand')
+    monkey = Monkey(items=deque([int(i) for i in m.group('items').split(', ')]),
+                    operation=eval(f"lambda x: x {m.group('op')} {operand}"), # kinda evil
                     test=int(m.group('test')),
                     if_true=int(m.group('if_true')),
                     if_false=int(m.group('if_false')))
