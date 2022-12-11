@@ -22,14 +22,14 @@ class Monkey:
         return worry_level, self.if_true if worry_level % self.test == 0 else self.if_false
 
 
-def parse_monkies(data: str) -> list[Monkey]:
+def parse_monkeys(data: str) -> list[Monkey]:
     monkey_re = re.compile(r"""Starting\ items:\ (?P<items>[\d, ]+)\n
             \s+Operation:\ new\ =\ (?P<operation>.*?)\n
             \s+Test:\ divisible\ by\ (?P<test>\d+)\n
             \s+If\ true:\ throw\ to\ monkey\ (?P<if_true>\d+)\n
             \s+If\ false:\ throw\ to\ monkey\ (?P<if_false>\d+)""", re.X)
 
-    monkies: list[Monkey] = []
+    monkeys: list[Monkey] = []
     for m in monkey_re.finditer(data):
         monkey = Monkey(items=deque([int(i) for i in m.group('items').split(', ')]),
                         # kinda evil
@@ -37,29 +37,29 @@ def parse_monkies(data: str) -> list[Monkey]:
                         test=int(m.group('test')),
                         if_true=int(m.group('if_true')),
                         if_false=int(m.group('if_false')))
-        monkies.append(monkey)
+        monkeys.append(monkey)
 
-    return monkies
+    return monkeys
 
 
-def solve(monkies: list[Monkey], num_rounds: int, divisor: int = 1) -> int:
-    monkies = deepcopy(monkies)  # so we don't modify the original
+def solve(monkeys: list[Monkey], num_rounds: int, divisor: int = 1) -> int:
+    monkeys = deepcopy(monkeys)  # so we don't modify the original
     # our modulus is the product of all the divisor tests
-    modulo = math.prod([m.test for m in monkies])
+    modulo = math.prod([m.test for m in monkeys])
     for round in range(num_rounds):
-        for monkey in monkies:
+        for monkey in monkeys:
             while monkey.items:
                 item = monkey.items.popleft()
                 new_item, dest = monkey.inspect_item(item, divisor, modulo)
-                monkies[dest].items.append(new_item)
+                monkeys[dest].items.append(new_item)
 
-    monkies.sort(key=lambda m: m.inspect_count, reverse=True)
-    return monkies[0].inspect_count * monkies[1].inspect_count
+    monkeys.sort(key=lambda m: m.inspect_count, reverse=True)
+    return monkeys[0].inspect_count * monkeys[1].inspect_count
 
 
 #
 # main
 #
-monkies = parse_monkies(sys.stdin.read())
-print("Part 1:", solve(monkies, 20, 3))
-print("Part 2:", solve(monkies, 10000))
+monkeys = parse_monkeys(sys.stdin.read())
+print("Part 1:", solve(monkeys, 20, 3))
+print("Part 2:", solve(monkeys, 10000))
