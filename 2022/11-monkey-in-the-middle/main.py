@@ -36,25 +36,27 @@ def solve(monkies: list[Monkey], num_rounds: int, divisor: int = 1) -> int:
     return monkies[0].inspect_count * monkies[1].inspect_count
 
 
+def parse_monkies(data: str) -> list[Monkey]:
+    monkey_re = re.compile(r"""Starting\ items:\ (?P<items>[\d, ]+)\n
+            \s+Operation:\ new\ =\ (?P<operation>.*?)\n
+            \s+Test:\ divisible\ by\ (?P<test>\d+)\n
+            \s+If\ true:\ throw\ to\ monkey\ (?P<if_true>\d+)\n
+            \s+If\ false:\ throw\ to\ monkey\ (?P<if_false>\d+)""", re.X)
+
+    monkies: list[Monkey] = []
+    for m in monkey_re.finditer(data):
+        monkey = Monkey(items=deque([int(i) for i in m.group('items').split(', ')]),
+                        operation=eval(f"lambda old: {m.group('operation')}"), # kinda evil
+                        test=int(m.group('test')),
+                        if_true=int(m.group('if_true')),
+                        if_false=int(m.group('if_false')))
+        monkies.append(monkey)
+
+    return monkies
+
 #
 # main
 #
-monkies: list[Monkey] = []
-
-data = sys.stdin.read()
-monkey_re = re.compile(r"""Starting\ items:\ (?P<items>[\d, ]+)\n
-        \s+Operation:\ new\ =\ (?P<operation>.*?)\n
-        \s+Test:\ divisible\ by\ (?P<test>\d+)\n
-        \s+If\ true:\ throw\ to\ monkey\ (?P<if_true>\d+)\n
-        \s+If\ false:\ throw\ to\ monkey\ (?P<if_false>\d+)""", re.X)
-
-for m in monkey_re.finditer(data):
-    monkey = Monkey(items=deque([int(i) for i in m.group('items').split(', ')]),
-                    operation=eval(f"lambda old: {m.group('operation')}"), # kinda evil
-                    test=int(m.group('test')),
-                    if_true=int(m.group('if_true')),
-                    if_false=int(m.group('if_false')))
-    monkies.append(monkey)
-
+monkies = parse_monkies(sys.stdin.read())
 print("Part 1:", solve(monkies, 20, 3))
 print("Part 2:", solve(monkies, 10000))
