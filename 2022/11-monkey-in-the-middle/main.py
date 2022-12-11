@@ -2,6 +2,8 @@ import sys
 import re
 from dataclasses import dataclass
 from collections import deque
+from functools import reduce
+from copy import deepcopy
 
 @dataclass
 class Monkey:
@@ -14,7 +16,7 @@ class Monkey:
     if_false: int
     inspect_count: int = 0
 
-    def inspect_item(self, item: int) -> tuple[int, int]:
+    def inspect_item(self, item: int, divisor: int, modulo: int) -> tuple[int, int]:
         self.inspect_count += 1
         scalar = item if self.operand == "old" else int(self.operand)
         worry_level = 0
@@ -24,16 +26,29 @@ class Monkey:
             case '*':
                 worry_level = item * scalar
 
-        worry_level = int(worry_level / 3)
-        if worry_level % self.test == 0:
-            return worry_level, self.if_true
-        else:
-            return worry_level, self.if_false
+        worry_level //= divisor
+        worry_level %= modulo
+        return worry_level, self.if_true if worry_level % self.test == 0 else self.if_false
 
+def solve(monkies: list[Monkey], num_rounds: int, divisor: int = 1) -> int:
+    monkies = deepcopy(monkies) # so we don't modify the original
+    modulo = reduce(lambda x, y: x * y, [m.test for m in monkies]) # product of all the divisor tests
+    for round in range(num_rounds):
+        for monkey in monkies:
+            while monkey.items:
+                item = monkey.items.popleft()
+                new_item, dest = monkey.inspect_item(item, divisor, modulo)
+                monkies[dest].items.append(new_item)
 
+    monkies.sort(key=lambda m: m.inspect_count, reverse=True)
+    return monkies[0].inspect_count * monkies[1].inspect_count
+
+#
+# main
+#
 monkies: list[Monkey] = []
 
-input = sys.stdin.read()
+data = sys.stdin.read()
 monkey_re = re.compile(r"""
         Monkey\ (?P<id>\d+):\n
         \s+Starting\ items:\ (?P<items>[\d, ]+)\n
@@ -42,7 +57,7 @@ monkey_re = re.compile(r"""
         \s+If\ true:\ throw\ to\ monkey\ (?P<if_true>\d+)\n
         \s+If\ false:\ throw\ to\ monkey\ (?P<if_false>\d+)""", re.X)
 
-for m in monkey_re.finditer(input):
+for m in monkey_re.finditer(data):
     monkey = Monkey(id=int(m.group('id')),
                     items=deque([int(i) for i in m.group('items').split(', ')]),
                     op=m.group('op'),
@@ -52,15 +67,5 @@ for m in monkey_re.finditer(input):
                     if_false=int(m.group('if_false')))
     monkies.append(monkey)
 
-for round in range(20):
-    for monkey in monkies:
-        while monkey.items:
-            item = monkey.items.popleft()
-            new_item, dest = monkey.inspect_item(item)
-            # print(f"Monkey {monkey.id}, item {item}: throw to {dest}")
-            monkies[dest].items.append(new_item)
-
-
-monkies.sort(key=lambda m: m.inspect_count, reverse=True)
-# print(monkies)
-print(monkies[0].inspect_count * monkies[1].inspect_count)
+print("Part 1:", solve(monkies, 20, 3))
+print("Part 2:", solve(monkies, 10000))

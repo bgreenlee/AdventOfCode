@@ -21,3 +21,5 @@ Solutions in Go and/or Python
 [Day 9: Rope Bridge (Python)](09-rope-bridge/)
 
 [Day 10: Cathode-Ray Tube (Python)](10-cathode-ray-tube/)
+
+[Day 11: Monkey in the Middle (Python)](11-monkey-in-the-middle/)
