@@ -43,14 +43,14 @@ monkies: list[Monkey] = []
 
 data = sys.stdin.read()
 monkey_re = re.compile(r"""Starting\ items:\ (?P<items>[\d, ]+)\n
-        \s+Operation:\ new\ =\ old\ (?P<op>.)\ (?P<operand>\w+)\n
+        \s+Operation:\ new\ =\ (?P<operation>.*?)\n
         \s+Test:\ divisible\ by\ (?P<test>\d+)\n
         \s+If\ true:\ throw\ to\ monkey\ (?P<if_true>\d+)\n
         \s+If\ false:\ throw\ to\ monkey\ (?P<if_false>\d+)""", re.X)
 
 for m in monkey_re.finditer(data):
     monkey = Monkey(items=deque([int(i) for i in m.group('items').split(', ')]),
-                    operation=eval(f"lambda old: old {m.group('op')} {m.group('operand')}"), # kinda evil
+                    operation=eval(f"lambda old: {m.group('operation')}"), # kinda evil
                     test=int(m.group('test')),
                     if_true=int(m.group('if_true')),
                     if_false=int(m.group('if_false')))
