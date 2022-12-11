@@ -49,9 +49,8 @@ monkey_re = re.compile(r"""Starting\ items:\ (?P<items>[\d, ]+)\n
         \s+If\ false:\ throw\ to\ monkey\ (?P<if_false>\d+)""", re.X)
 
 for m in monkey_re.finditer(data):
-    operand = "x" if m.group('operand') == "old" else m.group('operand')
     monkey = Monkey(items=deque([int(i) for i in m.group('items').split(', ')]),
-                    operation=eval(f"lambda x: x {m.group('op')} {operand}"), # kinda evil
+                    operation=eval(f"lambda old: old {m.group('op')} {m.group('operand')}"), # kinda evil
                     test=int(m.group('test')),
                     if_true=int(m.group('if_true')),
                     if_false=int(m.group('if_false')))
