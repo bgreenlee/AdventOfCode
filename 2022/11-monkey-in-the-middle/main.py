@@ -1,8 +1,8 @@
 import sys
 import re
+import math
 from dataclasses import dataclass
 from collections import deque
-from functools import reduce
 from copy import deepcopy
 
 @dataclass
@@ -32,7 +32,7 @@ class Monkey:
 
 def solve(monkies: list[Monkey], num_rounds: int, divisor: int = 1) -> int:
     monkies = deepcopy(monkies) # so we don't modify the original
-    modulo = reduce(lambda x, y: x * y, [m.test for m in monkies]) # product of all the divisor tests
+    modulo = math.prod([m.test for m in monkies]) # our modulus is the product of all the divisor tests
     for round in range(num_rounds):
         for monkey in monkies:
             while monkey.items:
