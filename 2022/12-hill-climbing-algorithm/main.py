@@ -16,24 +16,8 @@ def neighbors(p: Point, grid: Grid) -> list[Point]:
     return filter(valid_neighbor, possible_neighbors)
 
 
+# Dijkstra's algorithm for finding the shortest path between start and end
 def find_path(grid: Grid, start: Point, end: Point) -> list[Point]:
-    parents, _ = dijkstra(grid, start, end)
-
-    # return empty list if the end wasn't found
-    if end not in parents:
-        return []
-
-    # construct path
-    path: list[Point] = []
-    node = end
-    while node != start:
-        path.append(node)
-        node = parents[node]
-    path.append(start)
-    return path # this is reversed, but we don't care
-
-
-def dijkstra(grid: Grid, start: Point, end: Point) -> tuple[dict, dict]:
     visited = set()
     parents = {}
     pqueue = []
@@ -43,6 +27,8 @@ def dijkstra(grid: Grid, start: Point, end: Point) -> tuple[dict, dict]:
 
     while pqueue:
         _, node = heapq.heappop(pqueue)
+        if node == end: # we're done
+            break
         visited.add(node)
 
         for neighbor in neighbors(node, grid):
@@ -52,11 +38,21 @@ def dijkstra(grid: Grid, start: Point, end: Point) -> tuple[dict, dict]:
             if dists[neighbor] > dist:
                 parents[neighbor] = node
                 dists[neighbor] = dist
-                if neighbor == end: # we're done
-                    return parents, dists
                 heapq.heappush(pqueue, (dist, neighbor))
 
-    return parents, dists    
+    # search algorithm is done, now construct the path from the parents dict
+
+    # return empty list if the end wasn't found
+    if end not in parents:
+        return []
+
+    path: list[Point] = []
+    node = end
+    while node != start:
+        path.append(node)
+        node = parents[node]
+    path.append(start)
+    return path # this is reversed, but we don't care
 
 
 def parse_input(lines: list[str]) -> tuple[Grid, Point, Point]:
