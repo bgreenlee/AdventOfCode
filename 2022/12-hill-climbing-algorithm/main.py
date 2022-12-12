@@ -7,6 +7,8 @@ from collections import defaultdict
 Point = tuple[int, int]
 Grid = dict[Point, int]
 
+# return valid neighbors for the given point
+# neighbor must be adjacent (up, down, left, or right) and no more than one higher in elevation
 def neighbors(p: Point, grid: Grid) -> list[Point]:
     possible_neighbors = [
         (p[0] - 1, p[1]), (p[0], p[1] - 1),
@@ -55,6 +57,7 @@ def find_path(grid: Grid, start: Point, end: Point) -> list[Point]:
     return path # this is reversed, but we don't care
 
 
+# parse the input lines, returning the grid, start point, and end point
 def parse_input(lines: list[str]) -> tuple[Grid, Point, Point]:
     grid: Grid = {}
     start: Point
