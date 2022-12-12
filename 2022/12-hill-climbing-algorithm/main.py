@@ -17,28 +17,28 @@ def neighbors(p: Point, grid: Grid) -> list[Point]:
 
 
 def find_path(grid: Grid, start: Point, end: Point) -> list[Point]:
-    parentsMap, _ = dijkstra(grid, start, end)
+    parents, _ = dijkstra(grid, start, end)
     # construct path
     path: list[Point] = []
-    if end not in parentsMap:
+    if end not in parents:
         return path
 
     node = end
     while node != start:
         path.append(node)
-        if node not in parentsMap:
-            print(parentsMap)
-        node = parentsMap[node]
+        if node not in parents:
+            print(parents)
+        node = parents[node]
     path.append(start)
     return path # this is reversed, but we don't care
 
 
 def dijkstra(grid: Grid, start: Point, end: Point) -> tuple[dict, dict]:
     visited = set()
-    parentsMap = {}
+    parents = {}
     pqueue = []
-    nodeCosts = defaultdict(lambda: math.inf)
-    nodeCosts[start] = 0
+    costs = defaultdict(lambda: math.inf)
+    costs[start] = 0
     heapq.heappush(pqueue, (0, start))
 
     while pqueue:
@@ -48,21 +48,19 @@ def dijkstra(grid: Grid, start: Point, end: Point) -> tuple[dict, dict]:
         for neighbor in neighbors(node, grid):
             if neighbor in visited:
                 continue
-            
-            newCost = nodeCosts[node] + 1
-            if nodeCosts[neighbor] > newCost:
-                parentsMap[neighbor] = node
-                nodeCosts[neighbor] = newCost
+            cost = costs[node] + 1
+            if costs[neighbor] > cost:
+                parents[neighbor] = node
+                costs[neighbor] = cost
                 if neighbor == end: # we're done
-                    return parentsMap, nodeCosts
-                heapq.heappush(pqueue, (newCost, neighbor))
+                    return parents, costs
+                heapq.heappush(pqueue, (cost, neighbor))
 
-    return parentsMap, nodeCosts    
+    return parents, costs    
 
 #
 # main
 #
-
 grid: Grid = {}
 start: Point
 end: Point
