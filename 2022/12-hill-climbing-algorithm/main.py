@@ -1,26 +1,16 @@
 import sys
 import math
 import heapq
-from dataclasses import dataclass
 from collections import defaultdict
 
 
-@dataclass(frozen=True)
-class Point:
-    x: int
-    y: int
-
-    # need to define this for the priority queue
-    # it doesn't matter if it is meaningful
-    def __lt__(self, other):
-        return self.x < other.x if self.y == other.y else self.y < other.y
-
+Point = tuple[int, int]
 Grid = dict[Point, int]
 
 def neighbors(p: Point, grid: Grid) -> list[Point]:
     possible_neighbors = [
-        Point(p.x - 1, p.y), Point(p.x, p.y - 1),
-        Point(p.x + 1, p.y), Point(p.x, p.y + 1)
+        (p[0] - 1, p[1]), (p[0], p[1] - 1),
+        (p[0] + 1, p[1]), (p[0], p[1] + 1)
     ]
     valid_neighbor = lambda n: n in grid and grid[n] - grid[p] <= 1
     return filter(valid_neighbor, possible_neighbors)
@@ -40,7 +30,7 @@ def find_path(grid: Grid, start: Point, end: Point) -> list[Point]:
             print(parentsMap)
         node = parentsMap[node]
     path.append(start)
-    return path
+    return path # this is reversed, but we don't care
 
 
 def dijkstra(grid: Grid, start: Point, end: Point) -> tuple[dict, dict]:
@@ -81,13 +71,13 @@ for y in range(len(lines)):
     for x in range(len(lines[y])):
         match lines[y][x]:
             case 'S':
-                start = Point(x, y)
+                start = (x, y)
                 grid[start] = ord('a')
             case 'E':
-                end = Point(x, y)
+                end = (x, y)
                 grid[end] = ord('z')
             case c:
-                grid[Point(x, y)] = ord(c)
+                grid[(x, y)] = ord(c)
 
 path = find_path(grid, start, end)
 print("Part 1:", len(path) - 1) # path includes start, so subtract one
