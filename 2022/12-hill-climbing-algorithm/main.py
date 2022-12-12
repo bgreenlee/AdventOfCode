@@ -18,16 +18,16 @@ def neighbors(p: Point, grid: Grid) -> list[Point]:
 
 def find_path(grid: Grid, start: Point, end: Point) -> list[Point]:
     parents, _ = dijkstra(grid, start, end)
+
+    # return empty list if the end wasn't found
+    if end not in parents:
+        return []
+
     # construct path
     path: list[Point] = []
-    if end not in parents:
-        return path
-
     node = end
     while node != start:
         path.append(node)
-        if node not in parents:
-            print(parents)
         node = parents[node]
     path.append(start)
     return path # this is reversed, but we don't care
