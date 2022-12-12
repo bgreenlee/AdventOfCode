@@ -37,8 +37,8 @@ def dijkstra(grid: Grid, start: Point, end: Point) -> tuple[dict, dict]:
     visited = set()
     parents = {}
     pqueue = []
-    costs = defaultdict(lambda: math.inf)
-    costs[start] = 0
+    dists = defaultdict(lambda: math.inf)
+    dists[start] = 0
     heapq.heappush(pqueue, (0, start))
 
     while pqueue:
@@ -48,15 +48,15 @@ def dijkstra(grid: Grid, start: Point, end: Point) -> tuple[dict, dict]:
         for neighbor in neighbors(node, grid):
             if neighbor in visited:
                 continue
-            cost = costs[node] + 1
-            if costs[neighbor] > cost:
+            dist = dists[node] + 1
+            if dists[neighbor] > dist:
                 parents[neighbor] = node
-                costs[neighbor] = cost
+                dists[neighbor] = dist
                 if neighbor == end: # we're done
-                    return parents, costs
-                heapq.heappush(pqueue, (cost, neighbor))
+                    return parents, dists
+                heapq.heappush(pqueue, (dist, neighbor))
 
-    return parents, costs    
+    return parents, dists    
 
 #
 # main
