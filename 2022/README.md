@@ -23,3 +23,5 @@ Solutions in Go and/or Python
 [Day 10: Cathode-Ray Tube (Python)](10-cathode-ray-tube/)
 
 [Day 11: Monkey in the Middle (Python)](11-monkey-in-the-middle/)
+
+[Day 12: Hill Climbing Algorithm (Python)](12-hill-climbing-algorithm/)
