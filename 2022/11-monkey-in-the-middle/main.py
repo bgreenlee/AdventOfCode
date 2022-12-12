@@ -32,8 +32,7 @@ def parse_monkeys(data: str) -> list[Monkey]:
     monkeys: list[Monkey] = []
     for m in monkey_re.finditer(data):
         monkey = Monkey(items=deque([int(i) for i in m.group('items').split(', ')]),
-                        # kinda evil
-                        operation=eval(f"lambda old: {m.group('operation')}"),
+                        operation=eval(f"lambda old: {m.group('operation')}"), # kinda evil
                         test=int(m.group('test')),
                         if_true=int(m.group('if_true')),
                         if_false=int(m.group('if_false')))
@@ -44,8 +43,7 @@ def parse_monkeys(data: str) -> list[Monkey]:
 
 def solve(monkeys: list[Monkey], num_rounds: int, divisor: int = 1) -> int:
     monkeys = deepcopy(monkeys)  # so we don't modify the original
-    # our modulus is the product of all the divisor tests
-    modulo = math.prod([m.test for m in monkeys])
+    modulo = math.prod([m.test for m in monkeys]) # our modulus is the product of all the divisor tests
     for round in range(num_rounds):
         for monkey in monkeys:
             while monkey.items:
