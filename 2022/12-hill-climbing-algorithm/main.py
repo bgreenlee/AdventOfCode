@@ -75,6 +75,8 @@ def parse_input(lines: list[str]) -> tuple[Grid, Point, Point]:
                 case c:
                     grid[(x, y)] = ord(c)
 
+    return grid, start, end
+
 #
 # main
 #
