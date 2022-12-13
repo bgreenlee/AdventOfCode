@@ -1,32 +1,40 @@
 import sys
+from functools import cmp_to_key
 
-def is_ordered(left: list|int, right: list|int) -> bool|None:
+def packet_order(left: list|int, right: list|int) -> int:
     match left, right:
         case list(), list():
             for i, a in enumerate(left):
                 if i >= len(right):
-                    return False
+                    return 1
                 b = right[i]
-                if (ordered := is_ordered(a, b)) != None:
+                if (ordered := packet_order(a, b)) != 0:
                     return ordered
-            return True
+            return -1
         case list(), int():
-            return is_ordered(left, [right])
+            return packet_order(left, [right])
         case int(), list():
-            return is_ordered([left], right)
+            return packet_order([left], right)
         case int(), int():
-            if left != right:
-                return left < right
+            return (left > right) - (left < right) # cmp
 
 def part1(packets: list) -> int:
-    ordered = [is_ordered(a, b) for a, b in zip(packets[::2], packets[1::2])]
-    return sum([i+1 for i, b in enumerate(ordered) if b])
+    ordered = [packet_order(a, b) for a, b in zip(packets[::2], packets[1::2])]
+    return sum([i+1 for i, b in enumerate(ordered) if b == -1])
+
+def part2(packets: list) -> int:
+    dividers = [[[2]],[[6]]]
+    packets.extend(dividers)
+    packets.sort(key=cmp_to_key(packet_order))
+    return (packets.index(dividers[0]) +1 ) * (packets.index(dividers[1]) + 1)
 
 #
 # main
 #
+
 packets = [eval(line.rstrip()) for line in sys.stdin if line != "\n"]
 
 print("Part 1:", part1(packets))
+print("Part 2:", part2(packets))
 
     

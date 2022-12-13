@@ -25,3 +25,5 @@ Solutions in Go and/or Python
 [Day 11: Monkey in the Middle (Python)](11-monkey-in-the-middle/)
 
 [Day 12: Hill Climbing Algorithm (Python)](12-hill-climbing-algorithm/)
+
+[Day 13: Distress Signal (Python)](13-distress-signal/)
