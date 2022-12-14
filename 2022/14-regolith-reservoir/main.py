@@ -34,34 +34,14 @@ def parse_input(lines: list[str]) -> set[Point]:
     return rocks
 
 
-def part1(rocks: set[Point]) -> set[Point]:
+def solve(rocks: set[Point], has_floor: bool) -> set[Point]:
     sand = set[Point]()
     start = (500, 0)
-    max_y = max(p[1] for p in rocks) # abyss
+    max_y = max(p[1] for p in rocks)
+    floor_y = max_y + 2
 
     sx, sy = start
-    while sy < max_y:
-        if (sx, sy + 1) in sand or (sx, sy + 1) in rocks:
-            if (sx - 1, sy + 1) in sand or (sx - 1, sy + 1) in rocks:
-                if (sx + 1, sy + 1) in sand or (sx + 1, sy + 1) in rocks:
-                    sand.add((sx, sy))
-                    sx, sy = start
-                else:
-                    sx += 1
-            else:
-                sx -= 1
-        sy += 1
-
-    return sand
-
-
-def part2(rocks: set[Point]) -> set[Point]:
-    sand = set[Point]()
-    start = (500, 0)
-    floor_y = max(p[1] for p in rocks) + 2
-
-    sx, sy = start
-    while not start in sand:
+    while has_floor and not start in sand or not has_floor and sy < max_y:
         if (sx, sy + 1) in sand or (sx, sy + 1) in rocks or sy + 1 == floor_y:
             if (sx - 1, sy + 1) in sand or (sx - 1, sy + 1) in rocks or sy + 1 == floor_y:
                 if (sx + 1, sy + 1) in sand or (sx + 1, sy + 1) in rocks or sy + 1 == floor_y:
@@ -83,10 +63,10 @@ def part2(rocks: set[Point]) -> set[Point]:
 lines = [line.rstrip() for line in sys.stdin]
 rocks = parse_input(lines)
 
-sand = part1(rocks)
+sand = solve(rocks, False)
 #display(rocks, sand)
 print("Part 1:", len(sand))
 
-sand = part2(rocks)
+sand = solve(rocks, True)
 # display(rocks, sand)
 print("Part 2:", len(sand))
