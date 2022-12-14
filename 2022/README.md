@@ -29,3 +29,5 @@ Solutions in Go and/or Python
 [Day 12: Hill Climbing Algorithm (Python)](12-hill-climbing-algorithm/)
 
 [Day 13: Distress Signal (Python)](13-distress-signal/)
+
+[Day 14: Regolith Reservoir (Pyton)](14-regolith-reservoir/)
