@@ -1,5 +1,6 @@
 import sys
 from itertools import pairwise
+from typing import Callable
 
 Point = tuple[int, int]
 
@@ -39,20 +40,21 @@ def solve(rocks: set[Point], has_floor: bool) -> set[Point]:
     start = (500, 0)
     max_y = max(p[1] for p in rocks)
     floor_y = max_y + 2
+    is_blocked: Callable[[Point], bool] = lambda p: p in sand or p in rocks or p[1] == floor_y
 
     sx, sy = start
-    while has_floor and not start in sand or not has_floor and sy < max_y:
-        if (sx, sy + 1) in sand or (sx, sy + 1) in rocks or sy + 1 == floor_y:
-            if (sx - 1, sy + 1) in sand or (sx - 1, sy + 1) in rocks or sy + 1 == floor_y:
-                if (sx + 1, sy + 1) in sand or (sx + 1, sy + 1) in rocks or sy + 1 == floor_y:
-                    sand.add((sx, sy))
+    while (has_floor and not start in sand) or (not has_floor and sy < max_y):
+        sy += 1
+        if is_blocked((sx, sy)): # below
+            if is_blocked((sx - 1, sy)): # diagonal left
+                if is_blocked((sx + 1, sy)): # diagonal right
+                    sand.add((sx, sy - 1))
                     sx, sy = start
                     continue
                 else:
-                    sx += 1
+                    sx += 1 # flow right
             else:
-                sx -= 1
-        sy += 1
+                sx -= 1 # flow left
 
     return sand
 
@@ -64,7 +66,7 @@ lines = [line.rstrip() for line in sys.stdin]
 rocks = parse_input(lines)
 
 sand = solve(rocks, False)
-#display(rocks, sand)
+# display(rocks, sand)
 print("Part 1:", len(sand))
 
 sand = solve(rocks, True)
