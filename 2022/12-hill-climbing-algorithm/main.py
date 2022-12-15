@@ -2,14 +2,12 @@ import sys
 import math
 import heapq
 from collections import defaultdict
-from functools import lru_cache
 
 Point = tuple[int, int]
 Grid = dict[Point, int]
 
 # return valid neighbors for the given point
 # neighbor must be adjacent (up, down, left, or right) and no more than one higher in elevation
-@lru_cache
 def neighbors(p: Point, grid: Grid) -> tuple[Point, ...]:
     possible_neighbors = [
         (p[0] - 1, p[1]), (p[0], p[1] - 1),
