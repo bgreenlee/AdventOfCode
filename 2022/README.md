@@ -30,4 +30,6 @@ Solutions in Go and/or Python
 
 [Day 13: Distress Signal (Python)](13-distress-signal/)
 
-[Day 14: Regolith Reservoir (Pyton)](14-regolith-reservoir/)
+[Day 14: Regolith Reservoir (Python)](14-regolith-reservoir/)
+
+[Day 15: Beacon Exclusion Zone (Python)](15-beacon-exclusion-zone/)
