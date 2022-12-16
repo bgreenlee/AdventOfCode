@@ -36,6 +36,7 @@ def part1(sensors: dict[Point, int], beacons: set[Point], row: int) -> int:
     return total
 
 
+# stolen from https://www.geeksforgeeks.org/merging-intervals/ because I'm lazy
 def merge_intervals(intervals: list[Interval]) -> list[Interval]:
     if len(intervals) < 2:
         return intervals
