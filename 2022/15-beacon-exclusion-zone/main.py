@@ -59,16 +59,15 @@ def part2(sensors: dict[Point, int], beacons: set[Point], max_xy: int) -> int:
         min_y, max_y = max(0, sy - strength), min(max_xy, sy + strength)
 
         for y in range(min_y, max_y + 1):
-            interval = (max(sx - (strength - abs(sy - y)), 0), min(sx + (strength - abs(sy - y)), max_xy))
-            if len(intervals[y]) == 0:
-                intervals[y].append(interval)
-            else:
-                intervals[y] = merge_intervals([interval, *intervals[y]])
+            interval = (max(sx - strength + abs(sy - y), 0), min(sx + strength - abs(sy - y), max_xy))
+            intervals[y] = merge_intervals([interval, *intervals[y]])
 
+    # find the one row that has more than one interval
     for y, interval in enumerate(intervals):
         if len(interval) > 1:
-            print(f"Part 2: beacon at ({interval[0][1]+1}, {y})")
-            return (interval[0][1]+1) * 4000000 + y
+            x = interval[0][1] + 1
+            print(f"Part 2: beacon at ({x}, {y})")
+            return x * 4000000 + y
 
     return 0
 
