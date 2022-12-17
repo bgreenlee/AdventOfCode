@@ -5,7 +5,6 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Self
 from numpy import array, zeros, ndarray
-# from itertools import permutations
 
 @dataclass
 class Valve:
@@ -126,28 +125,36 @@ def part1(valves: dict[str, Valve]) -> int:
         print(f"Valves open: {turned_on}, releasing {sum(flows_on)} pressure")
         return t
 
-    while tick() < 30:
-        # create list of off valves sorted by their value (flow - distance)
+    # create list of off valves sorted by their value (flow - distance)
+    def sort_nodes(current: str) -> list[tuple[int, str]]:
         nodes: list[tuple[int, str]] = [] # list of (value, node name)
         for name, valve in valves.items():
             if name != current and valve.rate > 0 and name not in turned_on:
                 dist = apd[names.index(current), names.index(name)]
                 nodes.append((valve.rate * (t - dist), name))
         nodes.sort()
+        return nodes
 
+    while tick() < 30:
+        nodes = sort_nodes(current)
         # move to next highest node
         if len(nodes) > 0:
             _, dest = nodes.pop()
             path = find_path(valves, current, dest)
             for node in path:
                 print(f"Move to {node}")
+                current = node
                 if tick() >= 30:
                     return flow
-            current = path[-1]
+                # nodes = sort_nodes(current)
+                # if len(nodes) > 0 and nodes[-1] != dest:
+                #     break
+
             # turn on
-            print("Open valve", current)
-            turned_on.append(current)
-            flows_on.append(valves[current].rate)
+            if valves[current].rate > 0 and current not in turned_on:
+                print("Open valve", current)
+                turned_on.append(current)
+                flows_on.append(valves[current].rate)
 
     return flow
 
