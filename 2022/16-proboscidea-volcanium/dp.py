@@ -108,46 +108,32 @@ def adj_matrix(valves: dict[str, Valve]) -> ndarray:
 
 
 def part1(valves: dict[str, Valve]) -> int:
+    max_t = 30
     t = 0
-    flow = 0
-    adj = adj_matrix(valves)
-    apd = all_pairs_distance(adj)
+    open_valves = []
     names = sorted(valves.keys())
-    opened = []
-    opened_flows = []
+    apd = all_pairs_distance(adj_matrix(valves))
+
     current = 'AA'
-
-    def tick() -> int:
-        nonlocal t, flow
-        t += 1
-        flow += sum(opened_flows)
-        print(f"\n== Minute {t} ==")
-        print(f"Valves open: {opened}, releasing {sum(opened_flows)} pressure")
-        return t
-
-    # return next best node
-    def best_node(current: str) -> str:
-        nodes: list[tuple[int, str]] = [] # list of (value, node name)
-        unopened = [v for v in valves if valves[v].rate > 0 and v not in opened]
-        for node in unopened:
-            dist = apd[names.index(current), names.index(node)]
-            nodes.append((valves[node].rate * (t - dist), node))
-        nodes.sort()
-        return nodes[-1][1]
-
-    while tick() < 30:
-        best = best_node(current)
-        path = find_path(valves, current, best)
-        current = path[0]
-        print(f"Move to {current}")
-        if tick() >= 30:
-            return flow
-
-        # turn on
-        if current == best:
-            print("Open valve", current)
-            opened.append(current)
-            opened_flows.append(valves[current].rate)
+    closed_valves = [v for v in valves.keys() if valves[v].rate > 0 and v not in open_valves]
+    # create our dynamic programming grid
+    dp_values = [[0] * (max_t - t) for _ in range(len(closed_valves))] #zeros((max_t - t, len(closed_valves)), dtype=tuple[int, str])
+    dp_nodes = [[""] * (max_t - t) for _ in range(len(closed_valves))]
+    for i, v in enumerate(closed_valves):
+        dist = apd[names.index(current), names.index(v)]
+        for j in range(1, max_t - t + 1):
+            if dist <= j:
+                value = valves[v].rate * (max_t - t)
+                if i == 0:
+                    dp_values[i][j] = value
+                    dp_nodes[i][j] = v
+                else:
+                    if dp_values[i-1][j] > value + dp_values[i - 1][j - dist]:
+                        dp_values[i][j] = dp_values[i-1][j]
+                        dp_nodes[i][j] = dp_nodes[i-1][j]
+                    else:
+                        dp_values[i][j] = value + dp_values[i - 1][j - dist] # max of previous max and value of item plus value of remaining time
+                        dp_nodes[i][j] = dp_nodes[i - 1][j - dist]
 
     return flow
 
