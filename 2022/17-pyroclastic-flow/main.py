@@ -40,6 +40,18 @@ def expand_board(board: Board, units: int) -> Board:
     return new_units
 
 
+def trim_board(board: Board, cutoff_count: int) -> tuple[Board, int]:
+    sweeper = [0] * 7
+    for i, row in enumerate(board):
+        for j in range(7):
+            sweeper[j] |= row[j]
+            if all(sweeper):
+                cutoff_count += len(board) - i - 1
+                print("cutoff:", cutoff_count)
+                return board[:i+1], cutoff_count
+    return board, cutoff_count
+
+
 def detect_collision(board: Board, rock: Rock, rx, ry) -> bool:
     for y in range(len(rock)-1, -1, -1): # scan from bottom up
         for x in range(len(rock[y])):
@@ -56,20 +68,26 @@ def place_rock(board: Board, rock: Rock, rx, ry):
             board[by][rx + x] |= rock[y][x]
 
 
-def part1(jets: list[str]) -> int:
+def solve(jets: list[str], iterations: int) -> int:
     board_width = 7
     board = make_board(board_width, 3)
     rock_i = 0
     jet_i = 0
+    cutoff_count = 0
 
-    while rock_i < 2022:
+    while rock_i < iterations:
         # update rock and board
         rock = rocks[rock_i % len(rocks)]
         rock_height = len(rock)
         rock_width = len(rock[0])
-        board = expand_board(board, rock_height)
+        highpoint = highest_rock(board)
+        if len(board) - highpoint < len(rock) + 3:
+            board = expand_board(board, rock_height)
+        # board, cutoff_count = trim_board(board, cutoff_count)
         rx = 2
-        ry = len(board) - 1 - highest_rock(board) - 3
+        # print("extra space:", len(board) - highpoint)
+        ry = len(board) - 1 - highpoint - 3
+
 
         # drop the rock
         while True:
@@ -88,13 +106,59 @@ def part1(jets: list[str]) -> int:
 
         rock_i += 1
 
+    return highest_rock(board) + cutoff_count
 
-    return highest_rock(board)
 
+def part2(jets: list[str]) -> int:
+    iterations = 1000000000000
+    diffs = []
+    last_result = 0
+    i = 0
+    max_seq = 0
+    cycle = []
+    min_cycle_len = len(rocks) * 2
+
+    def max_repeating_sequence(seq):
+        max_seq = 1
+        start_pos = 0
+        max_len = int(len(seq) / 2)
+        for l in range(2, max_len):
+            for i in range(0, len(seq) - l * 2):
+                if seq[i:i+l] == seq[i+l:i+l*2] :
+                    max_seq = l
+                    start_pos = i
+        return max_seq, start_pos
+
+    while True:
+        i += 1
+        result = solve(jets, i)
+        print(i, result)
+        diffs.append(result - last_result)
+        last_result = result
+        if len(diffs) > len(jets):
+            max_seq, start_pos = max_repeating_sequence(diffs)
+            # print(f"max seq {max_seq} at {start_pos}")
+            if max_seq >= min_cycle_len:
+                print(f"{i}: cycle of length {max_seq} at start_pos = {start_pos} (len={len(diffs)}); last result = {last_result}")
+                # print(diffs[start_pos:start_pos+max_seq])
+                # print(diffs[start_pos+max_seq:start_pos+max_seq*2])
+                cycle = diffs[start_pos:start_pos+max_seq]
+                print("cycle:", cycle)
+                print("cycle sum:", sum(cycle))
+                break
+
+    full_cycles = int((iterations - i) / max_seq)
+    print("full cycles:", full_cycles)
+    remainder = (iterations - i) % max_seq
+    print("remainder:", remainder)
+    total = last_result + full_cycles * sum(cycle) + sum(cycle[:remainder])
+
+    return total
 #
 # main
 #
 
 jets = list(sys.stdin.readline().rstrip())
 #jets = list(">>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>")
-print("Part 1:", part1(jets))
+print("Part 1:", solve(jets, 2022))
+print("Part 2:", part2(jets))
