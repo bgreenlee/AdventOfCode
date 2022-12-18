@@ -10,30 +10,25 @@ def neighbors(points: set[Point], point: Point) -> list[Point]:
             if p in points]
 
 def part1(points: set[Point]) -> int:
-    covered = sum(len(neighbors(points, point)) for point in points)
-    return len(points) * 6 - covered
+    return len(points) * 6 - sum(len(neighbors(points, point)) for point in points)
 
+# create a bounding box around the points and flood fill the interior
 def part2(points: set[Point]) -> int:
-    x_min, x_max = min(p[0] for p in points), max(p[0] for p in points)
-    y_min, y_max = min(p[1] for p in points), max(p[1] for p in points)
-    z_min, z_max = min(p[2] for p in points), max(p[2] for p in points)
+    # bounding box
+    x_min, x_max = min(p[0] for p in points) - 1, max(p[0] for p in points) + 1
+    y_min, y_max = min(p[1] for p in points) - 1, max(p[1] for p in points) + 1
+    z_min, z_max = min(p[2] for p in points) - 1, max(p[2] for p in points) + 1
 
-    def flood_fill(point: Point) -> set[Point]:
-        flooded = set[Point]()
-        queue = deque[Point]()
+    # flood fill
+    flooded = set[Point]()
+    queue = deque([(x_min, y_min, z_min)]) # start in corner of bounding box
+    while len(queue) > 0:
+        x, y, z = p = queue.popleft()
+        if p not in points and p not in flooded and x_min <= x <= x_max and y_min <= y <= y_max and z_min <= z <= z_max:
+            flooded.add(p)
+            queue.extend((x + dx, y + dy, z + dz) for dx, dy, dz in [(0,0,1), (0,1,0), (1,0,0), (0,0,-1), (0,-1,0), (-1,0,0)])
 
-        queue.append(point)
-        while len(queue) > 0:
-            x, y, z = p = queue.popleft()
-            if p not in points and p not in flooded and x_min - 1 <= x <= x_max + 1 and y_min - 1 <= y <= y_max + 1 and z_min - 1 <= z <= z_max + 1:
-                flooded.add(p)
-                queue.extend((x + dx, y + dy, z + dz) for dx, dy, dz in [(0,0,1), (0,1,0), (1,0,0), (0,0,-1), (0,-1,0), (-1,0,0)])
-
-        return flooded
-
-    flooded = flood_fill((x_min - 1, y_min - 1, z_min - 1))
-    exterior = sum(len(neighbors(points, point)) for point in flooded)
-    return exterior
+    return sum(len(neighbors(points, point)) for point in flooded)
 
 #
 # main
