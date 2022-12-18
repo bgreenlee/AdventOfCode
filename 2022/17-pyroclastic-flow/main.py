@@ -132,10 +132,10 @@ def part2(jets: list[str]) -> int:
     while True:
         i += 1
         result = solve(jets, i)
-        print(i, result)
+        # print(i, result)
         diffs.append(result - last_result)
         last_result = result
-        if len(diffs) > len(jets):
+        if len(diffs) > 4000:
             max_seq, start_pos = max_repeating_sequence(diffs)
             # print(f"max seq {max_seq} at {start_pos}")
             if max_seq >= min_cycle_len:
@@ -143,7 +143,7 @@ def part2(jets: list[str]) -> int:
                 # print(diffs[start_pos:start_pos+max_seq])
                 # print(diffs[start_pos+max_seq:start_pos+max_seq*2])
                 cycle = diffs[start_pos:start_pos+max_seq]
-                print("cycle:", cycle)
+                # print("cycle:", cycle)
                 print("cycle sum:", sum(cycle))
                 break
 
