@@ -33,3 +33,9 @@ Solutions in Go and/or Python
 [Day 14: Regolith Reservoir (Python)](14-regolith-reservoir/)
 
 [Day 15: Beacon Exclusion Zone (Python)](15-beacon-exclusion-zone/)
+
+[Day 16: Proboscidea Volcanium (Python)](16-proboscidea-volcanium/) (Unfinished)
+
+[Day 17: Pyroclastic Flow (Python)](17-pyroclastic-flow/)
+
+[Day 18: Boiling Boulders (Python)](18-boiling-boulders/)
