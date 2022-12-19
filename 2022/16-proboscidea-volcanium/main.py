@@ -1,26 +1,15 @@
 import sys
 import re
 import heapq
-from collections import defaultdict
-from dataclasses import dataclass
-from typing import Self
+from collections import defaultdict, deque
+from typing import NamedTuple
 from numpy import array, zeros, ndarray
 
-@dataclass
-class Valve:
+
+class Valve(NamedTuple):
     name: str
     rate: int
     neighbors: list[str]
-
-    def __eq__(self, other: Self) -> bool:
-        return self.name == other.name
-
-    def __hash__(self) -> int:
-        return hash(self.name)
-
-    def __lt__(self, other: Self) -> bool:
-        # this is reversed because we want to use it in a min-heap as a max-heap
-        return self.rate > other.rate
 
 
 def parse_input(lines: list[str]) -> dict[str, Valve]:
@@ -55,45 +44,6 @@ def all_pairs_distance(A: ndarray):
     return D
 
 
-# Dijkstra's algorithm for finding the shortest path between start and end
-def find_path(valves: dict[str, Valve], start: str, end: str) -> list[str]:
-    # print(f"finding path from {start} to {end}")
-    visited = set[str]()
-    parents = dict[str, str]()
-    pqueue = list[tuple[int, str]]()
-    dists = defaultdict[str, int](lambda: sys.maxsize)
-    dists[start] = 0
-    heapq.heappush(pqueue, (0, start))
-
-    while pqueue:
-        _, node = heapq.heappop(pqueue)
-        if node == end: # we're done
-            break
-        visited.add(node)
-
-        for neighbor in valves[node].neighbors:
-            if neighbor in visited:
-                continue
-            dist = dists[node] + 1
-            if dists[neighbor] > dist:
-                parents[neighbor] = node
-                dists[neighbor] = dist
-                heapq.heappush(pqueue, (dist, neighbor))
-
-    # return empty list if the end wasn't found
-    if end not in parents:
-        return []
-
-    path: list[str] = []
-    node = end
-    while node != start:
-        path.append(node)
-        node = parents[node]
-    path.reverse()
-    return path
-
-
-
 # build an adjacency matrix for the valves graph
 def adj_matrix(valves: dict[str, Valve]) -> ndarray:
     keys = sorted(valves.keys())
@@ -108,48 +58,40 @@ def adj_matrix(valves: dict[str, Valve]) -> ndarray:
 
 
 def part1(valves: dict[str, Valve]) -> int:
-    t = 0
+    apd = all_pairs_distance(adj_matrix(valves))
+    nodes = sorted(valves.keys())
+    unopened = {name for name, valve in valves.items() if valve.rate > 0}
+    time_left = 30
+    paths = []
+    path = []
+    rate = 0
     flow = 0
-    adj = adj_matrix(valves)
-    apd = all_pairs_distance(adj)
-    names = sorted(valves.keys())
-    opened = []
-    opened_flows = []
-    current = 'AA'
 
-    def tick() -> int:
-        nonlocal t, flow
-        t += 1
-        flow += sum(opened_flows)
-        print(f"\n== Minute {t} ==")
-        print(f"Valves open: {opened}, releasing {sum(opened_flows)} pressure")
-        return t
+    queue: deque[tuple[str, set, list, int, int, int]] = deque(
+        [('AA', unopened, path, time_left, rate, flow)]
+    )
+    while len(queue) > 0:
+        node, unopened, path, time_left, rate, flow  = queue.popleft()
 
-    # return next best node
-    def best_node(current: str) -> str:
-        nodes: list[tuple[int, str]] = [] # list of (value, node name)
-        unopened = [v for v in valves if valves[v].rate > 0 and v not in opened]
-        for node in unopened:
-            dist = apd[names.index(current), names.index(node)]
-            nodes.append((valves[node].rate * (t - dist), node))
-        nodes.sort()
-        return nodes[-1][1]
+        if len(unopened) == 0:
+            # all done, just ride it out
+            paths.append((flow, path))
+            continue
 
-    while tick() < 30:
-        best = best_node(current)
-        path = find_path(valves, current, best)
-        current = path[0]
-        print(f"Move to {current}")
-        if tick() >= 30:
-            return flow
+        for v in unopened:
+            dist = apd[nodes.index(node), nodes.index(v)]
+            if dist >= time_left: # can't reach it in time
+                paths.append((flow, path))
+                continue
+            # move to v and open it
+            new_time_left = time_left - dist - 1
+            new_rate = rate + valves[v].rate
+            new_flow = flow + valves[v].rate * new_time_left
+            queue.append((v, unopened - {v}, path + [v], new_time_left, new_rate, new_flow))
 
-        # turn on
-        if current == best:
-            print("Open valve", current)
-            opened.append(current)
-            opened_flows.append(valves[current].rate)
-
-    return flow
+    paths.sort(reverse=True)
+    print(paths[0])
+    return paths[0][0]
 
 #
 # main
@@ -157,6 +99,19 @@ def part1(valves: dict[str, Valve]) -> int:
 
 valves = dict[str, Valve]()
 lines = [line.rstrip() for line in sys.stdin]
+# lines = [
+#     "Valve AA has flow rate=0; tunnels lead to valves DD, II, BB",
+#     "Valve BB has flow rate=13; tunnels lead to valves CC, AA",
+#     "Valve CC has flow rate=2; tunnels lead to valves DD, BB",
+#     "Valve DD has flow rate=20; tunnels lead to valves CC, AA, EE",
+#     "Valve EE has flow rate=3; tunnels lead to valves FF, DD",
+#     "Valve FF has flow rate=0; tunnels lead to valves EE, GG",
+#     "Valve GG has flow rate=0; tunnels lead to valves FF, HH",
+#     "Valve HH has flow rate=22; tunnel leads to valve GG",
+#     "Valve II has flow rate=0; tunnels lead to valves AA, JJ",
+#     "Valve JJ has flow rate=21; tunnel leads to valve II",
+# ]
+
 valves = parse_input(lines)
 
 flow = part1(valves)

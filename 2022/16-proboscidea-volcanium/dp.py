@@ -89,7 +89,6 @@ def find_path(valves: dict[str, Valve], start: str, end: str) -> list[str]:
     while node != start:
         path.append(node)
         node = parents[node]
-    path.reverse()
     return path
 
 
@@ -110,39 +109,76 @@ def adj_matrix(valves: dict[str, Valve]) -> ndarray:
 def part1(valves: dict[str, Valve]) -> int:
     max_t = 30
     t = 0
+    total_flow = 0
     open_valves = []
+    open_flows = []
     names = sorted(valves.keys())
     apd = all_pairs_distance(adj_matrix(valves))
 
-    current = 'AA'
-    closed_valves = [v for v in valves.keys() if valves[v].rate > 0 and v not in open_valves]
-    # create our dynamic programming grid
-    dp_values = [[0] * (max_t - t) for _ in range(len(closed_valves))] #zeros((max_t - t, len(closed_valves)), dtype=tuple[int, str])
-    dp_nodes = [[""] * (max_t - t) for _ in range(len(closed_valves))]
-    for i, v in enumerate(closed_valves):
-        dist = apd[names.index(current), names.index(v)]
-        for j in range(1, max_t - t + 1):
-            if dist <= j:
-                value = valves[v].rate * (max_t - t)
-                if i == 0:
-                    dp_values[i][j] = value
-                    dp_nodes[i][j] = v
-                else:
-                    if dp_values[i-1][j] > value + dp_values[i - 1][j - dist]:
-                        dp_values[i][j] = dp_values[i-1][j]
-                        dp_nodes[i][j] = dp_nodes[i-1][j]
-                    else:
-                        dp_values[i][j] = value + dp_values[i - 1][j - dist] # max of previous max and value of item plus value of remaining time
-                        dp_nodes[i][j] = dp_nodes[i - 1][j - dist]
+    def tick() -> int:
+        nonlocal t, total_flow
+        t += 1
+        total_flow += sum(open_flows)
+        print(f"\n== Minute {t} ==")
+        print(f"Valves open: {open_valves}, releasing {sum(open_flows)} pressure")
+        return t
 
-    return flow
+    current = 'AA'
+    tick()
+    while t < max_t:
+        closed_valves = [v for v in valves.keys() if valves[v].rate > 0 and v not in open_valves]
+        # create our dynamic programming grid
+        dp = [[(0, [])] * (max_t - t) for _ in range(len(closed_valves))] #zeros((max_t - t, len(closed_valves)), dtype=tuple[int, str])
+        for i, v in enumerate(closed_valves):
+            dist = apd[names.index(current), names.index(v)] # distance from our current node to the target node
+            for j in range(max_t - t):
+                if dist <= j+1:
+                    value = valves[v].rate * (max_t - t - dist)
+                    if i == 0:
+                        dp[i][j] = (value, [v])
+                    else:
+                        if j - dist < 0 or dp[i-1][j][0] > (value + dp[i - 1][j - dist][0]):
+                            dp[i][j] = (dp[i-1][j][0], [v] + dp[i-1][j][1])
+                        else:
+                            dp[i][j] = (value + dp[i - 1][j - dist][0], [v] + dp[i - 1][j - dist][1])  # max of previous max and value of item plus value of remaining time
+
+        # bottom right has our destination node
+        if len(dp) > 0 and len(dp[-1][-1][1]) > 0:
+            dest = dp[-1][-1][1].pop()
+            path = find_path(valves, current, dest)
+            current = path.pop()
+            tick()
+            print(f"Move to valve {current}")
+            if t == max_t:
+                break
+            if current == dest and dest not in open_valves:
+                open_valves.append(dest)
+                open_flows.append(valves[dest].rate)
+                tick()
+                print(f"Open valve {dest}")
+        else:
+            tick()
+
+    return total_flow
 
 #
 # main
 #
 
 valves = dict[str, Valve]()
-lines = [line.rstrip() for line in sys.stdin]
+#lines = [line.rstrip() for line in sys.stdin]
+lines = [
+    "Valve AA has flow rate=0; tunnels lead to valves DD, II, BB",
+    "Valve BB has flow rate=13; tunnels lead to valves CC, AA",
+    "Valve CC has flow rate=2; tunnels lead to valves DD, BB",
+    "Valve DD has flow rate=20; tunnels lead to valves CC, AA, EE",
+    "Valve EE has flow rate=3; tunnels lead to valves FF, DD",
+    "Valve FF has flow rate=0; tunnels lead to valves EE, GG",
+    "Valve GG has flow rate=0; tunnels lead to valves FF, HH",
+    "Valve HH has flow rate=22; tunnel leads to valve GG",
+    "Valve II has flow rate=0; tunnels lead to valves AA, JJ",
+    "Valve JJ has flow rate=21; tunnel leads to valve II",
+]
 valves = parse_input(lines)
 
 flow = part1(valves)
