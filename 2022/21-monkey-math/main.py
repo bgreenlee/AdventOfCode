@@ -1,7 +1,6 @@
 import sys
 from pprint import pp 
-from sympy import solveset, Eq, symbols
-from sympy.parsing.sympy_parser import parse_expr
+import sympy
 
 
 # expand the given node until we only have scalars (or undefined variables, as in part 2)
@@ -42,19 +41,16 @@ def evaluate(infix: list[str|int]) -> str:
     postfix = infix_to_postfix(infix)
     stack = []
     for tok in postfix:
-        match tok:
-            case "humn":
-                stack.append(tok)
-            case tok if tok.isnumeric():
-                stack.append(tok)
-            case _:
-                op2 = stack.pop()
-                op1 = stack.pop()
-                expr = f"({op1} {tok} {op2})"
-                if "humn" in expr:
-                    stack.append(expr)
-                else:
-                    stack.append(eval(expr))
+        if tok == "humn" or tok.isnumeric():
+            stack.append(tok)
+        else:
+            op2 = stack.pop()
+            op1 = stack.pop()
+            expr = f"({op1} {tok} {op2})"
+            if "humn" in expr:
+                stack.append(expr)
+            else:
+                stack.append(eval(expr))
 
     return str(stack[0])
 
@@ -70,9 +66,9 @@ def part2(lookup: dict) -> int:
     if "humn" in rhs:
         lhs, rhs = rhs, lhs
 
-    expr = Eq(parse_expr(lhs), int(float(rhs)))
-    solve = solveset(expr, symbols('humn'))
-    return int(list(solve)[0])
+    # get sympy to solve the expression: lhs - rhs = 0
+    return int(float(sympy.solve(f"{lhs} - {rhs}")[0]))
+
 
 
 #
