@@ -116,6 +116,8 @@ lines = [line.rstrip() for line in sys.stdin]
 global valves, apd, nodes
 valves = parse_input(lines)
 apd = all_pairs_distance(adj_matrix(valves))
+print(adj_matrix(valves))
+print(apd)
 nodes = sorted(valves.keys())
 
 print("Part 1:", part1())

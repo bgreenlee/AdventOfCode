@@ -19,7 +19,7 @@ def solve(nums: list[int], decryption_key: int=1, rounds: int=1) -> int:
 
 #
 # main
-#r
+#
 nums = [int(line.rstrip()) for line in sys.stdin]
 print("Part 1:", solve(nums))
 print("Part 2:", solve(nums, 811589153, 10))
