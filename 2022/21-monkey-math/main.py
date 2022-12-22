@@ -4,7 +4,7 @@ from sympy import solveset, Eq, symbols
 from sympy.parsing.sympy_parser import parse_expr
 
 
-# expand root
+# expand the given node until we only have scalars (or undefined variables, as in part 2)
 def expand(var: str, lookup: dict) -> list[str]:
     tokens = []
     for token in lookup[var]:
@@ -16,6 +16,7 @@ def expand(var: str, lookup: dict) -> list[str]:
     return tokens
 
 
+# convert infix tokens to postfix
 def infix_to_postfix(tokens: list[str]) -> list[str]:
     # convert to postfix
     postfix = []
