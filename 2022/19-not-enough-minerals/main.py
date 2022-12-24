@@ -3,64 +3,64 @@ import re
 import math
 from pprint import pp
 
-def solve_blueprint(blueprint: tuple[int, ...]) -> int:
-    costs = {
-        "orebot":      { "ore": bp[0], "clay": 0,     "obsidian": 0 },
-        "claybot":     { "ore": bp[1], "clay": 0,     "obsidian": 0 },
-        "obsidianbot": { "ore": bp[2], "clay": bp[3], "obsidian": 0 },
-        "geodebot":    { "ore": bp[4], "clay": 0,     "obsidian": bp[5] },
+def solve_blueprint(bp: tuple[int, ...]) -> int:
+    robot_cost = {
+        "ore":      { "ore": bp[0], "clay": 0,     "obsidian": 0 },
+        "clay":     { "ore": bp[1], "clay": 0,     "obsidian": 0 },
+        "obsidian": { "ore": bp[2], "clay": bp[3], "obsidian": 0 },
+        "geode":    { "ore": bp[4], "clay": 0,     "obsidian": bp[5] },
     }
-    inventory = { "ore": 0, "clay": 0, "obsidian": 0, "geode": 0 }
+    resources: dict[str, int] = { "ore": 0, "clay": 0, "obsidian": 0, "geode": 0 }
+    robots: dict[str, int] = { "ore": 1, "clay": 0, "obsidian": 0, "geode": 0 }
 
-    total_time = 24
-    # calculate what we need to build a geode bot
-    # ore: 4 ore
-    # clay: 2 ore
-    # obsidian: 3 ore, 14 clay
-    # geode: 2 ore, 7 ob
+    time_left = 24
+    minute = 0
+    build_robot = None # which robot to build this round
+    while (minute := minute + 1) <= time_left:
+        print(f"\n== Minute {minute} ==")
 
-    # ore: 2
-    # obsidian: 7
-        # ore: 21
-        # clay: 98
-            # ore: 196
+        # decide whether to build a robot or do nothing
+        possible_robots = []
+        for robot, cost in robot_cost.items():
+            if all(num <= resources[resource] for resource, num in cost.items()):
+                possible_robots.append(robot)
+        print("Can build:", possible_robots)
 
-    # calculate how much time it would take to build n geodebots
-    # keep increasing until we exceed our time limit
-    num_geodes = 0
-    time = 0
-    while time < total_time:
-        num_geodes += 1
-        ore = num_geodes * costs["geodebot"]["ore"]
-        obsidian = num_geodes * costs["geodebot"]["obsidian"]
-        ore += obsidian * costs["obsidianbot"]["ore"]
-        clay = obsidian * costs["obsidianbot"]["clay"]
-        ore += clay * costs["claybot"]["ore"]
+        # choose the best one
+        for robot in ["geode", "obsidian", "clay", "ore"]:
+            if robot in possible_robots:
+                build_robot = robot
+                # remove the resources
+                for resource, num in robot_cost[build_robot].items():
+                    resources[resource] -= num
+                print("Building:", robot)
+                break
 
-        # print("ore:", ore)
-        # print("clay:", clay)
-        # print("obsidian:", obsidian)
-        
-        time = num_geodes + int(math.log(ore, 2)) + 1 + int(math.log(clay, 2))
-        print(f"{num_geodes} geodes: time: {time}")
+        # update resources
+        for robot, num in robots.items():
+            resources[robot] += num
+            if num > 0:
+                print(f"{num} {robot} robots; now have {resources[robot]} {robot}")
 
-    return num_geodes
+        # finish building the robot
+        if build_robot:
+            robots[build_robot] += 1
+            print(f"The new {build_robot} robot is ready; you now have {robots[build_robot]} of them.")
+            build_robot = None
+
+    return resources["geode"]
 
 #
 # main
 #
 
+lines = open('test.dat').read().splitlines()
 blueprints = []
-# lines = [line.rstrip() for line in sys.stdin]
-lines = [
-    "Blueprint 1: Each ore robot costs 4 ore. Each clay robot costs 2 ore. Each obsidian robot costs 3 ore and 14 clay. Each geode robot costs 2 ore and 7 obsidian.",
-    "Blueprint 2: Each ore robot costs 2 ore. Each clay robot costs 3 ore. Each obsidian robot costs 3 ore and 8 clay. Each geode robot costs 3 ore and 12 obsidian."
-]
 for line in lines:
     nums = [int(n) for n in re.split(r'\D+', line) if n.isnumeric()]
     blueprints.append(tuple(nums[1:]))
 
-for bp in blueprints:
-    solve_blueprint(bp)
+# for bp in blueprints:
+solve_blueprint(blueprints[0])
 
 
