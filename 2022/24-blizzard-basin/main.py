@@ -128,20 +128,18 @@ class Valley:
 #
 lines = sys.stdin.read().splitlines()
 valley = Valley(lines)
-valley.tick(50)
+valley.tick(100)
 while not (exit := valley.find_path(valley.start, valley.end)):
-    valley.tick(50)
+    valley.tick(100)
 print("Part 1:", exit.z)
 
 # go back to start
-start = exit
-end = Point(1, 0)
+start, end = exit, Point(valley.start.x, valley.start.y)
 while not (exit := valley.find_path(start, end)):
-    valley.tick(50)
+    valley.tick(100)
 
 # and back to end
-start = exit
-end = valley.end
+start, end = exit, valley.end
 while not (exit := valley.find_path(start, end)):
-    valley.tick(50)
+    valley.tick(100)
 print("Part 2:", exit.z)
