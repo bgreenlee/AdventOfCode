@@ -39,3 +39,17 @@ Solutions in Go and/or Python
 [Day 17: Pyroclastic Flow (Python)](17-pyroclastic-flow/)
 
 [Day 18: Boiling Boulders (Python)](18-boiling-boulders/)
+
+[Day 19: Not Enough Minerals (Python)](19-not-enough-minerals/)
+
+[Day 20: Grove Positioning System (Python)](20-grove-positioning-system/)
+
+[Day 21: Monkey Math (Python)](21-monkey-math/)
+
+[Day 22: Monkey Map (Python)](22-monkey-map/)
+
+[Day 23: Unstable Diffusion (Python)](23-unstable-diffusion/)
+
+[Day 24: Blizzard Basin (Python)](24-blizzard-basin/)
+
+[Day 25: Full of Hot Air (Python)](25-full-of-hot-air/)
