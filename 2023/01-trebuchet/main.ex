@@ -21,18 +21,19 @@ defmodule Main do
     new_line =
       line
       |> String.replace(~r/(one|two|three|four|five|six|seven|eight|nine)/, fn word ->
-        # leave the first and last letters because, annoyingly, "oneight" should be "18"
-        case word do
-          "one" -> "o1e"
-          "two" -> "t2o"
-          "three" -> "t3e"
-          "four" -> "f4r"
-          "five" -> "f5e"
-          "six" -> "s6x"
-          "seven" -> "s7n"
-          "eight" -> "e8t"
-          "nine" -> "n9e"
+        num = case word do
+          "one" -> "1"
+          "two" -> "2"
+          "three" -> "3"
+          "four" -> "4"
+          "five" -> "5"
+          "six" -> "6"
+          "seven" -> "7"
+          "eight" -> "8"
+          "nine" -> "9"
         end
+        # keep the last letter because, annoyingly, "oneight" should be "18"
+        num <> String.slice(word, -1, 1)
       end)
 
     if new_line == line do
@@ -44,14 +45,14 @@ defmodule Main do
 
   def part1(lines) do
     lines
-    |> Enum.map(fn line -> line_to_number(line) end)
+    |> Enum.map(&line_to_number/1)
     |> Enum.sum()
   end
 
   def part2(lines) do
     lines
-    |> Enum.map(fn line -> words_to_numbers(line) end)
-    |> Enum.map(fn line -> line_to_number(line) end)
+    |> Enum.map(&words_to_numbers/1)
+    |> Enum.map(&line_to_number/1)
     |> Enum.sum()
   end
 end
