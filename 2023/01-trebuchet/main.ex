@@ -1,4 +1,4 @@
-defmodule Util do
+defmodule Main do
   def line_to_number(line) do
     line
     # remove non-digits
@@ -41,26 +41,24 @@ defmodule Util do
       words_to_numbers(new_line)
     end
   end
+
+  def part1(lines) do
+    lines
+    |> Enum.map(fn line -> line_to_number(line) end)
+    |> Enum.sum()
+  end
+
+  def part2(lines) do
+    lines
+    |> Enum.map(fn line -> words_to_numbers(line) end)
+    |> Enum.map(fn line -> line_to_number(line) end)
+    |> Enum.sum()
+  end
 end
 
 lines =
   IO.read(:stdio, :all)
   |> String.split("\n", trim: true)
 
-sum =
-  lines
-  |> Enum.map(fn line -> Util.line_to_number(line) end)
-  |> Enum.sum()
-
-IO.puts("Part 1: #{sum}")
-
-sum =
-  lines
-  |> Enum.map(fn line ->
-    line
-    |> Util.words_to_numbers()
-    |> Util.line_to_number()
-  end)
-  |> Enum.sum()
-
-IO.puts("Part 2: #{sum}")
+IO.puts("Part 1: #{Main.part1(lines)}")
+IO.puts("Part 2: #{Main.part2(lines)}")
