@@ -18,29 +18,20 @@ defmodule Main do
 
   # recursively replace words with numbers until no more words are found
   def words_to_numbers(line) do
-    new_line =
-      line
-      |> String.replace(~r/(one|two|three|four|five|six|seven|eight|nine)/, fn word ->
-        num = case word do
-          "one" -> "1"
-          "two" -> "2"
-          "three" -> "3"
-          "four" -> "4"
-          "five" -> "5"
-          "six" -> "6"
-          "seven" -> "7"
-          "eight" -> "8"
-          "nine" -> "9"
-        end
-        # keep the last letter because, annoyingly, "oneight" should be "18"
-        num <> String.slice(word, -1, 1)
-      end)
-
-    if new_line == line do
-      new_line
-    else
-      words_to_numbers(new_line)
-    end
+    number_regex = ~r/^(one|two|three|four|five|six|seven|eight|nine)/
+    word_map = %{"one" => "1", "two" => "2", "three" => "3", "four" => "4", "five" => "5", "six" => "6", "seven" => "7", "eight" => "8", "nine" => "9"}
+    line
+      |> String.graphemes()
+      |> Enum.with_index()
+      |> Enum.map(fn {char, idx} ->
+          rest_of_line = String.slice(line, idx..-1)
+          if String.match?(rest_of_line, number_regex) do
+            String.replace(rest_of_line, number_regex, fn word -> word_map[word] end)
+          else
+            char
+          end
+        end)
+      |> Enum.join()
   end
 
   def part1(lines) do
