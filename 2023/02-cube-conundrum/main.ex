@@ -1,45 +1,34 @@
 defmodule Main do
-  # parse the line into a tuple of game number and list of draws
+  # return the list of draws in the form {color: num}
   def parse_game(line) do
-    [game_num, draws] = line |> String.split(~r/Game |:/, trim: true)
-    game_num = String.to_integer(game_num)
-    # convert draws into a list of maps (e.g. [%{red: 1, green: 2, blue: 3}, ...])
-    draws =
-      String.split(draws, ";", trim: true)
-      |> Enum.map(fn draw ->
-           String.split(draw, ",", trim: true)
-           |> Enum.map(fn color ->
-                [num, color] = String.split(color, " ", trim: true)
-                {String.to_atom(color), String.to_integer(num)}
-              end)
-           |> Enum.into(%{red: 0, green: 0, blue: 0})
-         end)
-
-    {game_num, draws}
+    Regex.scan(~r/(\d+) (\w+)/, line)
+    |> Enum.map(fn [_whole_match, num, color] ->
+      {String.to_atom(color), String.to_integer(num)}
+    end)
   end
 
   def part1(lines) do
     max = %{:red => 12, :green => 13, :blue => 14}
 
     lines
-    |> Enum.map(&parse_game/1)
-    |> Enum.reduce(0, fn {num, draws}, acc ->
-        if Enum.any?(draws, fn draw ->
-          Enum.any?(draw, fn {color, num} -> num > Map.get(max, color) end)
-        end), do: acc, else: num + acc
-    end)
+    |> Enum.with_index()
+    |> Enum.reduce(0, fn {line, idx}, acc ->
+      draws = parse_game(line)
+
+      if Enum.any?(draws, fn {color, num} -> num > Map.get(max, color) end),
+        do: acc, # got a color over max, so skip
+        else: idx + 1 + acc # all good, count the game
+     end)
   end
 
   def part2(lines) do
     lines
-    |> Enum.map(&parse_game/1)
-    |> Enum.reduce(0, fn {_, draws}, acc ->
+    |> Enum.reduce(0, fn line, acc ->
+      draws = parse_game(line)
       # get the max number of each color
       max =
-        Enum.reduce(draws, %{}, fn draw, acc ->
-          Enum.reduce(draw, acc, fn {color, num}, acc ->
-            Map.update(acc, color, num, fn current -> max(current, num) end)
-          end)
+        Enum.reduce(draws, %{}, fn {color, num}, acc ->
+          Map.update(acc, color, num, fn current -> max(current, num) end)
         end)
 
       power = max[:red] * max[:green] * max[:blue]
