@@ -1,13 +1,13 @@
 defmodule Main do
-  # parse the line into a tuple of game number and list of games
+  # parse the line into a tuple of game number and list of draws
   def parse_game(line) do
-    [game_num, games] = line |> String.split(~r/Game |:/, trim: true)
+    [game_num, draws] = line |> String.split(~r/Game |:/, trim: true)
     game_num = String.to_integer(game_num)
-    # convert games into a list of maps (e.g. [%{red: 1, green: 2, blue: 3}, ...])
-    games =
-      String.split(games, ";", trim: true)
-      |> Enum.map(fn game ->
-           String.split(game, ",", trim: true)
+    # convert draws into a list of maps (e.g. [%{red: 1, green: 2, blue: 3}, ...])
+    draws =
+      String.split(draws, ";", trim: true)
+      |> Enum.map(fn draw ->
+           String.split(draw, ",", trim: true)
            |> Enum.map(fn color ->
                 [num, color] = String.split(color, " ", trim: true)
                 {String.to_atom(color), String.to_integer(num)}
@@ -15,7 +15,7 @@ defmodule Main do
            |> Enum.into(%{red: 0, green: 0, blue: 0})
          end)
 
-    {game_num, games}
+    {game_num, draws}
   end
 
   def part1(lines) do
@@ -23,9 +23,9 @@ defmodule Main do
 
     lines
     |> Enum.map(&parse_game/1)
-    |> Enum.reduce(0, fn {num, games}, acc ->
-        if Enum.any?(games, fn game ->
-          Enum.any?(game, fn {color, num} -> num > Map.get(max, color) end)
+    |> Enum.reduce(0, fn {num, draws}, acc ->
+        if Enum.any?(draws, fn draw ->
+          Enum.any?(draw, fn {color, num} -> num > Map.get(max, color) end)
         end), do: acc, else: num + acc
     end)
   end
@@ -33,10 +33,10 @@ defmodule Main do
   def part2(lines) do
     lines
     |> Enum.map(&parse_game/1)
-    |> Enum.map(fn {_, games} ->
+    |> Enum.map(fn {_, draws} ->
       max =
-        Enum.reduce(games, %{}, fn game, acc ->
-          Enum.reduce(game, acc, fn {color, num}, acc ->
+        Enum.reduce(draws, %{}, fn draw, acc ->
+          Enum.reduce(draw, acc, fn {color, num}, acc ->
             Map.update(acc, color, num, fn current -> max(current, num) end)
           end)
         end)
