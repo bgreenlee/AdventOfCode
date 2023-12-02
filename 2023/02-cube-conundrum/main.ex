@@ -33,7 +33,8 @@ defmodule Main do
   def part2(lines) do
     lines
     |> Enum.map(&parse_game/1)
-    |> Enum.map(fn {_, draws} ->
+    |> Enum.reduce(0, fn {_, draws}, acc ->
+      # get the max number of each color
       max =
         Enum.reduce(draws, %{}, fn draw, acc ->
           Enum.reduce(draw, acc, fn {color, num}, acc ->
@@ -41,9 +42,9 @@ defmodule Main do
           end)
         end)
 
-      max[:red] * max[:green] * max[:blue]
+      power = max[:red] * max[:green] * max[:blue]
+      power + acc
     end)
-    |> Enum.sum()
   end
 end
 
