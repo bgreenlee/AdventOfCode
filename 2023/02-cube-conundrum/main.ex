@@ -13,26 +13,21 @@ defmodule Main do
     lines
     |> Enum.with_index()
     |> Enum.reduce(0, fn {line, idx}, acc ->
-      draws = parse_game(line)
-
-      if Enum.any?(draws, fn {color, num} -> num > Map.get(max, color) end),
-        do: acc, # got a color over max, so skip
-        else: idx + 1 + acc # all good, count the game
-     end)
+        if Enum.any?(parse_game(line), fn {color, num} -> num > Map.get(max, color) end),
+          do: acc, # got a color over max, so skip
+          else: idx + 1 + acc # all good, count the game
+      end)
   end
 
   def part2(lines) do
     lines
     |> Enum.reduce(0, fn line, acc ->
-      draws = parse_game(line)
-      # get the max number of each color
-      max =
-        Enum.reduce(draws, %{}, fn {color, num}, acc ->
+        # get max of each color
+        Enum.reduce(parse_game(line), %{}, fn {color, num}, acc ->
           Map.update(acc, color, num, fn current -> max(current, num) end)
         end)
-
-      power = max[:red] * max[:green] * max[:blue]
-      power + acc
+        # calculate the power
+        |> (fn max -> max[:red] * max[:green] * max[:blue] + acc end).()
     end)
   end
 end
