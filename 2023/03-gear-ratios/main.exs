@@ -35,7 +35,6 @@ defmodule Engine do
       at(engine, x, y + 1),
       at(engine, x + 1, y + 1)
     ]
-    # |> Enum.reject(&is_nil/1)
   end
 
   # return neighbors that are [full] numbers
