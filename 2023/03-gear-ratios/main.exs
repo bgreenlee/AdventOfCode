@@ -84,12 +84,12 @@ defmodule Engine do
     new_points = engine.points
     |> Enum.with_index()
     |> Enum.reduce([], fn {point, idx}, acc ->
-        {x, y} = xy_from_idx(engine, idx)
         if numeric?(point) do
           # if the last item in acc is a number, use that, otherwise, find the full number
           if is_number(Enum.at(acc, 0)) do
             [Enum.at(acc, 0) | acc]
           else
+            {x, y} = xy_from_idx(engine, idx)
             [find_full_number(engine, x, y, String.to_integer(point)) | acc]
           end
         else
@@ -117,8 +117,8 @@ defmodule Engine do
     engine.points
     |> Enum.with_index()
     |> Enum.reduce([], fn {point, idx}, acc ->
-        {x, y} = xy_from_idx(engine, idx)
         if point == "*" do
+          {x, y} = xy_from_idx(engine, idx)
           adjacent_numbers = number_neighbors(engine, x, y)
           if length(adjacent_numbers) == 2, do: [Enum.product(adjacent_numbers) | acc], else: acc
         else
