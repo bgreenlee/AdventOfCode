@@ -10,6 +10,7 @@ defmodule Main do
       end)
   end
 
+  # recursively collect cards, given a map of card index to number of new cards, a list of cards, and a total number of cards
   defp collect_cards(card_map, remaining, total) do
     if length(remaining) == 0 do
       total
@@ -35,6 +36,7 @@ defmodule Main do
     card_map = lines
     |> Enum.map(&parse_card/1)
     |> Enum.with_index()
+    # generate a map of card index to number of new cards
     |> Map.new(fn {[winning_nums, my_nums], idx} ->
       {idx, MapSet.size(MapSet.intersection(winning_nums, my_nums))}
     end)
