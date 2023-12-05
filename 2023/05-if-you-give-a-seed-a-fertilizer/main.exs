@@ -46,7 +46,7 @@ defmodule Almanac do
       |> convert(almanac, "light-to-temperature")
       |> convert(almanac, "temperature-to-humidity")
       |> convert(almanac, "humidity-to-location")
-    end
+  end
 end
 
 defmodule Main do
@@ -58,6 +58,7 @@ defmodule Main do
       |> Enum.min()
   end
 
+  # Brute force it. Runs in ~30 minutes. There's definitely a better way, but I'm not seeing it.
   def part2(input) do
     almanac = Almanac.new(input)
     almanac.seeds
