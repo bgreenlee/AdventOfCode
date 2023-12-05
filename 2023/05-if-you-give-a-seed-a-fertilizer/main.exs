@@ -62,14 +62,12 @@ defmodule Main do
     almanac = Almanac.new(input)
     almanac.seeds
       |> Enum.chunk_every(2)
-      |> Task.async_stream(fn [seed_start, seed_length] ->
+      |> Enum.map(fn [seed_start, seed_length] ->
             Enum.reduce(seed_start..seed_start+seed_length-1, :infinity, fn seed, acc ->
               loc = Almanac.convert_seed_to_location(almanac, seed)
               if loc < acc, do: loc, else: acc
             end)
-         end, timeout: :infinity)
-      |> Stream.map(fn {:ok, val} -> val end)
-      |> Enum.to_list()
+         end)
       |> Enum.min()
   end
 end
