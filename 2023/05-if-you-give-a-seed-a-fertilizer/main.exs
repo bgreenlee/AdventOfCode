@@ -67,7 +67,7 @@ defmodule Main do
               Almanac.convert_seed_to_location(almanac, seed)
             end)
          end, timeout: :infinity)
-      |> Stream.map(fn {:ok, val} -> val |> IO.inspect() end)
+      |> Stream.map(fn {:ok, val} -> val end)
       |> Enum.to_list()
       |> List.flatten()
       |> Enum.min()
