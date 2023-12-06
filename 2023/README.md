@@ -3,3 +3,8 @@
 Solutions in Exlir
 
 [Day 1: Trebuchet?!](01-trebuchet/)
+[Day 2: Cube Conundrum](02-cube-conundrum/)
+[Day 3: Gear Ratios](03-gear-ratios/)
+[Day 4: Scratchcards](04-scratchcards/)
+[Day 5: If You Give a Seed a Fertilizer](05-if-you-give-a-seed-a-fertilizer/)
+[Day 6: Wait For It](06-wait-for-it/)
