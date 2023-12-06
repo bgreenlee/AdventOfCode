@@ -1,24 +1,20 @@
 defmodule Main do
   defp parse_input(input, split_nums \\ true) do
-    [time_line, distance_line] = input |> String.split("\n", trim: true) |> Enum.take(2)
+    [time_strs, distance_strs] = input
+      |> String.split("\n", trim: true)
+      |> Enum.map(fn line -> String.split(line, ~r/\D/, trim: true) end)
 
-    timestr = String.split(time_line, "Time:", trim: true) |> List.last()
+    times = if split_nums do
+      time_strs |> Enum.map(&String.to_integer/1)
+    else
+      [time_strs |> Enum.join() |> String.to_integer()]
+    end
 
-    times =
-      if split_nums do
-        timestr |> String.split(" ", trim: true) |> Enum.map(&String.to_integer/1)
-      else
-        [timestr |> String.replace(" ", "") |> String.to_integer()]
-      end
-
-    distancestr = String.split(distance_line, "Distance:", trim: true) |> List.last()
-
-    distances =
-      if split_nums do
-        distancestr |> String.split(" ", trim: true) |> Enum.map(&String.to_integer/1)
-      else
-        [distancestr |> String.replace(" ", "") |> String.to_integer()]
-      end
+    distances = if split_nums do
+      distance_strs |> Enum.map(&String.to_integer/1)
+    else
+      [distance_strs |> Enum.join() |> String.to_integer()]
+    end
 
     Enum.zip(times, distances)
   end
