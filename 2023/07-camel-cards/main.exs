@@ -34,14 +34,12 @@ defmodule Main do
   end
 
   def card_rank(card, use_jokers \\ false) do
-    cond do
-      card == "A" -> 14
-      card == "K" -> 13
-      card == "Q" -> 12
-      card == "J" -> if use_jokers, do: 1, else: 11
-      card == "T" -> 10
-      true -> String.to_integer(card)
-    end
+    cards =
+      if use_jokers,
+        do: ["J", "2", "3", "4", "5", "6", "7", "8", "9", "T", "Q", "K", "A"],
+        else: ["2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A"]
+
+    Enum.find_index(cards, &(&1 == card)) + 1
   end
 
   def solve(lines, use_jokers \\ false) do
