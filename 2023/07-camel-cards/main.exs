@@ -1,7 +1,8 @@
 defmodule Main do
   def hand_rank(hand, use_jokers \\ false) do
     # create map of card => count
-    initial_card_map = Enum.reduce(hand, %{}, fn card, acc -> Map.update(acc, card, 1, &(&1 + 1)) end)
+    initial_card_map =
+      Enum.reduce(hand, %{}, fn card, acc -> Map.update(acc, card, 1, &(&1 + 1)) end)
 
     # convert map to list sorted by count, then card rank, descending
     initial_card_counts =
