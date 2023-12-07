@@ -29,17 +29,8 @@ defmodule Main do
         initial_card_counts
       end
 
-    counts = card_counts |> Enum.map(fn {_card, count} -> count end)
-
-    cond do
-      counts == [5] -> 6
-      counts == [4, 1] -> 5
-      counts == [3, 2] -> 4
-      counts == [3, 1, 1] -> 3
-      counts == [2, 2, 1] -> 2
-      counts == [2, 1, 1, 1] -> 1
-      true -> 0
-    end
+    # produce a list of card counts (e.g. [3, 2]), which is sufficient for sorting because lists are compared element-wise
+    card_counts |> Enum.map(fn {_card, count} -> count end)
   end
 
   def card_rank(card, use_jokers \\ false) do
