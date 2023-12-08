@@ -13,6 +13,7 @@ defmodule Main do
 
   def parse_input(input) do
     [steps | nodelist] = String.split(input, "\n", trim: true)
+    # fake an array by creating a map of index => step
     steps = String.split(steps, "", trim: true) |> Enum.with_index() |> Map.new(fn {e, i} -> {i, e} end)
     nodes = Map.new(nodelist, fn line ->
       [node, left, right] = String.split(line, ~r/\W/, trim: true)
