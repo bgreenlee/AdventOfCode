@@ -1,14 +1,14 @@
 defmodule Main do
   # recursively find the first node matching the end node pattern,
   # returning the number of steps to get there
-  def find_node(nodes, current_node, end_node_pattern, steps, step_num) do
+  def count_steps(nodes, current_node, end_node_pattern, steps, step_num) do
     step = Enum.at(steps, Integer.mod(step_num, length(steps)))
     {left, right} = Map.get(nodes, current_node)
     target_node = if step == "L", do: left, else: right
     if String.match?(target_node, end_node_pattern) do
       step_num + 1
     else
-      find_node(nodes, target_node, end_node_pattern, steps, step_num + 1)
+      count_steps(nodes, target_node, end_node_pattern, steps, step_num + 1)
     end
   end
 
@@ -24,7 +24,7 @@ defmodule Main do
 
   def part1(lines) do
     {steps, nodes} = parse_input(lines)
-    find_node(nodes, "AAA", ~r/^ZZZ$/, steps, 0)
+    count_steps(nodes, "AAA", ~r/^ZZZ$/, steps, 0)
   end
 
   def part2(lines) do
@@ -32,7 +32,7 @@ defmodule Main do
     # get all starting nodes
     Enum.filter(Map.keys(nodes), &String.match?(&1, ~r/A$/))
     # find cycle length for each start node
-    |> Enum.map(fn node -> find_node(nodes, node, ~r/Z$/, steps, 0) end)
+    |> Enum.map(fn node -> count_steps(nodes, node, ~r/Z$/, steps, 0) end)
     # calculate least common multiple of all cycles
     |> Enum.reduce(fn n, acc -> div(acc * n, Integer.gcd(acc, n)) end)
   end
