@@ -1,4 +1,6 @@
 defmodule Main do
+  # recursively find the first node matching the end node pattern,
+  # returning the number of steps to get there
   def find_node(nodes, current_node, end_node_pattern, steps, step_num) do
     step = Enum.at(steps, Integer.mod(step_num, length(steps)))
     {left, right} = Map.get(nodes, current_node)
