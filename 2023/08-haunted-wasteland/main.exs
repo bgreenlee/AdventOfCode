@@ -29,11 +29,10 @@ defmodule Main do
 
   def part2(lines) do
     {steps, nodes} = parse_input(lines)
-    start_nodes = Enum.filter(Map.keys(nodes), &String.match?(&1, ~r/A$/))
+    # get all starting nodes
+    Enum.filter(Map.keys(nodes), &String.match?(&1, ~r/A$/))
     # find cycle length for each start node
-    Enum.map(start_nodes, fn node ->
-      find_node(nodes, node, ~r/Z$/, steps, 0)
-    end)
+    |> Enum.map(fn node -> find_node(nodes, node, ~r/Z$/, steps, 0) end)
     # calculate least common multiple of all cycles
     |> Enum.reduce(fn n, acc -> div(acc * n, Integer.gcd(acc, n)) end)
   end
