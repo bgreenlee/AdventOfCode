@@ -3,6 +3,7 @@ defmodule Main do
   # returning the number of steps to get there
   def count_steps(nodes, current_node, end_node_pattern, steps, step_num) do
     step = Enum.at(steps, Integer.mod(step_num, length(steps)))
+    # target_node = Map.get(Map.get(nodes, current_node), step)
     {left, right} = Map.get(nodes, current_node)
     target_node = if step == "L", do: left, else: right
     if String.match?(target_node, end_node_pattern) do
@@ -17,6 +18,7 @@ defmodule Main do
     steps = String.split(steps, "", trim: true)
     nodes = Map.new(nodelist, fn line ->
       [node, left, right] = String.split(line, ~r/\W/, trim: true)
+#      {node, %{"L" => left, "R" => right}}
       {node, {left, right}}
     end)
     {steps, nodes}
@@ -38,5 +40,7 @@ end
 
 {steps, nodes} = Main.parse_input(IO.read(:stdio, :all))
 
-IO.puts("Part 1: #{Main.part1(steps, nodes)}")
-IO.puts("Part 2: #{Main.part2(steps, nodes)}")
+{µsec, result} = :timer.tc(fn -> Main.part1(steps, nodes) end)
+IO.puts("Part 1: #{result} (#{µsec/1000} ms)")
+{µsec, result} = :timer.tc(fn -> Main.part2(steps, nodes) end)
+IO.puts("Part 2: #{result} (#{µsec/1000} ms)")
