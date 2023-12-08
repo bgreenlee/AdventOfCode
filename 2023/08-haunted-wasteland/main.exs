@@ -12,8 +12,8 @@ defmodule Main do
     end
   end
 
-  def parse_input(lines) do
-    [steps | nodelist] = lines
+  def parse_input(input) do
+    [steps | nodelist] = String.split(input, "\n", trim: true)
     steps = String.split(steps, "", trim: true)
     nodes = Map.new(nodelist, fn line ->
       [node, left, right] = String.split(line, ~r/\W/, trim: true)
@@ -22,13 +22,11 @@ defmodule Main do
     {steps, nodes}
   end
 
-  def part1(lines) do
-    {steps, nodes} = parse_input(lines)
+  def part1(steps, nodes) do
     count_steps(nodes, "AAA", ~r/^ZZZ$/, steps, 0)
   end
 
-  def part2(lines) do
-    {steps, nodes} = parse_input(lines)
+  def part2(steps, nodes) do
     # get all starting nodes
     Enum.filter(Map.keys(nodes), &String.match?(&1, ~r/A$/))
     # find cycle length for each start node
@@ -38,7 +36,7 @@ defmodule Main do
   end
 end
 
-lines = IO.read(:stdio, :all) |> String.split("\n", trim: true)
+{steps, nodes} = Main.parse_input(IO.read(:stdio, :all))
 
-IO.puts("Part 1: #{Main.part1(lines)}")
-IO.puts("Part 2: #{Main.part2(lines)}")
+IO.puts("Part 1: #{Main.part1(steps, nodes)}")
+IO.puts("Part 2: #{Main.part2(steps, nodes)}")
