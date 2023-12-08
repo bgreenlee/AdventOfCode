@@ -3,9 +3,7 @@ defmodule Main do
   # returning the number of steps to get there
   def count_steps(nodes, current_node, end_node_pattern, steps, step_num) do
     step = Enum.at(steps, Integer.mod(step_num, length(steps)))
-    # target_node = Map.get(Map.get(nodes, current_node), step)
-    {left, right} = Map.get(nodes, current_node)
-    target_node = if step == "L", do: left, else: right
+    target_node = nodes[current_node][step]
     if String.match?(target_node, end_node_pattern) do
       step_num + 1
     else
@@ -18,8 +16,7 @@ defmodule Main do
     steps = String.split(steps, "", trim: true)
     nodes = Map.new(nodelist, fn line ->
       [node, left, right] = String.split(line, ~r/\W/, trim: true)
-#      {node, %{"L" => left, "R" => right}}
-      {node, {left, right}}
+      {node, %{"L" => left, "R" => right}}
     end)
     {steps, nodes}
   end
