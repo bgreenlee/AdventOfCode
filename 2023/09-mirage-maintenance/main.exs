@@ -17,7 +17,6 @@ defmodule Main do
   end
 
   def next_in_seq(seq) do
-    # if all elements are equal, return the first element
     head = hd(seq)
     if Enum.all?(seq, fn x -> x == head end) do
       head
@@ -27,7 +26,6 @@ defmodule Main do
   end
 
   def prev_in_seq(seq) do
-    # if all elements are equal, return the first element
     head = hd(seq)
     if Enum.all?(seq, fn x -> x == head end) do
       head
