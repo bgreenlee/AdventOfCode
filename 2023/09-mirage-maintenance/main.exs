@@ -12,17 +12,8 @@ defmodule Main do
   # return a list of differences between the elements of the sequence
   def differences(sequence) do
     sequence
-    |> Enum.reduce({}, fn x, acc ->
-        if acc == {} do
-          {[x], x}
-        else
-          {diffs, last} = acc
-          {[x - last | diffs], x}
-        end
-      end)
-    |> elem(0)
-    |> Enum.reverse()
-    |> tl() # drop the first element, which is not valid
+    |> Enum.chunk_every(2, 1, :discard)
+    |> Enum.map(fn [a,b] -> b - a end)
   end
 
   def next_in_sequence(sequence) do
