@@ -13,7 +13,7 @@ defmodule Main do
   def differences(sequence) do
     sequence
     |> Enum.chunk_every(2, 1, :discard)
-    |> Enum.map(fn [a,b] -> b - a end)
+    |> Enum.map(fn [a, b] -> b - a end)
   end
 
   def next_in_sequence(sequence) do
@@ -49,5 +49,5 @@ sequences = Main.parse_input(IO.read(:stdio, :all))
 
 {μsec, result} = :timer.tc(fn -> Main.part1(sequences) end)
 IO.puts("Part 1: #{result} (#{μsec / 1000} ms)")
-{µsec, result} = :timer.tc(fn -> Main.part2(sequences) end)
-IO.puts("Part 2: #{result} (#{µsec/1000} ms)")
+{μsec, result} = :timer.tc(fn -> Main.part2(sequences) end)
+IO.puts("Part 2: #{result} (#{μsec / 1000} ms)")
