@@ -10,37 +10,41 @@ defmodule Main do
   end
 
   # return a list of differences between the elements of the sequence
-  def differences(sequence) do
-    sequence
+  def differences(seq) do
+    seq
     |> Enum.chunk_every(2, 1, :discard)
     |> Enum.map(fn [a, b] -> b - a end)
   end
 
-  def next_in_sequence(sequence) do
-    if length(Enum.uniq(sequence)) == 1 do
-      hd(sequence)
+  def next_in_seq(seq) do
+    # if all elements are equal, return the first element
+    head = hd(seq)
+    if Enum.all?(seq, fn x -> x == head end) do
+      head
     else
-      Enum.at(sequence, -1) + next_in_sequence(differences(sequence))
+      List.last(seq) + next_in_seq(differences(seq))
     end
   end
 
-  def prev_in_sequence(sequence) do
-    if length(Enum.uniq(sequence)) == 1 do
-      hd(sequence)
+  def prev_in_seq(seq) do
+    # if all elements are equal, return the first element
+    head = hd(seq)
+    if Enum.all?(seq, fn x -> x == head end) do
+      head
     else
-      hd(sequence) - prev_in_sequence(differences(sequence))
+      head - prev_in_seq(differences(seq))
     end
   end
 
   def part1(sequences) do
     sequences
-    |> Enum.map(fn s -> next_in_sequence(s) end)
+    |> Enum.map(&next_in_seq/1)
     |> Enum.sum()
   end
 
   def part2(sequences) do
     sequences
-    |> Enum.map(fn s -> prev_in_sequence(s) end)
+    |> Enum.map(&prev_in_seq/1)
     |> Enum.sum()
   end
 end
