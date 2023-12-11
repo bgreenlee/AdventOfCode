@@ -12,3 +12,4 @@ Solutions in Exlir
 [Day 8: Haunted Wasteland](08-haunted-wasteland/)
 [Day 9: Mirage Maintenance](09-mirage-maintenance/)
 [Day 10: Pipe Maze](10-pipe-maze/)
+[Day 11: Cosmic Expansion](11-cosmic-expansion/)
