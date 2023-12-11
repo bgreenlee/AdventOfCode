@@ -71,9 +71,7 @@ defmodule Main do
   def part2(map) do
     start = find_start(map)
     loop = find_loop(map, start, start, [start])
-    map
-    |> Map.keys()
-    |> Enum.count(fn p -> is_inside(p, loop) end)
+    Enum.count(map, fn {p, _} -> is_inside(p, loop) end)
   end
 end
 
