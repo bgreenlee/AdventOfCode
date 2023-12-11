@@ -16,9 +16,8 @@ defmodule Main do
 
   def find_start(map) do
     map
-    |> Map.filter(fn {_, v} -> v == "S" end)
-    |> Map.keys()
-    |> hd()
+    |> Enum.find(fn {_, v} -> v == "S" end)
+    |> elem(0)
   end
 
   # return the at most two neighbors that connect to this point on the map
