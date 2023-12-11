@@ -22,7 +22,7 @@ defmodule Universe do
     |> List.flatten()
     |> Map.new()
 
-    # expand the map
+    # find the empty rows and columns
     empty_rows = Enum.filter(0..(height - 1), fn y ->
       Enum.all?(0..(width - 1), fn x -> map[{x, y}] == nil end)
     end)
@@ -30,11 +30,11 @@ defmodule Universe do
       Enum.all?(0..(height - 1), fn y -> map[{x, y}] == nil end)
     end)
 
-    map = Enum.map(map, fn {{x, y}, char} ->
+    # expand the map
+    map = Map.new(map, fn {{x, y}, char} ->
       {{x + Enum.count(empty_columns, fn c -> c < x end) * (expansion - 1),
         y + Enum.count(empty_rows, fn r -> r < y end) * (expansion - 1)}, char}
     end)
-    |> Map.new()
 
     height = height + length(empty_rows)
     width = width + length(empty_columns)
