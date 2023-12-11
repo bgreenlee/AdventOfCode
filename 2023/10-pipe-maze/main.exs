@@ -25,12 +25,12 @@ defmodule Main do
   def find_neighbors(map, {x, y}) do
     v = map[{x, y}]
     [
-      (if v in ["|", "J", "L", "S"] and map[{x, y - 1}] in ["|", "7", "F", "S"], do: {x, y - 1}, else: nil),
-      (if v in ["-", "F", "L", "S"] and map[{x + 1, y}] in ["-", "7", "J", "S"], do: {x + 1, y}, else: nil),
-      (if v in ["|", "7", "F", "S"] and map[{x, y + 1}] in ["|", "L", "J", "S"], do: {x, y + 1}, else: nil),
-      (if v in ["-", "J", "7", "S"] and map[{x - 1, y}] in ["-", "F", "L", "S"], do: {x - 1, y}, else: nil)
+      v in ["|", "J", "L", "S"] and map[{x, y - 1}] in ["|", "7", "F", "S"] && {x, y - 1},
+      v in ["-", "F", "L", "S"] and map[{x + 1, y}] in ["-", "7", "J", "S"] && {x + 1, y},
+      v in ["|", "7", "F", "S"] and map[{x, y + 1}] in ["|", "L", "J", "S"] && {x, y + 1},
+      v in ["-", "J", "7", "S"] and map[{x - 1, y}] in ["-", "F", "L", "S"] && {x - 1, y},
     ]
-    |> Enum.reject(&is_nil/1)
+    |> Enum.reject(fn n -> n == false end)
   end
 
   # traverse the map from the starting point, returning the path
@@ -45,8 +45,8 @@ defmodule Main do
 
   # point-in-polygon algorithm from https://observablehq.com/@hg42/untitled
   def is_inside({x, y}, loop) do
-    if {x, y} in loop do # on the loop is not inside
-      false
+    if {x, y} in loop do
+      false # on the loop is not inside
     else
       loop
       |> Enum.chunk_every(2, 1, [hd(loop)])
