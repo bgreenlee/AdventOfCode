@@ -33,7 +33,7 @@ defmodule Pattern do
       Enum.find(1..(pattern.width - 1), fn x ->
         max_dx = min(x - 1, pattern.width - x - 1)
 
-        count =
+        mismatch_count =
           for dx <- 0..max_dx do
             Enum.count(0..(pattern.height - 1), fn y ->
               pattern.points[{x - dx - 1, y}] != pattern.points[{x + dx, y}]
@@ -41,7 +41,7 @@ defmodule Pattern do
           end
           |> Enum.sum()
 
-        count == smudges_allowed
+        mismatch_count == smudges_allowed
       end)
 
     if vert_x != nil do
@@ -53,7 +53,7 @@ defmodule Pattern do
         Enum.find(1..(pattern.height - 1), fn y ->
           max_dy = min(y - 1, pattern.height - y - 1)
 
-          count =
+          mismatch_count =
             for dy <- 0..max_dy do
               Enum.count(0..(pattern.width - 1), fn x ->
                 pattern.points[{x, y - dy - 1}] != pattern.points[{x, y + dy}]
@@ -61,7 +61,7 @@ defmodule Pattern do
             end
             |> Enum.sum()
 
-          count == smudges_allowed
+          mismatch_count == smudges_allowed
         end)
 
       {:horz, horz_y}
