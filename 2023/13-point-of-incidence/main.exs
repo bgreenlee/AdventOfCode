@@ -1,7 +1,7 @@
 #!/usr/bin/env elixir
 
 defmodule Pattern do
-  defstruct points: %{}, height: 0, width: 0, reflection: {}
+  defstruct points: %{}, height: 0, width: 0
 
   # parse the map into a Map of {x,y} => true for each rock
   def parse_pattern(input) do
