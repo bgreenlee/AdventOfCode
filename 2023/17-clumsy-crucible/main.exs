@@ -28,35 +28,57 @@ defmodule City do
     abs(bx - ax) + abs(by - ay)
   end
 
-  def neighbors(city, {x, y}) do
-    [
-      {x + 1, y},
-      {x - 1, y},
-      {x, y + 1},
-      {x, y - 1}
-    ]
-    |> Enum.reject(fn {x, y} ->
+  def neighbors(city, {x, y, dir, steps}) do
+    case dir do
+      :east ->
+        [
+          {x + 1, y, dir, steps + 1},
+          {x, y + 1, :south, 0},
+          {x, y - 1, :north, 0}
+        ]
+      :west ->
+        [
+          {x - 1, y, dir, steps + 1},
+          {x, y + 1, :south, 0},
+          {x, y - 1, :north, 0}
+        ]
+      :north ->
+        [
+          {x, y - 1, dir, steps + 1},
+          {x + 1, y, :east, 0},
+          {x - 1, y, :west, 0}
+        ]
+      :south ->
+        [
+          {x, y + 1, dir, steps + 1},
+          {x + 1, y, :east, 0},
+          {x - 1, y, :west, 0}
+        ]
+    end
+    |> Enum.reject(fn {x, y, _, steps} ->
         x < 0 or x >= city.width or
-        y < 0 or y >= city.height
+        y < 0 or y >= city.height or
+        steps > 2
       end)
   end
 
-  def reconstruct_path(came_from, current) do
-    if Map.has_key?(came_from, current) do
-      path = reconstruct_path(came_from, came_from[current])
-      [current | path]
+  def reconstruct_path(came_from, {cx, cy, _, _}) do
+    if Map.has_key?(came_from, {cx, cy}) do
+      path = reconstruct_path(came_from, came_from[{cx, cy}])
+      [{cx, cy} | path]
     else
-      [current]
+      [{cx, cy}]
     end
   end
 
   def find_path_recurse(city, goal, open_set, came_from, g_score, f_score) do
     # the node in open_set having the lowest f_score[] value
     # TODO: implement a min heap or priority queue
-    current = Enum.min_by(open_set, fn node -> f_score[node] end)
+    current = Enum.min_by(open_set, fn {x, y, _, _} -> f_score[{x, y}] end)
+    {cx, cy, _cdir, _csteps} = current
 
     cond do
-      current == goal -> reconstruct_path(came_from, current) # found the goal
+      {cx, cy} == goal -> reconstruct_path(came_from, current) # found the goal
       MapSet.size(open_set) == 0 -> nil # couldn't find the goal
       true ->
         open_set = MapSet.delete(open_set, current)
@@ -64,29 +86,19 @@ defmodule City do
 
         {open_set, came_from, g_score, f_score} =
           Enum.reduce(neighbors, {open_set, came_from, g_score, f_score}, fn neighbor, {open_set, came_from, g_score, f_score} ->
-            # avoid going straight for more than three blocks
-            # straight for three means we can have four in a row, since the fourth one was a turn
-            last_four = Enum.take(reconstruct_path(came_from, current), 4)
-            {cx, cy} = current
-            if length(last_four) == 4 and (
-              Enum.all?(last_four, fn {x, _} -> x == cx end) or
-              Enum.all?(last_four, fn {_, y} -> y == cy end)
-            ) do
-                {open_set, came_from, g_score, f_score}
-            else
-              # tentative_g_score is the distance from start to the neighbor through current
-              tentative_g_score = Map.get(g_score, current, :infinity) + city.blocks[neighbor]
+            {nx, ny, _, _} = neighbor
+            # tentative_g_score is the distance from start to the neighbor through current
+            tentative_g_score = g_score[{cx, cy}] + city.blocks[{nx, ny}]
 
-              if tentative_g_score < Map.get(g_score, neighbor, :infinity) do
-                # this path to neighbor is better than any previous one. Record it!
-                came_from = Map.put(came_from, neighbor, current)
-                g_score = Map.put(g_score, neighbor, tentative_g_score)
-                f_score = Map.put(f_score, neighbor, Map.get(g_score, neighbor, :infinity) + heuristic(neighbor, goal))
-                open_set = MapSet.put(open_set, neighbor)
-                {open_set, came_from, g_score, f_score}
-              else
-                {open_set, came_from, g_score, f_score}
-              end
+            if tentative_g_score < Map.get(g_score, {nx, ny}, :infinity) do
+              # this path to neighbor is better than any previous one. Record it!
+              came_from = Map.put(came_from, {nx, ny}, current)
+              g_score = Map.put(g_score, {nx, ny}, tentative_g_score)
+              f_score = Map.put(f_score, {nx, ny}, tentative_g_score + heuristic({nx, ny}, goal))
+              open_set = MapSet.put(open_set, neighbor)
+              {open_set, came_from, g_score, f_score}
+            else
+              {open_set, came_from, g_score, f_score}
             end
           end)
         find_path_recurse(city, goal, open_set, came_from, g_score, f_score)
@@ -95,11 +107,11 @@ defmodule City do
   end
   # use A* to find a path from the top left to the bottom right that minimizes the values of the blocks traversed
   # and does not travel in a straight line more than three blocks at a time
-  def find_path(city, start, goal) do
+  def find_path(city, {sx, sy} = start, direction, goal) do
     # The set of discovered nodes that may need to be (re-)expanded.
     # Initially, only the start node is known.
     # This is usually implemented as a min-heap or priority queue rather than a hash-set.
-    open_set = MapSet.new([start])
+    open_set = MapSet.new([{sx, sy, direction, 0}])
 
     # for node n, came_from[n] is the node immediately preceding it on the cheapest path from start to n currently known
     came_from = Map.new()
@@ -135,7 +147,7 @@ defmodule Main do
   def part1(input) do
     city = City.new(input)
     city
-    |> City.find_path({0, 0}, {city.width - 1, city.height - 1})
+    |> City.find_path({0, 0}, :east, {city.width - 1, city.height - 1})
     |> IO.inspect()
     |> Enum.map(fn {x, y} -> city.blocks[{x, y}] end)
     |> Enum.sum()
