@@ -24,106 +24,88 @@ defmodule City do
   end
 
   def heuristic({ax, ay}, {bx, by}) do
-    # Manhattan distance
-    abs(bx - ax) + abs(by - ay)
+    abs(bx - ax) + abs(by - ay) # manhattan distance
   end
 
-  def neighbors(city, {x, y, dir, steps}) do
+  def neighbors(city, {{x, y}, dir, steps}, min_straight, max_straight) do
     case dir do
       :east ->
         [
-          {x + 1, y, dir, steps + 1},
-          {x, y + 1, :south, 0},
-          {x, y - 1, :north, 0}
+          {{x + 1, y}, dir, steps + 1},
+          (if steps >= min_straight - 1, do: {{x, y + 1}, :south, 0}),
+          (if steps >= min_straight - 1, do: {{x, y - 1}, :north, 0}),
         ]
       :west ->
         [
-          {x - 1, y, dir, steps + 1},
-          {x, y + 1, :south, 0},
-          {x, y - 1, :north, 0}
+          {{x - 1, y}, dir, steps + 1},
+          (if steps >= min_straight - 1, do: {{x, y + 1}, :south, 0}),
+          (if steps >= min_straight - 1, do: {{x, y - 1}, :north, 0}),
         ]
       :north ->
         [
-          {x, y - 1, dir, steps + 1},
-          {x + 1, y, :east, 0},
-          {x - 1, y, :west, 0}
+          {{x, y - 1}, dir, steps + 1},
+          (if steps >= min_straight - 1, do: {{x + 1, y}, :east, 0}),
+          (if steps >= min_straight - 1, do: {{x - 1, y}, :west, 0}),
         ]
       :south ->
         [
-          {x, y + 1, dir, steps + 1},
-          {x + 1, y, :east, 0},
-          {x - 1, y, :west, 0}
+          {{x, y + 1}, dir, steps + 1},
+          (if steps >= min_straight - 1, do: {{x + 1, y}, :east, 0}),
+          (if steps >= min_straight - 1, do: {{x - 1, y}, :west, 0}),
         ]
     end
-    |> Enum.reject(fn {x, y, _, steps} ->
+    |> Enum.reject(&is_nil/1)
+    |> Enum.reject(fn {{x, y}, _, steps} ->
         x < 0 or x >= city.width or
         y < 0 or y >= city.height or
-        steps > 2
+        steps >= max_straight
       end)
   end
 
-  def reconstruct_path(came_from, {cx, cy, _, _}) do
-    if Map.has_key?(came_from, {cx, cy}) do
-      path = reconstruct_path(came_from, came_from[{cx, cy}])
-      [{cx, cy} | path]
+  def reconstruct_path(came_from, current) do
+    if Map.has_key?(came_from, current) do
+      path = reconstruct_path(came_from, came_from[current])
+      [current | path]
     else
-      [{cx, cy}]
+      [current]
     end
   end
 
-  def find_path_recurse(city, goal, open_set, came_from, g_score, f_score) do
-    # the node in open_set having the lowest f_score[] value
-    # TODO: implement a min heap or priority queue
-    current = Enum.min_by(open_set, fn {x, y, _, _} -> f_score[{x, y}] end)
-    {cx, cy, _cdir, _csteps} = current
+  def find_path_recurse(city, goal, open_set, came_from, g_score, f_score, min_straight, max_straight) do
+    {{_prio, current}, open_set} = PrioQ.extract_min(open_set)
+    {cpoint, _cdir, _csteps} = current
 
     cond do
-      {cx, cy} == goal -> reconstruct_path(came_from, current) # found the goal
-      MapSet.size(open_set) == 0 -> nil # couldn't find the goal
+      cpoint == goal -> reconstruct_path(came_from, current) # found the goal
       true ->
-        open_set = MapSet.delete(open_set, current)
-        neighbors = neighbors(city, current)
+        neighbors = neighbors(city, current, min_straight, max_straight)
 
         {open_set, came_from, g_score, f_score} =
           Enum.reduce(neighbors, {open_set, came_from, g_score, f_score}, fn neighbor, {open_set, came_from, g_score, f_score} ->
-            {nx, ny, _, _} = neighbor
-            # tentative_g_score is the distance from start to the neighbor through current
-            tentative_g_score = g_score[{cx, cy}] + city.blocks[{nx, ny}]
+            {npoint, _, _} = neighbor
+            tentative_g_score = g_score[current] + city.blocks[npoint]
 
-            if tentative_g_score < Map.get(g_score, {nx, ny}, :infinity) do
-              # this path to neighbor is better than any previous one. Record it!
-              came_from = Map.put(came_from, {nx, ny}, current)
-              g_score = Map.put(g_score, {nx, ny}, tentative_g_score)
-              f_score = Map.put(f_score, {nx, ny}, tentative_g_score + heuristic({nx, ny}, goal))
-              open_set = MapSet.put(open_set, neighbor)
+            if tentative_g_score < Map.get(g_score, neighbor, :infinity) do
+              came_from = Map.put(came_from, neighbor, current)
+              g_score = Map.put(g_score, neighbor, tentative_g_score)
+              f_score = Map.put(f_score, neighbor, tentative_g_score + heuristic(npoint, goal))
+              open_set = PrioQ.add_with_priority(open_set, neighbor, f_score[neighbor])
               {open_set, came_from, g_score, f_score}
             else
               {open_set, came_from, g_score, f_score}
             end
           end)
-        find_path_recurse(city, goal, open_set, came_from, g_score, f_score)
+        find_path_recurse(city, goal, open_set, came_from, g_score, f_score, min_straight, max_straight)
     end
-
   end
-  # use A* to find a path from the top left to the bottom right that minimizes the values of the blocks traversed
-  # and does not travel in a straight line more than three blocks at a time
-  def find_path(city, {sx, sy} = start, direction, goal) do
-    # The set of discovered nodes that may need to be (re-)expanded.
-    # Initially, only the start node is known.
-    # This is usually implemented as a min-heap or priority queue rather than a hash-set.
-    open_set = MapSet.new([{sx, sy, direction, 0}])
 
-    # for node n, came_from[n] is the node immediately preceding it on the cheapest path from start to n currently known
+  def find_path(city, start, dir, goal, min_straight, max_straight) do
+    open_set = PrioQ.new() |> PrioQ.add_with_priority({start, dir, 0}, 0)
     came_from = Map.new()
+    g_score = %{{start, dir, 0} => 0}
+    f_score = %{{start, dir, 0} => heuristic(start, goal)}
 
-    # for node n, g_score[n] is the cost of the cheapest path from start to n currently known
-    g_score = %{start => 0}
-
-    # for node n, f_score[n] = g_score[n] + h(n). f_score[n] represents our current best guess as to
-    # how cheap a path could be from start to finish if it goes through n.
-    f_score = %{start => heuristic(start, goal)}
-
-    find_path_recurse(city, goal, open_set, came_from, g_score, f_score)
+    find_path_recurse(city, goal, open_set, came_from, g_score, f_score, min_straight, max_straight)
   end
 
   def new(input) do
@@ -143,20 +125,55 @@ defimpl String.Chars, for: City do
   end
 end
 
+# PrioQ from https://blog.ftes.de/elixir-dijkstras-algorithm-with-priority-queue-f6022d710877
+defmodule PrioQ do
+  defstruct [:set]
+
+  def new(), do: %__MODULE__{set: :gb_sets.empty()}
+  def new([]), do: new()
+  def new([{_prio, _elem} | _] = list), do: %__MODULE__{set: :gb_sets.from_list(list)}
+
+  def add_with_priority(%__MODULE__{} = q, elem, prio) do
+    %{q | set: :gb_sets.add({prio, elem}, q.set)}
+  end
+
+  def size(%__MODULE__{} = q) do
+    :gb_sets.size(q.set)
+  end
+
+  def extract_min(%__MODULE__{} = q) do
+    case :gb_sets.size(q.set) do
+      0 -> :empty
+      _else ->
+        {{prio, elem}, set} = :gb_sets.take_smallest(q.set)
+        {{prio, elem}, %{q | set: set}}
+    end
+  end
+
+  defimpl Inspect do
+    import Inspect.Algebra
+
+    def inspect(%PrioQ{} = q, opts) do
+      concat(["#PrioQ.new(", to_doc(:gb_sets.to_list(q.set), opts), ")"])
+    end
+  end
+end
+
+
 defmodule Main do
-  def part1(input) do
+  def solve(input, min_straight \\ 0, max_straight \\ 3) do
     city = City.new(input)
     city
-    |> City.find_path({0, 0}, :east, {city.width - 1, city.height - 1})
-    |> IO.inspect()
-    |> Enum.map(fn {x, y} -> city.blocks[{x, y}] end)
+    |> City.find_path({0, 0}, :east, {city.width - 1, city.height - 1}, min_straight, max_straight)
+    |> List.delete_at(-1) # don't count the start
+    |> Enum.map(fn {{x, y}, _, _} -> city.blocks[{x, y}] end)
     |> Enum.sum()
   end
 end
 
 input = IO.read(:stdio, :all)
 
-{μsec, result} = :timer.tc(fn -> Main.part1(input) end)
+{μsec, result} = :timer.tc(fn -> Main.solve(input, 0, 3) end)
 IO.puts("Part 1: #{result} (#{μsec / 1000} ms)")
-# {μsec, result} = :timer.tc(fn -> Main.part2(input) end)
-# IO.puts("Part 2: #{result} (#{μsec / 1000} ms)")
+{μsec, result} = :timer.tc(fn -> Main.solve(input, 4, 10) end)
+IO.puts("Part 2: #{result} (#{μsec / 1000} ms)")
