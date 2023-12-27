@@ -110,38 +110,21 @@ defmodule Main do
     |> Enum.map(fn path ->
       path
       |> Enum.reduce(ranges, fn {var, op, val}, ranges ->
-        case op do
-          "<" ->
-            new_ranges =
-              ranges[var]
-              |> Enum.map(fn {min, max} ->
-                cond do
-                  min >= val -> nil
-                  max < val -> {min, max}
-                  min < val and max >= val -> {min, val - 1}
-                end
-              end)
-              |> Enum.filter(fn range -> range != nil end)
+        new_ranges = ranges[var]
+        |> Enum.map(fn {min, max} ->
+          cond do
+            op == "<" and min >= val -> nil
+            op == "<" and max < val -> {min, max}
+            op == "<" and min < val and max >= val -> {min, val - 1}
+            op == ">" and max <= val -> nil
+            op == ">" and min > val -> {min, max}
+            op == ">" and min <= val and max > val -> {val + 1, max}
+            true -> {min, max}
+          end
+        end)
+        |> Enum.reject(&is_nil/1)
 
-            Map.put(ranges, var, new_ranges)
-
-          ">" ->
-            new_ranges =
-              ranges[var]
-              |> Enum.map(fn {min, max} ->
-                cond do
-                  max <= val -> nil
-                  min > val -> {min, max}
-                  min <= val and max > val -> {val + 1, max}
-                end
-              end)
-              |> Enum.filter(fn range -> range != nil end)
-
-            Map.put(ranges, var, new_ranges)
-
-          _ ->
-            ranges
-        end
+        Map.put(ranges, var, new_ranges)
       end)
     end)
   end
