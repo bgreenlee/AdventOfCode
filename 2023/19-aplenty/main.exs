@@ -52,44 +52,97 @@ defmodule Main do
     |> Enum.sum()
   end
 
+    # build a binary tree from the workflows, with "in" as the root
+    # and "A" and "R" as the leaves
+  def build_tree(workflows, wf_or_cond) do
+    # IO.inspect(wf_or_cond)
+    if wf_or_cond == "A" or wf_or_cond == "R" do
+      %{:value => wf_or_cond, :true => nil, :false => nil}
+    else
+      {conds, else_cond} = case wf_or_cond do
+        {conds, else_cond} -> {conds, else_cond}
+        wf -> workflows[wf]
+      end
+      [{var, op, val, true_wf} | conds] = conds
+      %{
+        :value => {var, op, val},
+        :true => build_tree(workflows, true_wf),
+        :false => build_tree(workflows, (if conds == [], do: else_cond, else: {conds, else_cond}))
+      }
+    end
+  end
+
+  # given the above binary tree, find all paths that lead to "A"
+  def find_paths(tree) do
+    case tree do
+      %{:value => "A", :true => nil, :false => nil} -> [[]]
+      %{:value => "R", :true => nil, :false => nil} -> []
+      %{:value => {var, op, val}, :true => true_tree, :false => false_tree} ->
+        true_paths = find_paths(true_tree)
+        false_paths = find_paths(false_tree)
+        {false_op, false_val} = if op == "<", do: {">", val - 1}, else: {"<", val + 1}
+        Enum.map(true_paths, fn path -> [{var, op, val} | path] end) ++
+        Enum.map(false_paths, fn path -> [{var, false_op, false_val} | path] end)
+    end
+  end
+
+  # given the set of paths that lead to "A", and a set of ranges for each variable (x, m, a, s)
+= # filter and subdivide the ranges to only those values that are valid for each path
+  def filter_ranges(paths, ranges) do
+    paths
+    |> Enum.map(fn path ->
+      path
+      |> Enum.reduce(ranges, fn {var, op, val}, ranges ->
+        case op do
+          "<" ->
+            new_ranges = ranges[var]
+              |> Enum.map(fn {min, max} ->
+                cond do
+                  min >= val -> nil
+                  max < val -> {min, max}
+                  min < val and max >= val -> {min, val - 1}
+                end
+              end)
+              |> Enum.filter(fn range -> range != nil end)
+            Map.put(ranges, var, new_ranges)
+          ">" ->
+            new_ranges = ranges[var]
+              |> Enum.map(fn {min, max} ->
+                cond do
+                  max <= val -> nil
+                  min > val -> {min, max}
+                  min <= val and max > val -> {val + 1, max}
+                end
+              end)
+              |> Enum.filter(fn range -> range != nil end)
+            Map.put(ranges, var, new_ranges)
+          _ -> ranges
+        end
+      end)
+    end)
+  end
+
+  # given the output of filter_ranges, calculate the total combinations
+  # for each variable, multiply the number of valid parts for each path
+  # then sum up all the paths
+  def calculate_combinations(path_ranges) do
+    path_ranges
+    |> Enum.map(fn ranges ->
+      ranges
+      |> Enum.map(fn {_var, ranges} -> ranges end)
+      |> Enum.map(fn ranges -> Enum.reduce(ranges, 0, fn {min, max}, acc -> acc + max - min + 1 end) end)
+      |> Enum.product()
+    end)
+    |> Enum.sum()
+  end
+
   def part2(input) do
     [workflows, _parts] = String.split(input, "\n\n")
-    workflows = parse_workflows(workflows)
-    # find all conds that end in "A"
-    options = workflows
-    |> Enum.flat_map(fn {_name, {conds, _}} -> conds end)
-    |> Enum.filter(fn {_, _, _, workflow} -> workflow == "A" end)
-    |> Enum.group_by(fn {var, op, _val, _} -> {var, op} end)
-    |> Enum.map(fn {{var, op}, conds} ->
-      vals = Enum.map(conds, fn {_, _, val, _} -> val end)
-      cond do
-        op == ">" -> {var, 4000 - Enum.min(vals)}
-        op == "<" -> {var, Enum.max(vals) - 1}
-      end
-    end)
-    |> Enum.group_by(fn {var, _} -> var end)
-    |> Enum.map(fn {var, var_vals} -> {var, Enum.sum(Enum.map(var_vals, fn {_, val} -> val end))} end)
-    |> Map.new()
-
-    Map.get(options, "x", 4000) * Map.get(options, "m", 4000) * Map.get(options, "a", 4000) * Map.get(options, "s", 4000)
-    |> IO.inspect()
-
-    # now get all the else clause options
-    # else_clause_options = workflows
-    # |> Enum.filter(fn {_name, {_, else_cond}} -> else_cond == "A" end)
-    # |> Enum.flat_map(fn {_name, {conds, _else_cond}} -> conds end)
-    # |> Enum.group_by(fn {var, op, _val, _} -> {var, op} end)
-    # |> Enum.map(fn {{_var, op}, conds} ->
-    #   vals = Enum.map(conds, fn {_, _, val, _} -> val end)
-    #   cond do
-    #     op == ">" -> Enum.max(vals)
-    #     op == "<" -> 4000 - Enum.min(vals)
-    #   end
-    # end)
-    # |> Enum.product()
-    # |> IO.inspect()
-
-    # main_clause_options * else_clause_options
+    parse_workflows(workflows)
+    |> build_tree("in")
+    |> find_paths()
+    |> filter_ranges(%{"x" => [{1, 4000}], "m" => [{1, 4000}], "a" => [{1, 4000}], "s" => [{1, 4000}]})
+    |> calculate_combinations()
   end
 end
 
