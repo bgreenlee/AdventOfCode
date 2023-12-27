@@ -8,11 +8,14 @@ defmodule Main do
       [_, name, code] = Regex.run(~r/^(\w+)\{(.*?)\}/, line)
       conds = String.split(code, ",")
       else_cond = Enum.at(conds, -1)
-      conds = Enum.drop(conds, -1)
-      |> Enum.map(fn cond ->
-        [_, var, op, val, workflow] = Regex.run(~r/(\w+)([<>])(\d+):(\w+)/, cond)
-        {var, op, String.to_integer(val), workflow}
-      end)
+
+      conds =
+        Enum.drop(conds, -1)
+        |> Enum.map(fn cond ->
+          [_, var, op, val, workflow] = Regex.run(~r/(\w+)([<>])(\d+):(\w+)/, cond)
+          {var, op, String.to_integer(val), workflow}
+        end)
+
       {name, {conds, else_cond}}
     end)
     |> Map.new()
@@ -22,23 +25,30 @@ defmodule Main do
     parts
     |> String.split("\n")
     |> Enum.map(fn line ->
-      [x, m, a, s] = line
-      |> String.split(~r/\D+/, trim: true)
-      |> Enum.map(&String.to_integer/1)
+      [x, m, a, s] =
+        line
+        |> String.split(~r/\D+/, trim: true)
+        |> Enum.map(&String.to_integer/1)
+
       %{"x" => x, "m" => m, "a" => a, "s" => s}
     end)
   end
 
   def process_part(workflows, cur_wf, part) do
     {conds, else_cond} = workflows[cur_wf]
-    next_wf = Enum.find_value(conds, else_cond, fn {var, op, val, workflow} ->
-      cond do
-        op == ">" and part[var] > val -> workflow
-        op == "<" and part[var] < val -> workflow
-        true -> nil
-      end
-    end)
-    if Enum.member?(["A", "R"], next_wf), do: next_wf, else: process_part(workflows, next_wf, part)
+
+    next_wf =
+      Enum.find_value(conds, else_cond, fn {var, op, val, workflow} ->
+        cond do
+          op == ">" and part[var] > val -> workflow
+          op == "<" and part[var] < val -> workflow
+          true -> nil
+        end
+      end)
+
+    if Enum.member?(["A", "R"], next_wf),
+      do: next_wf,
+      else: process_part(workflows, next_wf, part)
   end
 
   def part1(input) do
@@ -52,22 +62,24 @@ defmodule Main do
     |> Enum.sum()
   end
 
-    # build a binary tree from the workflows, with "in" as the root
-    # and "A" and "R" as the leaves
+  # build a binary tree from the workflows
   def build_tree(workflows, wf_or_cond) do
     # IO.inspect(wf_or_cond)
     if wf_or_cond == "A" or wf_or_cond == "R" do
-      %{:value => wf_or_cond, :true => nil, :false => nil}
+      %{:value => wf_or_cond, true => nil, false => nil}
     else
-      {conds, else_cond} = case wf_or_cond do
-        {conds, else_cond} -> {conds, else_cond}
-        wf -> workflows[wf]
-      end
+      {conds, else_cond} =
+        case wf_or_cond do
+          {conds, else_cond} -> {conds, else_cond}
+          wf -> workflows[wf]
+        end
+
       [{var, op, val, true_wf} | conds] = conds
+
       %{
         :value => {var, op, val},
-        :true => build_tree(workflows, true_wf),
-        :false => build_tree(workflows, (if conds == [], do: else_cond, else: {conds, else_cond}))
+        true => build_tree(workflows, true_wf),
+        false => build_tree(workflows, if(conds == [], do: else_cond, else: {conds, else_cond}))
       }
     end
   end
@@ -75,19 +87,24 @@ defmodule Main do
   # given the above binary tree, find all paths that lead to "A"
   def find_paths(tree) do
     case tree do
-      %{:value => "A", :true => nil, :false => nil} -> [[]]
-      %{:value => "R", :true => nil, :false => nil} -> []
-      %{:value => {var, op, val}, :true => true_tree, :false => false_tree} ->
+      %{:value => "A", true => nil, false => nil} ->
+        [[]]
+
+      %{:value => "R", true => nil, false => nil} ->
+        []
+
+      %{:value => {var, op, val}, true => true_tree, false => false_tree} ->
         true_paths = find_paths(true_tree)
         false_paths = find_paths(false_tree)
         {false_op, false_val} = if op == "<", do: {">", val - 1}, else: {"<", val + 1}
+
         Enum.map(true_paths, fn path -> [{var, op, val} | path] end) ++
-        Enum.map(false_paths, fn path -> [{var, false_op, false_val} | path] end)
+          Enum.map(false_paths, fn path -> [{var, false_op, false_val} | path] end)
     end
   end
 
   # given the set of paths that lead to "A", and a set of ranges for each variable (x, m, a, s)
-= # filter and subdivide the ranges to only those values that are valid for each path
+  # filter and subdivide the ranges to only those values that are valid for each path
   def filter_ranges(paths, ranges) do
     paths
     |> Enum.map(fn path ->
@@ -95,7 +112,8 @@ defmodule Main do
       |> Enum.reduce(ranges, fn {var, op, val}, ranges ->
         case op do
           "<" ->
-            new_ranges = ranges[var]
+            new_ranges =
+              ranges[var]
               |> Enum.map(fn {min, max} ->
                 cond do
                   min >= val -> nil
@@ -104,9 +122,12 @@ defmodule Main do
                 end
               end)
               |> Enum.filter(fn range -> range != nil end)
+
             Map.put(ranges, var, new_ranges)
+
           ">" ->
-            new_ranges = ranges[var]
+            new_ranges =
+              ranges[var]
               |> Enum.map(fn {min, max} ->
                 cond do
                   max <= val -> nil
@@ -115,8 +136,11 @@ defmodule Main do
                 end
               end)
               |> Enum.filter(fn range -> range != nil end)
+
             Map.put(ranges, var, new_ranges)
-          _ -> ranges
+
+          _ ->
+            ranges
         end
       end)
     end)
@@ -130,7 +154,9 @@ defmodule Main do
     |> Enum.map(fn ranges ->
       ranges
       |> Enum.map(fn {_var, ranges} -> ranges end)
-      |> Enum.map(fn ranges -> Enum.reduce(ranges, 0, fn {min, max}, acc -> acc + max - min + 1 end) end)
+      |> Enum.map(fn ranges ->
+        Enum.reduce(ranges, 0, fn {min, max}, acc -> acc + max - min + 1 end)
+      end)
       |> Enum.product()
     end)
     |> Enum.sum()
@@ -138,10 +164,16 @@ defmodule Main do
 
   def part2(input) do
     [workflows, _parts] = String.split(input, "\n\n")
+
     parse_workflows(workflows)
     |> build_tree("in")
     |> find_paths()
-    |> filter_ranges(%{"x" => [{1, 4000}], "m" => [{1, 4000}], "a" => [{1, 4000}], "s" => [{1, 4000}]})
+    |> filter_ranges(%{
+      "x" => [{1, 4000}],
+      "m" => [{1, 4000}],
+      "a" => [{1, 4000}],
+      "s" => [{1, 4000}]
+    })
     |> calculate_combinations()
   end
 end
