@@ -1,40 +1,5 @@
 #!/usr/bin/env elixir
 
-
-# PrioQ from https://blog.ftes.de/elixir-dijkstras-algorithm-with-priority-queue-f6022d710877
-defmodule PrioQ do
-  defstruct [:set]
-
-  def new(), do: %__MODULE__{set: :gb_sets.empty()}
-  def new([]), do: new()
-  def new([{_prio, _elem} | _] = list), do: %__MODULE__{set: :gb_sets.from_list(list)}
-
-  def add_with_priority(%__MODULE__{} = q, elem, prio) do
-    %{q | set: :gb_sets.add({prio, elem}, q.set)}
-  end
-
-  def size(%__MODULE__{} = q) do
-    :gb_sets.size(q.set)
-  end
-
-  def extract_min(%__MODULE__{} = q) do
-    case :gb_sets.size(q.set) do
-      0 -> :empty
-      _else ->
-        {{prio, elem}, set} = :gb_sets.take_smallest(q.set)
-        {{prio, elem}, %{q | set: set}}
-    end
-  end
-
-  defimpl Inspect do
-    import Inspect.Algebra
-
-    def inspect(%PrioQ{} = q, opts) do
-      concat(["#PrioQ.new(", to_doc(:gb_sets.to_list(q.set), opts), ")"])
-    end
-  end
-end
-
 defmodule Main do
 
   # parse the map into a Map of {x,y} => char
@@ -87,20 +52,83 @@ defmodule Main do
     end
   end
 
-  def part1(input) do
+  def display(map) do
+    {width, height} = Enum.reduce(map, {0, 0}, fn {{x, y}, _}, {width, height} ->
+      {max(x, width), max(y, height)}
+    end)
+    Enum.reduce(0..(height - 1), "", fn y, acc ->
+      Enum.reduce(0..(width - 1), acc, fn x, acc ->
+        acc <> "#{map[{x, y}]}"
+      end)
+      |> Kernel.<>("\n")
+    end)
+  end
+
+  def part1(input, step_target) do
     map = parse_map(input)
     start = Enum.find_value(map, fn {k, v} -> v == "S" && k end)
 
-    step_target = 64
     find_distances(map, PrioQ.new([{0, start}]), %{start => 0})
     |> Enum.count(fn {_, v} -> v <= step_target and rem(v, 2) == rem(step_target, 2) end)
   end
 
+  # Much help from https://github.com/villuna/aoc23/wiki/A-Geometric-solution-to-advent-of-code-2023,-day-21
+  def part2(input, step_target) do
+    map = parse_map(input)
+    width = Enum.reduce(map, 0, fn {{x, _}, _}, width -> max(x, width) end) + 1
+    half_width = div(width, 2)
+
+    start = Enum.find_value(map, fn {k, v} -> v == "S" && k end)
+
+    map = find_distances(map, PrioQ.new([{0, start}]), %{start => 0})
+
+    even_full = Enum.count(map, fn {_, v} -> rem(v, 2) == 0 end)
+    odd_full = Enum.count(map, fn {_, v} -> rem(v, 2) == 1 end)
+    even_corners = Enum.count(map, fn {_, v} -> v > half_width and rem(v, 2) == 0 end)
+    odd_corners = Enum.count(map, fn {_, v} -> v > half_width and rem(v, 2) == 1 end)
+
+    n = div(step_target - half_width, width)
+    (n + 1) * (n + 1) * odd_full + n * n * even_full - (n + 1) * odd_corners + n * even_corners
+  end
+end
+
+# Priority queue from https://blog.ftes.de/elixir-dijkstras-algorithm-with-priority-queue-f6022d710877
+defmodule PrioQ do
+  defstruct [:set]
+
+  def new(), do: %__MODULE__{set: :gb_sets.empty()}
+  def new([]), do: new()
+  def new([{_prio, _elem} | _] = list), do: %__MODULE__{set: :gb_sets.from_list(list)}
+
+  def add_with_priority(%__MODULE__{} = q, elem, prio) do
+    %{q | set: :gb_sets.add({prio, elem}, q.set)}
+  end
+
+  def size(%__MODULE__{} = q) do
+    :gb_sets.size(q.set)
+  end
+
+  def extract_min(%__MODULE__{} = q) do
+    case :gb_sets.size(q.set) do
+      0 -> :empty
+      _else ->
+        {{prio, elem}, set} = :gb_sets.take_smallest(q.set)
+        {{prio, elem}, %{q | set: set}}
+    end
+  end
+
+  defimpl Inspect do
+    import Inspect.Algebra
+
+    def inspect(%PrioQ{} = q, opts) do
+      concat(["#PrioQ.new(", to_doc(:gb_sets.to_list(q.set), opts), ")"])
+    end
+  end
 end
 
 input = IO.read(:stdio, :all)
 
-{μsec, result} = :timer.tc(fn -> Main.part1(input) end)
+{μsec, result} = :timer.tc(fn -> Main.part1(input, 64) end)
 IO.puts("Part 1: #{result} (#{μsec / 1000} ms)")
-# {μsec, result} = :timer.tc(fn -> Main.part2(input) end)
-# IO.puts("Part 2: #{result} (#{μsec / 1000} ms)")
+{μsec, result} = :timer.tc(fn -> Main.part2(input, 26501365) end)
+IO.puts("Part 2: #{result} (#{μsec / 1000} ms)")
