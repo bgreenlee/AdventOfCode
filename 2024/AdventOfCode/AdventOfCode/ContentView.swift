@@ -10,9 +10,9 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         VStack {
-            Text(HystorianHysteria.part1())
+            Text(HystorianHysteria().part1())
                 .textSelection(.enabled)
-            Text(HystorianHysteria.part2())
+            Text(HystorianHysteria().part2())
                 .textSelection(.enabled)
         }
         .padding()

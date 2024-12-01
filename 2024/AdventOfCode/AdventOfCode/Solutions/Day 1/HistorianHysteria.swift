@@ -7,12 +7,18 @@
 
 import Foundation
 
-struct HystorianHysteria {
-    static func part1() -> String {
+struct HystorianHysteria: Solution {
+    let day = 1
+    var input: [String]
+
+    init() {
+        self.input = Input.load(day: day)
+    }
+
+    func part1() -> String {
         var left: [Int] = []
         var right: [Int] = []
-        let lines = Input.load(day: 1)
-        for line in lines {
+        for line in input {
             let nums = line.split(separator: " ").map { Int($0)! }
             left.append(nums[0])
             right.append(nums[1])
@@ -26,11 +32,10 @@ struct HystorianHysteria {
         return "\(sum)"
     }
 
-    static func part2() -> String {
+    func part2() -> String {
         var left: [Int] = []
         var right: [Int:Int] = [:]
-        let lines = Input.load(day: 1)
-        for line in lines {
+        for line in input {
             let nums = line.split(separator: " ").map { Int($0)! }
             left.append(nums[0])
             right[nums[1], default: 0] += 1
