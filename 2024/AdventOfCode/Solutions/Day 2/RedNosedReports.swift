@@ -49,12 +49,8 @@ struct RedNosedReports: Solution {
             let nums = line.split(separator: " ").map { Int($0)! }
             for i in 0..<nums.count {
                 // remove the element at this index and test the rest
-                let newNums = switch i {
-                    case 0: nums[1..<nums.count]
-                    case nums.count-1: nums[0..<nums.count-1]
-                    default: nums[0..<i] + nums[i+1..<nums.count]
-                }
-                if isSafe(Array(newNums)) {
+                let newNums = nums.enumerated().filter { (j, _) in j != i }.map(\.element)
+                if isSafe(newNums) {
                     numSafe += 1
                     break
                 }
