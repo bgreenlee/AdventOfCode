@@ -4,8 +4,11 @@
 //
 //  Created by Brad Greenlee on 12/1/24.
 //
+import Foundation
 
-protocol Solution {
+protocol Solution: Identifiable {
+    var id: UUID { get }
+    var name: String { get }
     var day: Int { get }
     var input: [String] { get set }
 

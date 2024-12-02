@@ -12,7 +12,8 @@ struct Input {
     static func load(day: Int, name: String = "input") -> [String] {
         do {
             let filePath = Bundle.main.path(forResource: name, ofType: "dat", inDirectory: "Inputs/Day \(day)")!
-            let data = try String(contentsOfFile: filePath, encoding: .utf8)
+            var data = try String(contentsOfFile: filePath, encoding: .utf8)
+            data = data.trimmingCharacters(in: .newlines) // remove trailing newlines
             let lines = data.components(separatedBy: .newlines)
             return lines
         } catch {

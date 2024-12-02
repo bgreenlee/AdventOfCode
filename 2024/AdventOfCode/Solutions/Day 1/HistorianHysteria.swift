@@ -4,10 +4,11 @@
 //
 //  Created by Brad Greenlee on 12/1/24.
 //
-
 import Foundation
 
 struct HystorianHysteria: Solution {
+    let id = UUID()
+    let name = "Historian Hysteria"
     let day = 1
     var input: [String]
 
