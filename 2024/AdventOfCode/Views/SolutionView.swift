@@ -11,15 +11,13 @@ struct SolutionView: View {
 
     var body: some View {
         VStack {
-            Text(solution.part1())
-                .textSelection(.enabled)
-            Text(solution.part2())
-                .textSelection(.enabled)
+            SolutionPartView(solution: solution, part: .part1)
+            SolutionPartView(solution: solution, part: .part2)
         }
         .padding()
     }
 }
 
 #Preview {
-    SolutionView(solution: AnySolution(RedNosedReports()))
+    SolutionView(solution: AnySolution(HistorianHysteria()))
 }

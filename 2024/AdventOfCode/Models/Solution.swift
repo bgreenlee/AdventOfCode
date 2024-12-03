@@ -58,3 +58,8 @@ extension AnySolution: Hashable {
         hasher.combine(id)
     }
 }
+
+enum SolutionPart {
+    case part1
+    case part2
+}

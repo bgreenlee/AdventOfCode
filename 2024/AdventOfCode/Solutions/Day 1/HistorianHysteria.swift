@@ -10,9 +10,22 @@ struct HistorianHysteria: Solution {
     var id = 1
     var name = "Historian Hysteria"
     var input: [String]
+    var executionTime: TimeInterval?
 
     init() {
         self.input = Input.load(day: id)
+    }
+
+    mutating func run(_ part: SolutionPart) -> String {
+        let start = Date()
+        let result = switch part {
+        case .part1:
+            part1()
+        case .part2:
+            part2()
+        }
+        self.executionTime = Date().timeIntervalSince(start)
+        return result
     }
 
     func part1() -> String {
