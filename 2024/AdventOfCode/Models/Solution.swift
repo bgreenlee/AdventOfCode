@@ -12,7 +12,6 @@ protocol Solution: Identifiable {
     var day: Int { get }
     var input: [String] { get set }
 
-    init()
     func part1() -> String
     func part2() -> String
 }

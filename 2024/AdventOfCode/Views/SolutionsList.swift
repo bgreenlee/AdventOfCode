@@ -6,12 +6,16 @@
 //
 import SwiftUI
 
-//struct SolutionsList: View {
-//    var body: some View {
-//        List {
-//            ForEach(solutions) { solution in
-//                Text(solution.name)
-//            }
-//        }
-//    }
-//}
+struct SolutionsList: View {
+    var body: some View {
+        List {
+            ForEach(solutions, id: \.id) { solution in
+                Text(solution.name)
+            }
+        }
+    }
+}
+
+#Preview {
+    SolutionsList()
+}
