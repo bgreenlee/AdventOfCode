@@ -7,13 +7,12 @@
 import Foundation
 
 struct HystorianHysteria: Solution {
-    let id = UUID()
+    let id = 1
     let name = "Historian Hysteria"
-    let day = 1
     var input: [String]
 
     init() {
-        self.input = Input.load(day: day)
+        self.input = Input.load(day: id)
     }
 
     func part1() -> String {

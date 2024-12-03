@@ -7,5 +7,6 @@
 
 @MainActor let solutions: [any Solution] = [
     HystorianHysteria(),
-    RedNosedReports()
+    RedNosedReports(),
+    MullItOver(),
 ]

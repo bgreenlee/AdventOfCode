@@ -7,13 +7,12 @@
 import Foundation
 
 struct RedNosedReports: Solution {
-    let id = UUID()
+    let id = 2
     let name = "Red-Nosed Reports"
-    let day = 2
     var input: [String]
 
     init() {
-        self.input = Input.load(day: day)
+        self.input = Input.load(day: id)
     }
 
     // generate a list of diffs between each number

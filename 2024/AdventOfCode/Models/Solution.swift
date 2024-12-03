@@ -6,10 +6,9 @@
 //
 import Foundation
 
-protocol Solution: Identifiable {
-    var id: UUID { get }
+protocol Solution: Identifiable, Hashable {
+    var id: Int { get } // day
     var name: String { get }
-    var day: Int { get }
     var input: [String] { get set }
 
     func part1() -> String

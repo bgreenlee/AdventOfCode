@@ -9,11 +9,9 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Text(RedNosedReports().part1())
-                .textSelection(.enabled)
-            Text(RedNosedReports().part2())
-                .textSelection(.enabled)
+        HStack {
+            SolutionsList()
+            SolutionView(solution: MullItOver())
         }
         .padding()
     }
