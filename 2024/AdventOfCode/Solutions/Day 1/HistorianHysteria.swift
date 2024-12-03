@@ -6,29 +6,12 @@
 //
 import Foundation
 
-struct HistorianHysteria: Solution {
-    var id = 1
-    var name = "Historian Hysteria"
-    var input: [String]
-    var executionTime: TimeInterval?
-
+class HistorianHysteria: Solution {
     init() {
-        self.input = Input.load(day: id)
+        super.init(id: 1, name: "Historian Hysteria")
     }
 
-    mutating func run(_ part: SolutionPart) -> String {
-        let start = Date()
-        let result = switch part {
-        case .part1:
-            part1()
-        case .part2:
-            part2()
-        }
-        self.executionTime = Date().timeIntervalSince(start)
-        return result
-    }
-
-    func part1() -> String {
+    override func part1() -> String {
         var left: [Int] = []
         var right: [Int] = []
         for line in input {
@@ -45,7 +28,7 @@ struct HistorianHysteria: Solution {
         return "\(sum)"
     }
 
-    func part2() -> String {
+    override func part2() -> String {
         var left: [Int] = []
         var right: [Int:Int] = [:]
         for line in input {

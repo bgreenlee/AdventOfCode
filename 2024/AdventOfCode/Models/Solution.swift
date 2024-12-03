@@ -6,56 +6,44 @@
 //
 import Foundation
 
-protocol Solution: Identifiable, Hashable {
-    var id: Int { get set } // day
-    var name: String { get set }
-    var input: [String] { get set }
+class Solution: Identifiable, Hashable {
+    let id: Int
+    let name: String
+    var input: [String]
+    var executionTime: TimeInterval?
 
-    func part1() -> String
-    func part2() -> String
-}
-
-// this is annoying but necessary for "any Solution" to conform to Identifiable
-struct AnySolution: Solution {
-    private var _solution: any Solution
-
-    init(_ solution: some Solution) {
-        _solution = solution // Automatically casts to “any” type
+    init(id: Int, name: String) {
+        self.id = id
+        self.name = name
+        self.input = Input.load(day: id)
     }
 
-    var id: Int {
-        get { _solution.id }
-        set { _solution.id = newValue }
+    static func == (lhs: Solution, rhs: Solution) -> Bool {
+        return lhs.id == rhs.id
     }
 
-    var name: String {
-        get { _solution.name }
-        set { _solution.name = newValue }
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 
-    var input: [String] {
-        get { _solution.input }
-        set { _solution.input = newValue }
+    func run(_ part: SolutionPart) -> String {
+        let start = Date()
+        let result = switch part {
+        case .part1:
+            part1()
+        case .part2:
+            part2()
+        }
+        self.executionTime = Date().timeIntervalSince(start)
+        return result
     }
 
     func part1() -> String {
-        _solution.part1()
+        return "unimplemented"
     }
 
     func part2() -> String {
-        _solution.part2()
-    }
-}
-
-extension AnySolution: Equatable {
-    static func == (lhs: AnySolution, rhs: AnySolution) -> Bool {
-        return lhs._solution.id == rhs._solution.id
-    }
-}
-
-extension AnySolution: Hashable {
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+        return "unimplemented"
     }
 }
 

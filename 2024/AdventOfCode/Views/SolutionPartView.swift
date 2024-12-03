@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SolutionPartView: View {
-    let solution: AnySolution
+    let solution: Solution
     let part: SolutionPart
 
     var body: some View {
@@ -23,5 +23,5 @@ struct SolutionPartView: View {
 }
 
 #Preview {
-    SolutionPartView(solution: AnySolution(HistorianHysteria()), part: .part1)
+    SolutionPartView(solution: HistorianHysteria(), part: .part1)
 }

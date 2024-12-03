@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct SolutionView: View {
-    let solution: AnySolution
+    let solution: Solution
 
     var body: some View {
         VStack {
@@ -19,5 +19,5 @@ struct SolutionView: View {
 }
 
 #Preview {
-    SolutionView(solution: AnySolution(HistorianHysteria()))
+    SolutionView(solution: HistorianHysteria())
 }

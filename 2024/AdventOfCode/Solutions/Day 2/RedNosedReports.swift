@@ -6,13 +6,9 @@
 //
 import Foundation
 
-struct RedNosedReports: Solution {
-    var id = 2
-    var name = "Red-Nosed Reports"
-    var input: [String]
-
+class RedNosedReports: Solution {
     init() {
-        self.input = Input.load(day: id)
+        super.init(id: 2, name: "Red-Nosed Reports")
     }
 
     // generate a list of diffs between each number
@@ -36,11 +32,11 @@ struct RedNosedReports: Solution {
         return isSafe(nums)
     }
 
-    func part1() -> String {
+    override func part1() -> String {
         return String(input.count(where: isSafeLine))
     }
 
-    func part2() -> String {
+    override func part2() -> String {
         var numSafe = input.count(where: isSafeLine) // these are safe without removing anything
         // test the unsafe lines
         let maybeUnsafe = input.filter { !isSafeLine($0) }

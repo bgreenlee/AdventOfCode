@@ -6,16 +6,12 @@
 //
 import Foundation
 
-struct MullItOver: Solution {
-    var id = 3
-    var name = "Mull It Over"
-    var input: [String]
-
+class MullItOver: Solution {
     init() {
-        self.input = Input.load(day: id)
+        super.init(id: 3, name: "Mull It Over")
     }
 
-    func part1() -> String {
+    override func part1() -> String {
         let matches = input
             .joined()
             .matches(of: /mul\((\d+),(\d+)\)/)
@@ -26,7 +22,7 @@ struct MullItOver: Solution {
         return String(sum)
     }
 
-    func part2() -> String {
+    override func part2() -> String {
         let matches = input
             .joined()
             .matches(of: /do\(\)|don't\(\)|mul\((\d+),(\d+)\)/)

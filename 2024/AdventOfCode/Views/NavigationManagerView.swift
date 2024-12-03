@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct NavigationManagerView: View {
-    @State private var selected: AnySolution?
+    @State private var selected: Solution?
 
     var body: some View {
         NavigationSplitView() {
