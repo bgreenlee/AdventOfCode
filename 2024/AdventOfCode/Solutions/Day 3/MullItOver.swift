@@ -7,8 +7,8 @@
 import Foundation
 
 struct MullItOver: Solution {
-    let id = 3
-    let name = "Mull It Over"
+    var id = 3
+    var name = "Mull It Over"
     var input: [String]
 
     init() {

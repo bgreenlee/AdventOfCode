@@ -9,11 +9,12 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        HStack {
-            SolutionsList()
-            SolutionView(solution: MullItOver())
-        }
-        .padding()
+//        HStack {
+//            SolutionsList()
+//            SolutionView(solution: AnySolution(HistorianHysteria()))
+//        }
+        NavigationManagerView()
+//        .padding()
     }
 }
 

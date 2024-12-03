@@ -6,9 +6,9 @@
 //
 import Foundation
 
-struct HystorianHysteria: Solution {
-    let id = 1
-    let name = "Historian Hysteria"
+struct HistorianHysteria: Solution {
+    var id = 1
+    var name = "Historian Hysteria"
     var input: [String]
 
     init() {

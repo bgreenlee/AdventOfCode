@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct SolutionView: View {
-    let solution: any Solution
+    let solution: AnySolution
 
     var body: some View {
         VStack {
@@ -21,5 +21,5 @@ struct SolutionView: View {
 }
 
 #Preview {
-    SolutionView(solution: RedNosedReports())
+    SolutionView(solution: AnySolution(RedNosedReports()))
 }

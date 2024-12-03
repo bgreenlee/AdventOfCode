@@ -7,8 +7,8 @@
 import Foundation
 
 struct RedNosedReports: Solution {
-    let id = 2
-    let name = "Red-Nosed Reports"
+    var id = 2
+    var name = "Red-Nosed Reports"
     var input: [String]
 
     init() {

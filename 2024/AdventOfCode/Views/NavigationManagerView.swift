@@ -6,16 +6,21 @@
 //
 import SwiftUI
 
-//struct NavigationManagerView<T: Solution>: View {
-//    @State var selected: T = solutions.first!
-//
-//    var body: some View {
-//        NavigationSplitView() {
-//            List(solutions, id: \.id, selection: $selected) { item in
-//                NavigationLink(item.name, value: item.id)
-//            }
-//        } detail: {
-//            SolutionView(solution: selected)
-//        }
-//    }
-//}
+struct NavigationManagerView: View {
+    @State private var sideBarVisibility: NavigationSplitViewVisibility = .doubleColumn
+    @State private var selected: AnySolution?
+
+    var body: some View {
+        NavigationSplitView(columnVisibility: $sideBarVisibility) {
+            List(solutions, id: \.id, selection: $selected) { item in
+                NavigationLink("Day \(item.id): \(item.name)") {
+                    SolutionView(solution: item)
+                        .navigationTitle("Advent of Code - Day \(item.id): \(item.name)")
+                }
+            }
+        } detail: {
+            Text("Please select a day.")
+        }
+        .navigationTitle("Advent of Code")
+    }
+}
