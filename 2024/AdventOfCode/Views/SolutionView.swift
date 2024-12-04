@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct SolutionView: View {
-    let solution: Solution
+    @ObservedObject var solution: Solution
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -22,5 +22,5 @@ struct SolutionView: View {
 }
 
 #Preview {
-    SolutionView(solution: HistorianHysteria())
+    SolutionView(solution: solutions.first!)
 }

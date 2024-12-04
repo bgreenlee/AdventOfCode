@@ -8,9 +8,8 @@
 import SwiftUI
 
 struct SolutionPartView: View {
-    @StateObject var solution: Solution
+    @ObservedObject var solution: Solution
     let part: SolutionPart
-//    @State private var answer: SolutionAnswer?
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -22,9 +21,6 @@ struct SolutionPartView: View {
                 Spacer()
                 Button("Run", systemImage: "play") {
                     solution.run(part)
-                    // we're only using answer to signal a state change
-                    // since updating the solution var doesn't trigger it, as it is a reference
-//                    answer = solution.answers[part]
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.green)
@@ -43,5 +39,5 @@ struct SolutionPartView: View {
 }
 
 #Preview {
-    SolutionPartView(solution: HistorianHysteria(), part: .part1)
+    SolutionPartView(solution: solutions.first!, part: .part1)
 }
