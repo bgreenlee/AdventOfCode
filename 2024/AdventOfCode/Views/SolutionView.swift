@@ -10,11 +10,14 @@ struct SolutionView: View {
     let solution: Solution
 
     var body: some View {
-        VStack {
+        VStack(alignment: .leading) {
+            Text("Select Input")
+                .font(.headline)
+                .padding()
             SolutionPartView(solution: solution, part: .part1)
             SolutionPartView(solution: solution, part: .part2)
         }
-        .padding()
+        .background(.background)
     }
 }
 
