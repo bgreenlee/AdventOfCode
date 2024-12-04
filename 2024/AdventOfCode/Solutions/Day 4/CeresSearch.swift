@@ -20,10 +20,13 @@ struct Grid: Sequence {
         }
     }
 
+    // proxy our iterator to the grid
     func makeIterator() -> Dictionary<point, Character>.Iterator {
         grid.makeIterator()
     }
 
+    // get the character at a given point
+    // return a space if the point is not in the grid
     func at(_ p: point) -> Character {
         grid[p] ?? " "
     }
@@ -54,6 +57,7 @@ struct Grid: Sequence {
         ]
     }
 }
+
 class CeresSearch: Solution {
     init() {
         super.init(id: 4, name: "Ceres Search")
