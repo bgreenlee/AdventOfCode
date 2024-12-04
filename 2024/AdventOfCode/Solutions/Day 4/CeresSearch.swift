@@ -8,7 +8,7 @@
 typealias point = SIMD2<Int>
 typealias vec = SIMD2<Int> // pendantry
 
-struct Grid {
+struct Grid: Sequence {
     private var grid: [point: Character] = [:]
     let width: Int
     let height: Int
@@ -23,6 +23,10 @@ struct Grid {
                 grid[point(x, y)] = chars[x]
             }
         }
+    }
+
+    func makeIterator() -> Dictionary<point, Character>.Iterator {
+        grid.makeIterator()
     }
 
     func at(_ p: point) -> Character {
@@ -55,11 +59,9 @@ class CeresSearch: Solution {
     override func part1() -> String {
         let grid = Grid(input)
         var count = 0
-        for x in 0..<grid.width {
-            for y in 0..<grid.height {
-                if grid.at(point(x, y)) == "X" {
-                    count += grid.words(at: point(x,y)).filter { $0 == "XMAS" }.count
-                }
+        for (p, c) in grid {
+            if c == "X" {
+                count += grid.words(at: p).filter { $0 == "XMAS" }.count
             }
         }
         return String(count)
@@ -68,12 +70,10 @@ class CeresSearch: Solution {
     override func part2() -> String {
         let grid = Grid(input)
         var count = 0
-        for x in 0..<grid.width {
-            for y in 0..<grid.height {
-                if grid.at(point(x, y)) == "A" {
-                    if grid.xwords(at: point(x,y)).allSatisfy({ $0 == "MAS" || $0 == "SAM" }) {
-                        count += 1
-                    }
+        for (p, c) in grid {
+            if c == "A" {
+                if grid.xwords(at: p).allSatisfy({ $0 == "MAS" || $0 == "SAM" }) {
+                    count += 1
                 }
             }
         }
