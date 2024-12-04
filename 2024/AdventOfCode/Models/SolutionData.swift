@@ -9,4 +9,5 @@
     HistorianHysteria(),
     RedNosedReports(),
     MullItOver(),
+    CeresSearch(),
 ]
