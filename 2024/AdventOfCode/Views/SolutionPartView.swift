@@ -29,7 +29,7 @@ struct SolutionPartView: View {
             }
             Text("Answer: \(solution.answers[part]?.answer ?? "")")
                 .textSelection(.enabled)
-            Text("Execution time: \(solution.answers[part] == nil ? "" : "\(solution.answers[part]?.executionTime.milliseconds ?? 0) ms")")
+            Text("Execution time: \(solution.answers[part] == nil ? "" : "\(solution.answers[part]!.executionTime.smartFormatted)")")
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)

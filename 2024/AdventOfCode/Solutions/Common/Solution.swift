@@ -8,7 +8,7 @@ import Foundation
 
 struct SolutionAnswer: Hashable {
     var answer: String
-    var executionTime: TimeInterval
+    var executionTime: Duration
 
     static func == (lhs: SolutionAnswer, rhs: SolutionAnswer) -> Bool {
         return lhs.answer == rhs.answer
@@ -47,16 +47,21 @@ class Solution: ObservableObject, Identifiable, Hashable {
     }
 
     func run(_ part: SolutionPart, file: String) {
-        let start = Date()
+        let clock = ContinuousClock()
         let input = inputs.first(where: { $0.name == file })?.lines ?? []
-        let result = switch part {
+        var result: String = ""
+        var time: Duration
+        switch part {
         case .part1:
-            part1(input)
+            time = clock.measure {
+                result = part1(input)
+            }
         case .part2:
-            part2(input)
+            time = clock.measure {
+                result = part2(input)
+            }
         }
-        self.answers[part] = SolutionAnswer(answer: result, executionTime: Date().timeIntervalSince(start))
-//        self.objectWillChange.send()
+        self.answers[part] = SolutionAnswer(answer: result, executionTime: time)
     }
 
     func part1(_ input: [String]) -> String {
