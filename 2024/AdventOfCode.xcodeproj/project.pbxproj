@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		A222BD902D00CEDC00F539CB /* .swift-format in Resources */ = {isa = PBXBuildFile; fileRef = A222BD8F2D00CED400F539CB /* .swift-format */; };
-		A2A9496B2CFCF839002935C1 /* Inputs in Resources */ = {isa = PBXBuildFile; fileRef = A2A9496A2CFCF839002935C1 /* Inputs */; };
+		A222BD9E2D02591100F539CB /* Inputs in Resources */ = {isa = PBXBuildFile; fileRef = A222BD9D2D02591100F539CB /* Inputs */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,10 +30,10 @@
 
 /* Begin PBXFileReference section */
 		A222BD8F2D00CED400F539CB /* .swift-format */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".swift-format"; sourceTree = "<group>"; };
+		A222BD9D2D02591100F539CB /* Inputs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Inputs; path = AdventOfCode/Resources/Inputs; sourceTree = "<group>"; };
 		A2A949242CFCA57D002935C1 /* AdventOfCode.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AdventOfCode.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2A949352CFCA57E002935C1 /* AdventOfCodeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AdventOfCodeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2A9493F2CFCA57E002935C1 /* AdventOfCodeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AdventOfCodeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		A2A9496A2CFCF839002935C1 /* Inputs */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Inputs; path = AdventOfCode/Resources/Inputs; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -49,6 +49,8 @@
 				"Resources/Inputs/Day 3/test2.dat",
 				"Resources/Inputs/Day 4/input.dat",
 				"Resources/Inputs/Day 4/test.dat",
+				"Resources/Inputs/Day 5/input.dat",
+				"Resources/Inputs/Day 5/test.dat",
 			);
 			target = A2A949232CFCA57D002935C1 /* AdventOfCode */;
 		};
@@ -103,8 +105,8 @@
 		A2A9491B2CFCA57D002935C1 = {
 			isa = PBXGroup;
 			children = (
+				A222BD9D2D02591100F539CB /* Inputs */,
 				A222BD8F2D00CED400F539CB /* .swift-format */,
-				A2A9496A2CFCF839002935C1 /* Inputs */,
 				A2A949262CFCA57D002935C1 /* AdventOfCode */,
 				A2A949382CFCA57E002935C1 /* AdventOfCodeTests */,
 				A2A949422CFCA57E002935C1 /* AdventOfCodeUITests */,
@@ -242,7 +244,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A2A9496B2CFCF839002935C1 /* Inputs in Resources */,
+				A222BD9E2D02591100F539CB /* Inputs in Resources */,
 				A222BD902D00CEDC00F539CB /* .swift-format in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
