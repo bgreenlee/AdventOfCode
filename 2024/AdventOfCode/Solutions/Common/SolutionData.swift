@@ -10,4 +10,5 @@
     RedNosedReports(),
     MullItOver(),
     CeresSearch(),
+    PrintQueue(),
 ]
