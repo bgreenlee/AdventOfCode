@@ -63,7 +63,7 @@ class CeresSearch: Solution {
         super.init(id: 4, name: "Ceres Search")
     }
 
-    override func part1() -> String {
+    override func part1(_ input: [String]) -> String {
         let grid = Grid(input)
         var count = 0
         for (p, c) in grid {
@@ -74,7 +74,7 @@ class CeresSearch: Solution {
         return String(count)
     }
 
-    override func part2() -> String {
+    override func part2(_ input: [String]) -> String {
         let grid = Grid(input)
         var count = 0
         for (p, c) in grid {

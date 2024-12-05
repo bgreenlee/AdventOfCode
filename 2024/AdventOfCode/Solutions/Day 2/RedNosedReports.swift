@@ -32,11 +32,11 @@ class RedNosedReports: Solution {
         return isSafe(nums)
     }
 
-    override func part1() -> String {
+    override func part1(_ input: [String]) -> String {
         return String(input.count(where: isSafeLine))
     }
 
-    override func part2() -> String {
+    override func part2(_ input: [String]) -> String {
         var numSafe = input.count(where: isSafeLine) // these are safe without removing anything
         // test the unsafe lines
         let maybeUnsafe = input.filter { !isSafeLine($0) }

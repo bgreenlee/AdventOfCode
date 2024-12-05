@@ -11,7 +11,7 @@ class HistorianHysteria: Solution {
         super.init(id: 1, name: "Historian Hysteria")
     }
 
-    override func part1() -> String {
+    override func part1(_ input: [String]) -> String {
         var left: [Int] = []
         var right: [Int] = []
         for line in input {
@@ -28,7 +28,7 @@ class HistorianHysteria: Solution {
         return "\(sum)"
     }
 
-    override func part2() -> String {
+    override func part2(_ input: [String]) -> String {
         var left: [Int] = []
         var right: [Int:Int] = [:]
         for line in input {

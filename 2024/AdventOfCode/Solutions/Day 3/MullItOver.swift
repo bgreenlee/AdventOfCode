@@ -11,7 +11,7 @@ class MullItOver: Solution {
         super.init(id: 3, name: "Mull It Over")
     }
 
-    override func part1() -> String {
+    override func part1(_ input: [String]) -> String {
         let matches = input
             .joined()
             .matches(of: /mul\((\d+),(\d+)\)/)
@@ -22,7 +22,7 @@ class MullItOver: Solution {
         return String(sum)
     }
 
-    override func part2() -> String {
+    override func part2(_ input: [String]) -> String {
         let matches = input
             .joined()
             .matches(of: /do\(\)|don't\(\)|mul\((\d+),(\d+)\)/)

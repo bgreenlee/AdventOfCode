@@ -20,10 +20,12 @@ struct SolutionPartView: View {
                     .padding(.bottom)
                 Spacer()
                 Button("Run", systemImage: "play") {
-                    solution.run(part)
+                    solution.run(part, file: solution.selectedInput?.name ?? "input")
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.green)
+                .disabled(solution.selectedInput == nil)
+                .help(solution.selectedInput == nil ? "Select an input file" : "Run the solution")
             }
             Text("Answer: \(solution.answers[part]?.answer ?? "")")
                 .textSelection(.enabled)
@@ -39,5 +41,11 @@ struct SolutionPartView: View {
 }
 
 #Preview {
-    SolutionPartView(solution: solutions.first!, part: .part1)
+    struct Preview: View {
+        @State var selectedInput = solutions.first?.inputs.first
+        var body: some View {
+            SolutionPartView(solution: solutions.first!, part: .part1)
+        }
+    }
+    return Preview()
 }

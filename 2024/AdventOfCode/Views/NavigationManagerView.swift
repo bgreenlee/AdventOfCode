@@ -15,7 +15,7 @@ struct NavigationManagerView: View {
                 NavigationLink("Day \(item.id): \(item.name)") {
                     SolutionView(solution: item)
                         .navigationTitle("Advent of Code - Day \(item.id): \(item.name)")
-                   Spacer()
+                    Spacer()
                 }
             }
             .navigationSplitViewColumnWidth(ideal: 200)
@@ -23,7 +23,7 @@ struct NavigationManagerView: View {
             Text("Please select a day.")
         }
         .navigationTitle("Advent of Code")
-        .background(.white)
+        .background(.background)
     }
 }
 
