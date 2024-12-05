@@ -48,7 +48,7 @@ class Solution: ObservableObject, Identifiable, Hashable {
 
     func run(_ part: SolutionPart, file: String) {
         let clock = ContinuousClock()
-        let input = inputs.first(where: { $0.name == file })?.lines ?? []
+        let input = selectedInput?.lines ?? []
         var result: String = ""
         var time: Duration
         switch part {
