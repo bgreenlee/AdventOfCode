@@ -30,6 +30,12 @@ class Solution: ObservableObject, Identifiable, Hashable {
     let inputs: [Input]
     @Published var selectedInput: Input?
     @Published var answers: [SolutionPart: SolutionAnswer] = [:]
+    var aocUrl: String {
+        return "https://adventofcode.com/2024/day/\(id)"
+    }
+    var githubUrl: String {
+        return "https://github.com/bgreenlee/AdventOfCode/blob/main/2024/AdventOfCode/Solutions/Day%20\(id)/\(String(describing: type(of: self))).swift"
+    }
 
     init(id: Int, name: String) {
         self.id = id

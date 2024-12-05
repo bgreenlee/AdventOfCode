@@ -11,7 +11,11 @@ struct SolutionView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            InputView(solution: solution)
+            HStack(alignment: .top) {
+                InputView(solution: solution)
+                Spacer()
+                LinksView(solution: solution)
+            }
             SolutionPartView(solution: solution, part: .part1)
             SolutionPartView(solution: solution, part: .part2)
         }
