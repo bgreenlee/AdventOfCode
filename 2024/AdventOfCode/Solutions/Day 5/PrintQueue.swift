@@ -16,11 +16,13 @@ class PrintQueue: Solution {
         let splitIndex = input.firstIndex(of: "")!
         let rulesInput = input[..<splitIndex]
         let updatesInput = input[splitIndex.advanced(by: 1)...]
-        let rules = Set(rulesInput.map {
-            let parts = $0.split(separator: "|")
-            return Rule(Int(parts[0])!, Int(parts[1])!)
-        })
-        let updates = updatesInput.map { $0.split(separator: ",").map { Int($0)! }}
+        let rules = Set(
+            rulesInput.map {
+                let parts = $0.split(separator: "|")
+                return Rule(Int(parts[0])!, Int(parts[1])!)
+            }
+        )
+        let updates = updatesInput.map { $0.split(separator: ",").map { Int($0)! } }
         return (rules, updates)
     }
 
