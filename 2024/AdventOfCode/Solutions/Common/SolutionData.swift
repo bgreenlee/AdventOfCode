@@ -11,4 +11,5 @@
     MullItOver(),
     CeresSearch(),
     PrintQueue(),
+    GuardGallivant(),
 ]
