@@ -38,8 +38,8 @@ class GuardGallivant: Solution {
 
         while map[guardPos] != nil {
             map[guardPos] = "v"
-            guard !visited[guardPos, default: Set()].contains(direction) else {
-                return (map, true)
+            if visited[guardPos, default: Set()].contains(direction) {
+                return (map, true) // found a loop
             }
             visited[guardPos, default: Set()].insert(direction)
             let newPos = guardPos &+ direction
