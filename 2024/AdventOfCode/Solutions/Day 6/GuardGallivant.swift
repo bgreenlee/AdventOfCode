@@ -62,7 +62,7 @@ class GuardGallivant: Solution {
     override func part2(_ input: [String]) -> String {
         var (map, guardPos) = parseInput(input)
         var numLoops = 0
-        (map, _) = runMap(map, guardPos: guardPos) // initial run to populated visited points
+        (map, _) = runMap(map, guardPos: guardPos) // initial run to populate visited points
         let visitedPoints = map.keys.filter { map[$0] == "v" && $0 != guardPos }
         // for each of the visitedPoints, try creating an obstruction and see if a loop is detected
         for point in visitedPoints {
