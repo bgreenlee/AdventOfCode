@@ -34,14 +34,14 @@ class GuardGallivant: Solution {
         var map = map
         var guardPos = guardPos
         var direction = direction
-        var visited: [Point:Set<Direction>] = [:]
+        var visited: [Point:[Direction]] = [:]
 
         while map[guardPos] != nil {
             map[guardPos] = "v"
-            if visited[guardPos, default: Set()].contains(direction) {
+            if visited[guardPos, default: []].contains(direction) {
                 return (map, true) // found a loop
             }
-            visited[guardPos, default: Set()].insert(direction)
+            visited[guardPos, default: []].append(direction)
             let newPos = guardPos &+ direction
             if map[newPos] == "#" {
                 direction = Direction(-direction.y, direction.x) // rotate right 90 deg
