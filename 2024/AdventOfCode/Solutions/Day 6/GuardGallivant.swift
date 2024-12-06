@@ -6,7 +6,7 @@
 //
 
 typealias Point = SIMD2<Int>
-typealias Vec = SIMD2<Int>
+typealias Direction = SIMD2<Int>
 
 class GuardGallivant: Solution {
     init() {
@@ -30,11 +30,11 @@ class GuardGallivant: Solution {
     }
 
     // run through the given map, returning the updated map and whether a loop was detected
-    func runMap(_ map: [Point: Character], guardPos: Point, direction: Vec = Vec(0, -1)) -> ([Point: Character], Bool) {
+    func runMap(_ map: [Point: Character], guardPos: Point, direction: Direction = Direction(0, -1)) -> ([Point: Character], Bool) {
         var map = map
         var guardPos = guardPos
         var direction = direction
-        var visited: [Point:Set<Vec>] = [:]
+        var visited: [Point:Set<Direction>] = [:]
 
         while map[guardPos] != nil {
             map[guardPos] = "v"
@@ -44,7 +44,7 @@ class GuardGallivant: Solution {
             visited[guardPos, default: Set()].insert(direction)
             let newPos = guardPos &+ direction
             if map[newPos] == "#" {
-                direction = Vec(-direction.y, direction.x) // rotate right 90 deg
+                direction = Direction(-direction.y, direction.x) // rotate right 90 deg
             } else {
                 guardPos = newPos
             }
