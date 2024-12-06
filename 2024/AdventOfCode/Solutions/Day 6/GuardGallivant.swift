@@ -29,43 +29,44 @@ class GuardGallivant: Solution {
         return (map, guardPos)
     }
 
-    // run through the given map, returning the updated map and whether a loop was detected
-    func runMap(_ map: [Point: Character], guardPos: Point, direction: Direction = Direction(0, -1)) -> ([Point: Character], Bool) {
-        var map = map
+    // run through the given map, returning the list of visited points and whether a loop was detected
+    func runMap(_ map: [Point: Character], guardPos: Point, dir: Direction = Direction(0, -1))
+        -> ([Point], Bool)
+    {
         var guardPos = guardPos
-        var direction = direction
-        var visited: [Point:[Direction]] = [:]
+        var dir = dir
+        var visited: [Point: [Direction]] = [:]
 
         while map[guardPos] != nil {
-            map[guardPos] = "v"
-            if visited[guardPos, default: []].contains(direction) {
-                return (map, true) // found a loop
+            if visited[guardPos, default: []].contains(dir) {
+                return (Array(visited.keys), true)  // found a loop
             }
-            visited[guardPos, default: []].append(direction)
-            let newPos = guardPos &+ direction
+            visited[guardPos, default: []].append(dir)
+            let newPos = guardPos &+ dir
             if map[newPos] == "#" {
-                direction = Direction(-direction.y, direction.x) // rotate right 90 deg
+                dir = Direction(-dir.y, dir.x)  // rotate right 90 deg
             } else {
                 guardPos = newPos
             }
         }
 
-        return (map, false)
+        return (Array(visited.keys), false)
     }
 
     override func part1(_ input: [String]) -> String {
-        var (map, guardPos) = parseInput(input)
-        (map, _) = runMap(map, guardPos: guardPos)
-        return String(map.values.filter { $0 == "v" }.count)
+        let (map, guardPos) = parseInput(input)
+        let (visitedPoints, _) = runMap(map, guardPos: guardPos)
+
+        return String(visitedPoints.count)
     }
 
     override func part2(_ input: [String]) -> String {
-        var (map, guardPos) = parseInput(input)
-        var numLoops = 0
-        (map, _) = runMap(map, guardPos: guardPos) // initial run to populate visited points
-        let visitedPoints = map.keys.filter { map[$0] == "v" && $0 != guardPos }
+        let (map, guardPos) = parseInput(input)
+        let (visitedPoints, _) = runMap(map, guardPos: guardPos)  // initial run to populate visited points
+
         // for each of the visitedPoints, try creating an obstruction and see if a loop is detected
-        for point in visitedPoints {
+        var numLoops = 0
+        for point in visitedPoints.filter({ $0 != guardPos }) {
             var newMap = map
             newMap[point] = "#"
             let (_, loopDetected) = runMap(newMap, guardPos: guardPos)
