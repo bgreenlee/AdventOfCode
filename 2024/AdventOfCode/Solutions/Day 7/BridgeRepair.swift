@@ -10,19 +10,19 @@ class BridgeRepair: Solution {
         super.init(id: 7, name: "Bridge Repair")
     }
 
-    func parseInput(_ input: [String]) -> [(UInt, [UInt])] {
-        var equations: [(UInt, [UInt])] = []
+    func parseInput(_ input: [String]) -> [(Int, [Int])] {
+        var equations: [(Int, [Int])] = []
         for line in input {
             let parts = line.split(separator: ": ")
-            let testValue = UInt(parts[0])!
-            let numbers = parts[1].split(separator: " ").map { UInt($0)! }
+            let testValue = Int(parts[0])!
+            let numbers = parts[1].split(separator: " ").map { Int($0)! }
             equations.append((testValue, numbers))
         }
         return equations
     }
 
     struct OperatorCombinationsGenerator {
-        private var cache: [UInt: [[Character]]] = [:]  // cache of results for each k
+        private var cache: [Int: [[Character]]] = [:]  // cache of results for each k
         private let operators: [Character]
 
         init(_ operators: [Character]) {
@@ -30,7 +30,7 @@ class BridgeRepair: Solution {
         }
 
         // generate all combinations of operators filling k slots
-        mutating func generate(_ k: UInt) -> [[Character]] {
+        mutating func generate(_ k: Int) -> [[Character]] {
             if let cached = cache[k] {
                 return cached
             }
@@ -55,16 +55,16 @@ class BridgeRepair: Solution {
     }
 
     // given a list of n numbers and n - 1 operators, calculate the result
-    func calculate(_ numbers: [UInt], _ operators: [Character]) -> UInt {
+    func calculate(_ numbers: [Int], _ operators: [Character]) -> Int {
         guard numbers.count - operators.count == 1 else { return 0 }
 
-        var result: UInt = 0
+        var result = 0
         let operators = ["+"] + operators // add a leading + so that we can zip
         for (num, op) in zip(numbers, operators) {
             switch op {
             case "+": result += num
             case "*": result *= num
-            case "|": result = UInt(String(result) + String(num))!
+            case "|": result = Int(String(result) + String(num))!
             default: break
             }
         }
@@ -73,11 +73,11 @@ class BridgeRepair: Solution {
 
     // given a list of equations and a set of operators, return the sum of all equations
     // that can be satisfied by some combination of operators
-    func scoreValidValues(_ equations: [(UInt, [UInt])], _ operators: [Character]) -> UInt {
+    func scoreValidValues(_ equations: [(Int, [Int])], _ operators: [Character]) -> Int {
         var opGenerator = OperatorCombinationsGenerator(operators)
-        var result: UInt = 0
+        var result = 0
         for (testValue, numbers) in equations {
-            for ops in opGenerator.generate(UInt(numbers.count) - 1) {
+            for ops in opGenerator.generate(numbers.count - 1) {
                 if calculate(numbers, ops) == testValue {
                     result += testValue
                     break
