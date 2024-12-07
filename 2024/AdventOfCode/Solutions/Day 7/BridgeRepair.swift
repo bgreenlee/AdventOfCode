@@ -34,9 +34,13 @@ class BridgeRepair: Solution {
         let n = numbers[0]
         let rest = Array(numbers[1...])
 
-        return operators.map { op in
-            solve(op(acc, n), result, rest, operators)
-        }.first(where: { $0 > 0 }) ?? 0
+        for op in operators {
+            let result = solve(op(acc, n), result, rest, operators)
+            if result > 0 {
+                return result
+            }
+        }
+        return 0
     }
 
     override func part1(_ input: [String]) -> String {
