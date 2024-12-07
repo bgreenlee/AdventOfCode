@@ -21,83 +21,37 @@ class BridgeRepair: Solution {
         return equations
     }
 
-    struct OperatorCombinationsGenerator {
-        private var cache: [Int: [[Character]]] = [:]  // cache of results for each k
-        private let operators: [Character]
-
-        init(_ operators: [Character]) {
-            self.operators = operators
-        }
-
-        // generate all combinations of operators filling k slots
-        mutating func generate(_ k: Int) -> [[Character]] {
-            if let cached = cache[k] {
-                return cached
-            }
-
-            // base cases
-            guard k > 0 else { return [] }
-            if k == 1 {
-                let result = operators.map { [$0] }
-                cache[1] = result
-                return result
-            }
-
-            // get combinations for k-1 positions and append each operator
-            let previousCombos = generate(k - 1)
-            let result = previousCombos.flatMap { combo in
-                operators.map { op in
-                    combo + [op]
-                }
-            }
-
-            cache[k] = result
-            return result
-        }
+    func concat(_ a: Int, _ b: Int) -> Int {
+        Int(String(a) + String(b))!
     }
 
-    // given a list of n numbers and n - 1 operators, calculate the result
-    func calculate(_ numbers: [Int], _ operators: [Character]) -> Int {
-        guard numbers.count - operators.count == 1 else { return 0 }
-
-        var result = 0
-        let operators = ["+"] + operators  // add a leading + so that we can zip
-        for (num, op) in zip(numbers, operators) {
-            switch op {
-            case "+": result += num
-            case "*": result *= num
-            case "|": result = Int(String(result) + String(num))!
-            default: break
-            }
+    // mcfunley's clever solution
+    func solve(_ acc: Int, _ result: Int, _ numbers: [Int], _ operators: [(Int, Int) -> Int]) -> Int {
+        if numbers.isEmpty {
+            return acc == result ? result : 0
         }
-        return result
-    }
-
-    // given a list of equations and a set of operators, return the sum of all equations
-    // that can be satisfied by some combination of operators
-    func scoreValidValues(_ equations: [(Int, [Int])], _ operators: [Character]) -> Int {
-        var opGenerator = OperatorCombinationsGenerator(operators)
-        var result = 0
-        for (testValue, numbers) in equations {
-            for ops in opGenerator.generate(numbers.count - 1) {
-                if calculate(numbers, ops) == testValue {
-                    result += testValue
-                    break
-                }
-            }
-        }
-        return result
+        let n = numbers[0]
+        let rest = Array(numbers[1...])
+        return operators.map { op in
+            solve(op(acc, n), result, rest, operators)
+        }.max()!
     }
 
     override func part1(_ input: [String]) -> String {
         let equations = parseInput(input)
-        let result = scoreValidValues(equations, ["+", "*"])
+        var result = 0
+        for (testValue, numbers) in equations {
+            result += solve(numbers[0], testValue, Array(numbers[1...]), [(+), (*)])
+        }
         return String(result)
     }
 
     override func part2(_ input: [String]) -> String {
         let equations = parseInput(input)
-        let result = scoreValidValues(equations, ["+", "*", "|"])
+        var result = 0
+        for (testValue, numbers) in equations {
+            result += solve(numbers[0], testValue, Array(numbers[1...]), [(+), (*), concat])
+        }
         return String(result)
     }
 }
