@@ -35,21 +35,23 @@ class BridgeRepair: Solution {
                 return cached
             }
 
+            // base cases
             guard k > 0 else { return [] }
-
-            var result = operators.map { [$0] }
-
-            cache[1] = result  // cache single-operator result
-
-            for length in 2...k {
-                result = result.flatMap { combo in
-                    operators.map { op in
-                        combo + [op]
-                    }
-                }
-                cache[length] = result
+            if k == 1 {
+                let result = operators.map { [$0] }
+                cache[1] = result
+                return result
             }
 
+            // get combinations for k-1 positions and append each operator
+            let previousCombos = generate(k - 1)
+            let result = previousCombos.flatMap { combo in
+                operators.map { op in
+                    combo + [op]
+                }
+            }
+
+            cache[k] = result
             return result
         }
     }
@@ -59,7 +61,7 @@ class BridgeRepair: Solution {
         guard numbers.count - operators.count == 1 else { return 0 }
 
         var result = 0
-        let operators = ["+"] + operators // add a leading + so that we can zip
+        let operators = ["+"] + operators  // add a leading + so that we can zip
         for (num, op) in zip(numbers, operators) {
             switch op {
             case "+": result += num
