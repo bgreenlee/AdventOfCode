@@ -67,9 +67,8 @@ class BridgeRepair: Solution {
         return result
     }
 
-    override func part1(_ input: [String]) -> String {
-        let equations = parseInput(input)
-        var opGenerator = OperatorCombinationsGenerator(["+", "*"])
+    func scoreValidValues(equations: [(Int, [Int])], operators: [Character]) -> Int {
+        var opGenerator = OperatorCombinationsGenerator(operators)
         var result = 0
         for (testValue, numbers) in equations {
             for ops in opGenerator.generate(numbers.count - 1) {
@@ -79,21 +78,16 @@ class BridgeRepair: Solution {
                 }
             }
         }
-        return String(result)
+        return result
+    }
+
+    override func part1(_ input: [String]) -> String {
+        let equations = parseInput(input)
+        return String(scoreValidValues(equations: equations, operators: ["+", "*"]))
     }
 
     override func part2(_ input: [String]) -> String {
         let equations = parseInput(input)
-        var opGenerator = OperatorCombinationsGenerator(["+", "*", "|"])
-        var result = 0
-        for (testValue, numbers) in equations {
-            for ops in opGenerator.generate(numbers.count - 1) {
-                if calculate(numbers, ops) == testValue {
-                    result += testValue
-                    break
-                }
-            }
-        }
-        return String(result)
+        return String(scoreValidValues(equations: equations, operators: ["+", "*", "|"]))
     }
 }
