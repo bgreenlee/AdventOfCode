@@ -12,4 +12,5 @@
     CeresSearch(),
     PrintQueue(),
     GuardGallivant(),
+    BridgeRepair(),
 ]
