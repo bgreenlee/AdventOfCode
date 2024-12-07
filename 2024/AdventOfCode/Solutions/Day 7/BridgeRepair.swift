@@ -21,21 +21,36 @@ class BridgeRepair: Solution {
         return equations
     }
 
-    // generate all combinations of operators filling k positions
-    func generate(_ operators: [Character], _ k: Int) -> [[Character]] {
-        guard k > 0 else { return [] }
+    struct OperatorCombinationsGenerator {
+        private var cache: [Int: [[Character]]] = [:] // cache of results for each k
+        private let operators: [Character]
 
-        var result = operators.map { [$0] }
-
-        for _ in 1..<k {
-            result = result.flatMap { combo in
-                operators.map { op in
-                    combo + [op]
-                }
-            }
+        init(_ operators: [Character]) {
+            self.operators = operators
         }
 
-        return result
+        mutating func generate(_ k: Int) -> [[Character]] {
+            if let cached = cache[k] {
+                return cached
+            }
+
+            guard k > 0 else { return [] }
+
+            var result = operators.map { [$0] }
+
+            cache[1] = result // cache single-operator result
+
+            for length in 2...k {
+                result = result.flatMap { combo in
+                    operators.map { op in
+                        combo + [op]
+                    }
+                }
+                cache[length] = result
+            }
+
+            return result
+        }
     }
 
     func calculate(_ numbers: [Int], _ operators: [Character]) -> Int {
@@ -54,11 +69,11 @@ class BridgeRepair: Solution {
 
     override func part1(_ input: [String]) -> String {
         let equations = parseInput(input)
-        let operators: [Character] = ["+", "*"]
+        var opGenerator = OperatorCombinationsGenerator(["+", "*"])
         var result = 0
         for (testValue, numbers) in equations {
-            for opPermutation in generate(operators, numbers.count - 1) {
-                if calculate(numbers, opPermutation) == testValue {
+            for ops in opGenerator.generate(numbers.count - 1) {
+                if calculate(numbers, ops) == testValue {
                     result += testValue
                     break
                 }
@@ -69,11 +84,11 @@ class BridgeRepair: Solution {
 
     override func part2(_ input: [String]) -> String {
         let equations = parseInput(input)
-        let operators: [Character] = ["+", "*", "|"]
+        var opGenerator = OperatorCombinationsGenerator(["+", "*", "|"])
         var result = 0
         for (testValue, numbers) in equations {
-            for opPermutation in generate(operators, numbers.count - 1) {
-                if calculate(numbers, opPermutation) == testValue {
+            for ops in opGenerator.generate(numbers.count - 1) {
+                if calculate(numbers, ops) == testValue {
                     result += testValue
                     break
                 }
