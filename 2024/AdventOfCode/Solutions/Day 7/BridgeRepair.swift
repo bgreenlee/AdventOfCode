@@ -26,15 +26,17 @@ class BridgeRepair: Solution {
     }
 
     // mcfunley's clever solution
-    func solve(_ acc: Int, _ result: Int, _ numbers: [Int], _ operators: [(Int, Int) -> Int]) -> Int {
+    func solve(_ acc: Int, _ result: Int, _ numbers: [Int], _ operators: [(Int, Int) -> Int]) -> Int
+    {
         if numbers.isEmpty {
             return acc == result ? result : 0
         }
         let n = numbers[0]
         let rest = Array(numbers[1...])
+
         return operators.map { op in
             solve(op(acc, n), result, rest, operators)
-        }.max()!
+        }.first(where: { $0 > 0 }) ?? 0
     }
 
     override func part1(_ input: [String]) -> String {
