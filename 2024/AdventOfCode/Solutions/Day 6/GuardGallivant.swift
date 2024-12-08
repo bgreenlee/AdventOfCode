@@ -6,13 +6,13 @@
 //
 import Dispatch
 
-typealias Point = SIMD2<Int>
-typealias Direction = SIMD2<Int>
-
 class GuardGallivant: Solution {
     init() {
         super.init(id: 6, name: "Guard Gallivant")
     }
+
+    typealias Point = SIMD2<Int>
+    typealias Direction = SIMD2<Int>
 
     // parse the input into a dict of Point -> Character, and
     // return a tuple of that and the position of the guard

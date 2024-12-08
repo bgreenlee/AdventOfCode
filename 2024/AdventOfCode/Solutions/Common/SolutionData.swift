@@ -13,4 +13,5 @@
     PrintQueue(),
     GuardGallivant(),
     BridgeRepair(),
+    ResonantCollinearity()
 ]
