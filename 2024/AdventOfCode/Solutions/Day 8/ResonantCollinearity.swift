@@ -5,6 +5,8 @@
 //  Created by Brad Greenlee on 12/8/24.
 //
 
+import Algorithms
+
 typealias Point = SIMD2<Int>
 extension Point {
     // greatest common divisor
@@ -62,14 +64,12 @@ class ResonantCollinearity: Solution {
         let map = Map(input)
         var antinodes: Set<Point> = []
         for (_, points) in map.antennae {
-            for i in 0..<points.count - 1 {
-                for j in i + 1..<points.count {
-                    let possibleAntinodes = [
-                        points[i] &- 2 &* (points[i] &- points[j]),
-                        points[j] &- 2 &* (points[j] &- points[i]),
-                    ]
-                    antinodes.formUnion(possibleAntinodes.filter { map.contains($0) })
-                }
+            for pair in points.combinations(ofCount: 2) {
+                let possibleAntinodes = [
+                    pair[0] &- 2 &* (pair[0] &- pair[1]),
+                    pair[1] &- 2 &* (pair[1] &- pair[0]),
+                ]
+                antinodes.formUnion(possibleAntinodes.filter { map.contains($0) })
             }
         }
         return String(antinodes.count)
@@ -79,24 +79,22 @@ class ResonantCollinearity: Solution {
         let map = Map(input)
         var antinodes: Set<Point> = []
         for (_, points) in map.antennae {
-            for i in 0..<points.count - 1 {
-                for j in i + 1..<points.count {
-                    // normalize the distance between the two points, e.g. (3,3) -> (1,1)
-                    // note however that there are no cases in my input where this case arises
-                    // leaving it in though for correctness' sake
-                    let dist = (points[i] &- points[j]).normalized
-                    // generate antinodes up/left
-                    var antinode = points[i]
-                    while(map.contains(antinode)) {
-                        antinodes.insert(antinode)
-                        antinode &-= dist
-                    }
-                    // generate antinodes down/right
-                    antinode = points[i]
-                    while(map.contains(antinode)) {
-                        antinodes.insert(antinode)
-                        antinode &+= dist
-                    }
+            for pair in points.combinations(ofCount: 2) {
+                // normalize the distance between the two points, e.g. (3,3) -> (1,1)
+                // note however that there are no cases in my input where this case arises
+                // leaving it in though for correctness' sake
+                let dist = (pair[0] &- pair[1]).normalized
+                // generate antinodes up/left
+                var antinode = pair[0]
+                while(map.contains(antinode)) {
+                    antinodes.insert(antinode)
+                    antinode &-= dist
+                }
+                // generate antinodes down/right
+                antinode = pair[0]
+                while(map.contains(antinode)) {
+                    antinodes.insert(antinode)
+                    antinode &+= dist
                 }
             }
         }
