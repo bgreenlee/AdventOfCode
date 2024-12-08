@@ -23,7 +23,7 @@ extension Point {
 
     // reduce distance to its GCD (e.g. (3,3) -> (1,1))
     var normalized: Point {
-        self / gcd()
+        self / abs(gcd())
     }
 }
 
@@ -81,6 +81,9 @@ class ResonantCollinearity: Solution {
         for (_, points) in map.antennae {
             for i in 0..<points.count - 1 {
                 for j in i + 1..<points.count {
+                    // normalize the distance between the two points, e.g. (3,3) -> (1,1)
+                    // note however that there are no cases in my input where this case arises
+                    // leaving it in though for correctness' sake
                     let dist = (points[i] &- points[j]).normalized
                     // generate antinodes up/left
                     var antinode = points[i]
