@@ -16,14 +16,14 @@ struct SolutionPartView: View {
             HStack(alignment: .top) {
                 Text("\(part.rawValue)")
                     .multilineTextAlignment(.leading)
-                    .font(.title2)
+                    .font(Font.custom("Source Code Pro", size: 18))
                     .padding(.bottom)
                 Spacer()
                 Button("Run", systemImage: "play") {
                     solution.run(part, file: solution.selectedInput?.name ?? "input")
                 }
                 .buttonStyle(.borderedProminent)
-                .tint(.green)
+                .tint(.textForeground)
                 .disabled(solution.selectedInput == nil)
                 .help(solution.selectedInput == nil ? "Select an input file" : "Run the solution")
             }

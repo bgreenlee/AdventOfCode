@@ -12,19 +12,20 @@ struct InputView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
+            Text("Input file")
+                .font(Font.custom("Source Code Pro", size: 16))
             Picker(selection: $solution.selectedInput) {
                 ForEach(solution.inputs) { input in
                     Text(input.name).tag(input)
                 }
-            } label: {
-                Text("Input file:")
-                    .font(.title2)
-            }
-            .pickerStyle(.palette)
+            } label: { }
+            .pickerStyle(.segmented)
             .fixedSize()
+            .font(Font.custom("Source Code Pro", size: 16))
+            .colorMultiply(.textForeground)
         }
         .padding()
-        .background(.background)
+//        .background(.background)
     }
 }
 

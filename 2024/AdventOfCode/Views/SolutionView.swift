@@ -19,7 +19,7 @@ struct SolutionView: View {
             SolutionPartView(solution: solution, part: .part1)
             SolutionPartView(solution: solution, part: .part2)
         }
-        .background(.background)
+//        .background(.black)
         .onChange(of: solution, initial: true) {
             // make sure something is selected in the picker
             if solution.selectedInput == nil {

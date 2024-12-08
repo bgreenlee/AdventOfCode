@@ -25,7 +25,7 @@ class BridgeRepair: Solution {
         Int(String(a) + String(b))!
     }
 
-    // mcfunley's clever solution
+    // based on mcfunley's clever solution
     func solve(_ acc: Int, _ result: Int, _ numbers: [Int], _ operators: [(Int, Int) -> Int]) -> Int
     {
         if numbers.isEmpty {
