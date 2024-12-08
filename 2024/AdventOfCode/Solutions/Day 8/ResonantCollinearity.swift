@@ -88,7 +88,7 @@ class ResonantCollinearity: Solution {
                         antinodes.insert(antinode)
                         antinode &-= dist
                     }
-                    // generate aninodes down/right
+                    // generate antinodes down/right
                     antinode = points[i]
                     while(map.contains(antinode)) {
                         antinodes.insert(antinode)
