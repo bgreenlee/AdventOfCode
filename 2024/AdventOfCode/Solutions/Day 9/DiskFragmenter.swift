@@ -18,10 +18,8 @@ class DiskFragmenter: Solution {
         var description: String {
             fileId == nil ? ".(\(pos),\(size))" : "\(fileId!)(\(pos),\(size))"
         }
-
-        func isFree() -> Bool {
-            fileId == nil
-        }
+        var isFree: Bool { fileId == nil }
+        var isFile: Bool { fileId != nil }
     }
 
     func parseInput(_ input: [String]) -> [Int] {
@@ -42,8 +40,8 @@ class DiskFragmenter: Solution {
         // compact free space
         // find next free block, then swap that with the last file block
         for i in 0..<memory.count {
-            if memory[i].isFree() {
-                let lastFileBlockIndex = memory.lastIndex(where: { !$0.isFree() })
+            if memory[i].isFree {
+                let lastFileBlockIndex = memory.lastIndex(where: \.isFile)
                 if lastFileBlockIndex! < i {
                     break
                 }
