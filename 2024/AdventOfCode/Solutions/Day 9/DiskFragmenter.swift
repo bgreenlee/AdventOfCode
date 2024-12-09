@@ -8,7 +8,7 @@ import Collections
 
 class DiskFragmenter: Solution {
     init() {
-        super.init(id: 9, name: "Disk Fragmenter", hasDisplay: true)
+        super.init(id: 9, name: "Disk Fragmenter")
     }
 
     struct Block: CustomStringConvertible {
@@ -46,11 +46,10 @@ class DiskFragmenter: Solution {
                     break
                 }
                 memory[i] = memory[lastFileBlockIndex!]
-                memory[lastFileBlockIndex!] = Block()
+                memory[lastFileBlockIndex!].fileId = nil // free it
             }
         }
 
-        self.display[.part1] = "\(memory)"
         let checksum = memory.enumerated().reduce(0) { (acc, tuple) in
             let (i, block) = tuple
             return acc + i * (block.fileId ?? 0)
@@ -84,7 +83,6 @@ class DiskFragmenter: Solution {
             }
         }
 
-        self.display[.part2] = "\(files.sorted { $0.pos < $1.pos })"
         let checksum = files.sorted { $0.pos < $1.pos }.reduce(0) { (acc, b) in
             let sum = b.fileId! * (2 * b.pos + b.size - 1) * b.size / 2
             return acc + sum
