@@ -4,6 +4,7 @@
 //
 //  Created by Brad Greenlee on 12/9/24.
 //
+import Collections
 
 class DiskFragmenter: Solution {
     init() {
@@ -12,8 +13,10 @@ class DiskFragmenter: Solution {
 
     struct Block: CustomStringConvertible {
         var fileId: Int?
+        var pos: Int = 0
+        var size: Int = 0
         var description: String {
-            fileId == nil ? "." : String(fileId!)
+            fileId == nil ? ".(\(pos),\(size))" : "\(fileId!)(\(pos),\(size))"
         }
 
         func isFree() -> Bool {
@@ -49,15 +52,45 @@ class DiskFragmenter: Solution {
             }
         }
 
-//        self.display[.part1] = "\(memory)"
+        self.display[.part1] = "\(memory)"
         let checksum = memory.enumerated().reduce(0) { (acc, tuple) in
             let (i, block) = tuple
-            return block.isFree() ? acc : acc + i * block.fileId!
+            return acc + i * (block.fileId ?? 0)
         }
         return String(checksum)
     }
 
     override func part2(_ input: [String]) -> String {
-        return ""
+        let diskmap = parseInput(input)
+        var files : [Block] = []
+        var freeSpace : [Block] = []
+        var pos = 0
+        for (i, n) in diskmap.enumerated() {
+            if i % 2 == 0 {
+                files.append(Block(fileId: i / 2, pos: pos, size: n))
+            } else {
+                freeSpace.append(Block(pos: pos, size: n))
+            }
+            pos += n
+        }
+
+        for i in (0..<files.count).reversed() {
+            for j in 0..<freeSpace.count {
+                if files[i].pos < freeSpace[j].pos { break } // only look at memory to our left
+                if files[i].size <= freeSpace[j].size {
+                    files[i].pos = freeSpace[j].pos // "move" file
+                    freeSpace[j].size -= files[i].size
+                    freeSpace[j].pos += files[i].size
+                    break
+                }
+            }
+        }
+
+        self.display[.part2] = "\(files.sorted { $0.pos < $1.pos })"
+        let checksum = files.sorted { $0.pos < $1.pos }.reduce(0) { (acc, b) in
+            let sum = b.fileId! * (2 * b.pos + b.size - 1) * b.size / 2
+            return acc + sum
+        }
+        return String(checksum)
     }
 }

@@ -52,6 +52,8 @@ struct SolutionPartView: View {
                         .lineLimit(nil)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .font(font)
+                        .textSelection(.enabled)
+
                 }
                 .frame(minHeight: 300, alignment: .leading)
             }

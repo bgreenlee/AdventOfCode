@@ -10,6 +10,7 @@
 		A222BD902D00CEDC00F539CB /* .swift-format in Resources */ = {isa = PBXBuildFile; fileRef = A222BD8F2D00CED400F539CB /* .swift-format */; };
 		A222BD9E2D02591100F539CB /* Inputs in Resources */ = {isa = PBXBuildFile; fileRef = A222BD9D2D02591100F539CB /* Inputs */; };
 		A222BDB52D048EC600F539CB /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = A222BDB42D048EC600F539CB /* Algorithms */; };
+		A2AC16642D0790410069A9A6 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = A2AC16632D0790410069A9A6 /* Collections */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -92,6 +93,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A2AC16642D0790410069A9A6 /* Collections in Frameworks */,
 				A222BDB52D048EC600F539CB /* Algorithms in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -156,6 +158,7 @@
 			name = AdventOfCode;
 			packageProductDependencies = (
 				A222BDB42D048EC600F539CB /* Algorithms */,
+				A2AC16632D0790410069A9A6 /* Collections */,
 			);
 			productName = AdventOfCode;
 			productReference = A2A949242CFCA57D002935C1 /* AdventOfCode.app */;
@@ -244,6 +247,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				A222BDB32D048EC600F539CB /* XCRemoteSwiftPackageReference "swift-algorithms" */,
+				A2AC16622D0790410069A9A6 /* XCRemoteSwiftPackageReference "swift-collections" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A2A949252CFCA57D002935C1 /* Products */;
@@ -615,6 +619,14 @@
 				minimumVersion = 1.2.0;
 			};
 		};
+		A2AC16622D0790410069A9A6 /* XCRemoteSwiftPackageReference "swift-collections" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-collections.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.4;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -622,6 +634,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A222BDB32D048EC600F539CB /* XCRemoteSwiftPackageReference "swift-algorithms" */;
 			productName = Algorithms;
+		};
+		A2AC16632D0790410069A9A6 /* Collections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A2AC16622D0790410069A9A6 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = Collections;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
