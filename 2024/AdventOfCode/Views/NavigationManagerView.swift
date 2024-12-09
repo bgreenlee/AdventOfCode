@@ -17,34 +17,38 @@ struct NavigationManagerView: View {
                         .navigationTitle("")  // Hide default title
                         .toolbar {
                             ToolbarItem(placement: .navigation) {
-                                Text("Day \(item.id): \(item.name)")
-                                    .font(Font.custom("Source Code Pro", size: 20))
+                                Text("AoC Day \(item.id): \(item.name)")
+                                    .font(Font.Design.heading1())
+                                    .foregroundStyle(.crt)
                             }
                         }
                     Spacer()
                 } label: {
                     Text("Day \(item.id): \(item.name)")
-                        .font(Font.custom("Source Code Pro", size: 12))
+                        .font(Font.Design.body())
+                        .toolbarBackground(.myBackground)
                 }
             }
-            .navigationSplitViewColumnWidth(ideal: 220)
-            .background(.background)
+            .navigationSplitViewColumnWidth(ideal: 240)
+            .background(.myBackground)
 
         } detail: {
             Text("Please select a day.")
-                .font(Font.custom("Source Code Pro", size: 24))
+                .font(Font.Design.heading2())
                 .navigationTitle("")  // Hide default title
                 .toolbar {
                     ToolbarItem(placement: .navigation) {
                         Text("Advent of Code")
-                            .font(Font.custom("Source Code Pro", size: 20))
+                            .font(Font.Design.heading1())
+                            .foregroundStyle(.crt)
                     }
                 }
+                .toolbarBackground(.myBackground)
         }
         .navigationTitle("")
-        .background(.background)
-        .foregroundColor(.textForeground)
-        .font(Font.custom("Source Code Pro", size: 12))
+        .background(.myBackground)
+        .foregroundStyle(.textForeground)
+        .font(Font.Design.body())
     }
 }
 

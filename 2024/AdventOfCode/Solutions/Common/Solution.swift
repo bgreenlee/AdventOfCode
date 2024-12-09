@@ -28,8 +28,11 @@ class Solution: ObservableObject, Identifiable, Hashable {
     let id: Int
     let name: String
     let inputs: [Input]
+    let hasDisplay: Bool
     @Published var selectedInput: Input?
     @Published var answers: [SolutionPart: SolutionAnswer] = [:]
+    @Published var display: [SolutionPart: String] = [:]
+
     var aocUrl: String {
         return "https://adventofcode.com/2024/day/\(id)"
     }
@@ -37,10 +40,11 @@ class Solution: ObservableObject, Identifiable, Hashable {
         return "https://github.com/bgreenlee/AdventOfCode/blob/main/2024/AdventOfCode/Solutions/Day%20\(id)/\(String(describing: type(of: self))).swift"
     }
 
-    init(id: Int, name: String) {
+    init(id: Int, name: String, hasDisplay: Bool = false) {
         self.id = id
         self.name = name
         self.inputs = Input.load(day: id)
+        self.hasDisplay = hasDisplay
     }
 
     static func == (lhs: Solution, rhs: Solution) -> Bool {

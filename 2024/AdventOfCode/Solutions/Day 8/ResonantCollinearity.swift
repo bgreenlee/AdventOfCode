@@ -31,7 +31,7 @@ extension Point {
 
 class ResonantCollinearity: Solution {
     init() {
-        super.init(id: 8, name: "Resonant Collinearity")
+        super.init(id: 8, name: "Resonant Collinearity", hasDisplay: true)
     }
 
     struct Map {
@@ -58,6 +58,24 @@ class ResonantCollinearity: Solution {
         func contains(_ point: Point) -> Bool {
             point.x >= 0 && point.x < width && point.y >= 0 && point.y < height
         }
+    }
+
+    func updateDisplay(part: SolutionPart, input: [String], antinodes: Set<Point>) {
+        // generate a string representation of the map, including antinodes
+        var display: String = ""
+        for y in 0..<input.count {
+            for x in 0..<input[0].count {
+                if antinodes.contains(Point(x, y)) {
+                    display += "#"
+                } else {
+                    let line = input[y]
+                    let charPos = line.index(line.startIndex, offsetBy: x)
+                    display += String(line[charPos])
+                }
+            }
+            display += "\n"
+        }
+        self.display[part] = display
     }
 
     override func part1(_ input: [String]) -> String {
@@ -96,6 +114,7 @@ class ResonantCollinearity: Solution {
                     antinodes.insert(antinode)
                     antinode &+= dist
                 }
+                updateDisplay(part: .part2, input: input, antinodes: antinodes)
             }
         }
         return String(antinodes.count)

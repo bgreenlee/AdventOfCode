@@ -16,14 +16,14 @@ struct SolutionPartView: View {
             HStack(alignment: .top) {
                 Text("\(part.rawValue)")
                     .multilineTextAlignment(.leading)
-                    .font(Font.custom("Source Code Pro", size: 18))
+                    .font(Font.Design.heading2())
                     .padding(.bottom)
                 Spacer()
                 Button("Run", systemImage: "play") {
                     solution.run(part, file: solution.selectedInput?.name ?? "input")
                 }
                 .buttonStyle(.borderedProminent)
-                .tint(.textForeground)
+                .tint(.green)
                 .disabled(solution.selectedInput == nil)
                 .help(solution.selectedInput == nil ? "Select an input file" : "Run the solution")
             }
@@ -33,9 +33,34 @@ struct SolutionPartView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.background)
-        .roundedBorder(.black, width: 1, cornerRadius: 8)
+        .background(.myBackground)
+        .roundedBorder(.textForeground, width: 1, cornerRadius: 8)
         .padding()
+
+        if solution.hasDisplay {
+            let displaySize = solution.display[part]?.count(where: { $0 == "\n" }) ?? 0
+            let font = switch displaySize {
+                case 0...20: Font.Design.body()
+                case 21...40: Font.Design.bodySmall()
+                case 41...60: Font.Design.bodyXSmall()
+                default: Font.Design.bodyXXSmall()
+            }
+
+            VStack {
+                ScrollView {
+                    Text(solution.display[part] ?? "")
+                        .lineLimit(nil)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .font(font)
+                }
+                .frame(minHeight: 300, alignment: .leading)
+            }
+            .padding()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(.myBackground)
+            .roundedBorder(.textForeground, width: 1, cornerRadius: 8)
+            .padding()
+        }
 
     }
 }

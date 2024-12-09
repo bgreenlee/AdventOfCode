@@ -9,11 +9,12 @@ import SwiftUI
 
 struct InputView: View {
     @ObservedObject var solution: Solution
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         VStack(alignment: .leading) {
             Text("Input file")
-                .font(Font.custom("Source Code Pro", size: 16))
+                .font(Font.Design.heading2())
             Picker(selection: $solution.selectedInput) {
                 ForEach(solution.inputs) { input in
                     Text(input.name).tag(input)
@@ -21,11 +22,10 @@ struct InputView: View {
             } label: { }
             .pickerStyle(.segmented)
             .fixedSize()
-            .font(Font.custom("Source Code Pro", size: 16))
-            .colorMultiply(.textForeground)
+            .font(Font.Design.body()) // this doesn't seem to work
+            .colorMultiply(colorScheme == .dark ? .textForeground : .myBackground)
         }
         .padding()
-//        .background(.background)
     }
 }
 

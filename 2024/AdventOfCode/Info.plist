@@ -5,6 +5,9 @@
 	<key>UIAppFonts</key>
 	<array>
 		<string>SourceCodePro-Regular.ttf</string>
+		<string>SourceCodePro-Bold.ttf</string>
+		<string>SourceCodePro-Light.ttf</string>
+		<string>SourceCodePro-Medium.ttf</string>
 	</array>
 </dict>
 </plist>

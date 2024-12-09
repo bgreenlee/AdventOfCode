@@ -15,6 +15,7 @@ struct LinksView: View {
             Link("Problem Description", destination: URL(string: solution.aocUrl)!)
             Link("Source Code", destination: URL(string: solution.githubUrl)!)
         }
+        .foregroundStyle(.myLink)
         .padding()
     }
 }
