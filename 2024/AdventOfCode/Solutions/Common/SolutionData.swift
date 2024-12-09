@@ -13,5 +13,6 @@
     PrintQueue(),
     GuardGallivant(),
     BridgeRepair(),
-    ResonantCollinearity()
+    ResonantCollinearity(),
+    DiskFragmenter(),
 ]
