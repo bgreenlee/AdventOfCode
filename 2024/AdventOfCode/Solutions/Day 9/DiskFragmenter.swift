@@ -62,8 +62,8 @@ class DiskFragmenter: Solution {
 
     override func part2(_ input: [String]) -> String {
         let diskmap = parseInput(input)
-        var files : [Block] = []
-        var freeSpace : [Block] = []
+        var files: [Block] = []
+        var freeSpace: [Block] = []
         var pos = 0
         for (i, n) in diskmap.enumerated() {
             if i % 2 == 0 {
@@ -76,9 +76,9 @@ class DiskFragmenter: Solution {
 
         for i in (0..<files.count).reversed() {
             for j in 0..<freeSpace.count {
-                if files[i].pos < freeSpace[j].pos { break } // only look at memory to our left
+                if files[i].pos < freeSpace[j].pos { break }  // only look at memory to our left
                 if files[i].size <= freeSpace[j].size {
-                    files[i].pos = freeSpace[j].pos // "move" file
+                    files[i].pos = freeSpace[j].pos  // "move" file
                     freeSpace[j].size -= files[i].size
                     freeSpace[j].pos += files[i].size
                     break
