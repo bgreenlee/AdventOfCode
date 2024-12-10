@@ -7,28 +7,6 @@
 
 import Algorithms
 
-typealias Point = SIMD2<Int>
-extension Point {
-    // greatest common divisor
-    private func gcd() -> Int {
-        gcd(self.x, self.y)
-    }
-
-    private func gcd(_ a: Int, _ b: Int) -> Int {
-        let r = a % b
-        if r != 0 {
-            return gcd(b, r)
-        } else {
-            return b
-        }
-    }
-
-    // reduce distance to its GCD (e.g. (3,3) -> (1,1))
-    var normalized: Point {
-        self / abs(gcd())
-    }
-}
-
 class ResonantCollinearity: Solution {
     init() {
         super.init(id: 8, name: "Resonant Collinearity", hasDisplay: true)

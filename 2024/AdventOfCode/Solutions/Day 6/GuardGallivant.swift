@@ -11,9 +11,6 @@ class GuardGallivant: Solution {
         super.init(id: 6, name: "Guard Gallivant")
     }
 
-    typealias Point = SIMD2<Int>
-    typealias Direction = SIMD2<Int>
-
     // parse the input into a dict of Point -> Character, and
     // return a tuple of that and the position of the guard
     func parseInput(_ input: [String]) -> ([Point: Character], Point) {
@@ -31,12 +28,12 @@ class GuardGallivant: Solution {
     }
 
     // run through the given map, returning the list of visited points and whether a loop was detected
-    func runMap(_ map: [Point: Character], guardPos: Point, dir: Direction = Direction(0, -1), newObstacle: Point? = nil)
+    func runMap(_ map: [Point: Character], guardPos: Point, dir: Vector = Vector(0, -1), newObstacle: Point? = nil)
         -> ([Point], Bool)
     {
         var guardPos = guardPos
         var dir = dir
-        var visited: [Point: [Direction]] = [:]
+        var visited: [Point: [Vector]] = [:]
 
         while map[guardPos] != nil {
             if visited[guardPos, default: []].contains(dir) {
@@ -45,7 +42,7 @@ class GuardGallivant: Solution {
             visited[guardPos, default: []].append(dir)
             let newPos = guardPos &+ dir
             if newPos == newObstacle || map[newPos] == "#" {
-                dir = Direction(-dir.y, dir.x)  // rotate right 90 deg
+                dir = Vector(-dir.y, dir.x)  // rotate right 90 deg
             } else {
                 guardPos = newPos
             }

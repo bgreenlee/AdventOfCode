@@ -5,54 +5,51 @@
 //  Created by Brad Greenlee on 12/4/24.
 //
 
-typealias point = SIMD2<Int>
-typealias vec = SIMD2<Int>  // pendantry
-
 struct Grid: Sequence {
-    private var grid: [point: Character] = [:]
+    private var grid: [Point: Character] = [:]
 
     init(_ rows: [String]) {
         for y in 0..<rows.count {
             let chars = Array(rows[y])
             for x in 0..<chars.count {
-                grid[point(x, y)] = chars[x]
+                grid[Point(x, y)] = chars[x]
             }
         }
     }
 
     // proxy our iterator to the grid
-    func makeIterator() -> Dictionary<point, Character>.Iterator {
+    func makeIterator() -> Dictionary<Point, Character>.Iterator {
         grid.makeIterator()
     }
 
     // get the character at a given point
     // return a space if the point is not in the grid
-    func at(_ p: point) -> Character {
+    func at(_ p: Point) -> Character {
         grid[p] ?? " "
     }
 
     // get all words in each of the cardinal directions
-    func words(at p: point, length: Int = 4) -> [String] {
+    func words(at p: Point, length: Int = 4) -> [String] {
         [
-            vec(0, -1), vec(1, -1), vec(1, 0), vec(1, 1),
-            vec(0, 1), vec(-1, 1), vec(-1, 0), vec(-1, -1),
+            Vector(0, -1), Vector(1, -1), Vector(1, 0), Vector(1, 1),
+            Vector(0, 1), Vector(-1, 1), Vector(-1, 0), Vector(-1, -1),
         ].map { v in
             String(
                 (0..<length).map {
-                    at(point(p.x, p.y) &+ v &* $0)
+                    at(Point(p.x, p.y) &+ v &* $0)
                 }
             )
         }
     }
 
     // get the two 3-letter words that make up the X
-    func xwords(at p: point) -> [String] {
+    func xwords(at p: Point) -> [String] {
         [
             String([
-                at(point(p.x - 1, p.y + 1)), at(point(p.x, p.y)), at(point(p.x + 1, p.y - 1)),
+                at(Point(p.x - 1, p.y + 1)), at(Point(p.x, p.y)), at(Point(p.x + 1, p.y - 1)),
             ]),
             String([
-                at(point(p.x - 1, p.y - 1)), at(point(p.x, p.y)), at(point(p.x + 1, p.y + 1)),
+                at(Point(p.x - 1, p.y - 1)), at(Point(p.x, p.y)), at(Point(p.x + 1, p.y + 1)),
             ]),
         ]
     }
