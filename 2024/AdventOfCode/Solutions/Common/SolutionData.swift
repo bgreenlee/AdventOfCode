@@ -15,4 +15,5 @@
     BridgeRepair(),
     ResonantCollinearity(),
     DiskFragmenter(),
+    HoofIt(),
 ]
