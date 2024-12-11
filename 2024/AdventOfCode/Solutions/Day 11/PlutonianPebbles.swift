@@ -11,32 +11,25 @@ class PlutonianPebbles: Solution {
         super.init(id: 11, name: "Plutonian Pebbles", hasDisplay: true)
     }
 
-    func split(_ num: Int) -> (Int, Int) {
-        let len = log10(Double(num)).rounded(.down) + 1
-        let divisor = Int(pow(10, len / 2))
-        return (num / divisor, num % divisor)
+    func count(_ num: Int, _ iterations: Int) -> Int {
+        if iterations == 0 {
+            return 1
+        }
+        if num == 0 {
+            return count(1, iterations - 1)
+        } else {
+            let len = Int(log10(Float(num)) + 1) // length of number
+            if len % 2 == 0 {
+                let divisor = Int(pow(10, Float(len / 2)))
+                let (left, right) = (num / divisor, num % divisor)
+                return count(left, iterations - 1) + count(right, iterations - 1)
+            }
+        }
+        return count(num * 2024, iterations - 1)
     }
 
     func solve(_ nums: [Int], _ iterations: Int) -> Int {
-        var nums = nums
-        print("\(0): \(nums) \(nums.count)")
-        for i in 1...iterations {
-            let newNums = nums.flatMap { num in
-                if num == 0 {
-                    return [1]
-                } else {
-                    let len = log10(Double(num)).rounded(.down) + 1
-                    if len.truncatingRemainder(dividingBy: 2) == 0 {
-                        let divisor = Int(pow(10, len / 2))
-                        return [num / divisor, num % divisor]
-                    }
-                    return [num * 2024]
-                }
-            }
-            nums = newNums
-            print("\(i): \(nums) \(nums.count)")
-        }
-        return nums.count
+        nums.reduce(0) { acc, num in acc + count(num, iterations) }
     }
 
     override func part1(_ input: [String]) -> String {
@@ -46,6 +39,6 @@ class PlutonianPebbles: Solution {
 
     override func part2(_ input: [String]) -> String {
         let nums = input[0].split(separator: " ").map { Int($0)! }
-        return String(solve(nums, 25))
+        return String(solve(nums, 45))
     }
 }
