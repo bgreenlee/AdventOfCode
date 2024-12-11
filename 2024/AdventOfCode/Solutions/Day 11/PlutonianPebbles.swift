@@ -11,12 +11,12 @@ class PlutonianPebbles: Solution {
         super.init(id: 11, name: "Plutonian Pebbles", hasDisplay: false)
     }
 
-    typealias Tuple = SIMD2<Int>
-    typealias Cache = [Tuple: Int]
+    typealias Key = SIMD2<Int>
+    typealias Cache = [Key: Int]
 
     func count(_ num: Int, _ iterations: Int, _ cache: inout Cache) -> Int {
         // check cache
-        if let result = cache[Tuple(num, iterations)] {
+        if let result = cache[Key(num, iterations)] {
             return result
         }
 
@@ -39,7 +39,7 @@ class PlutonianPebbles: Solution {
                 result = count(num * 2024, iterations - 1, &cache)
             }
         }
-        cache[Tuple(num, iterations)] = result
+        cache[Key(num, iterations)] = result
         return result
     }
 
