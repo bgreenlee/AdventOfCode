@@ -8,19 +8,24 @@ import Foundation
 
 class PlutonianPebbles: Solution {
     init() {
-        super.init(id: 11, name: "Plutonian Pebbles", hasDisplay: true)
+        super.init(id: 11, name: "Plutonian Pebbles", hasDisplay: false)
     }
 
-    typealias Cache = [SIMD2<Int>: Int]
+    typealias Tuple = SIMD2<Int>
+    typealias Cache = [Tuple: Int]
 
     func count(_ num: Int, _ iterations: Int, _ cache: inout Cache) -> Int {
-        if let result = cache[SIMD2<Int>(num, iterations)] {
+        // check cache
+        if let result = cache[Tuple(num, iterations)] {
             return result
         }
 
+        // base case
         if iterations == 0 {
             return 1
         }
+
+        // recurse
         var result = 0
         if num == 0 {
             result = count(1, iterations - 1, &cache)
@@ -34,7 +39,7 @@ class PlutonianPebbles: Solution {
                 result = count(num * 2024, iterations - 1, &cache)
             }
         }
-        cache[SIMD2<Int>(num, iterations)] = result
+        cache[Tuple(num, iterations)] = result
         return result
     }
 
