@@ -11,25 +11,36 @@ class PlutonianPebbles: Solution {
         super.init(id: 11, name: "Plutonian Pebbles", hasDisplay: true)
     }
 
-    func count(_ num: Int, _ iterations: Int) -> Int {
+    typealias Cache = [SIMD2<Int>: Int]
+
+    func count(_ num: Int, _ iterations: Int, _ cache: inout Cache) -> Int {
+        if let result = cache[SIMD2<Int>(num, iterations)] {
+            return result
+        }
+
         if iterations == 0 {
             return 1
         }
+        var result = 0
         if num == 0 {
-            return count(1, iterations - 1)
+            result = count(1, iterations - 1, &cache)
         } else {
-            let len = Int(log10(Float(num)) + 1) // length of number
+            let len = Int(log10(Float(num))) + 1 // length of number
             if len % 2 == 0 {
                 let divisor = Int(pow(10, Float(len / 2)))
                 let (left, right) = (num / divisor, num % divisor)
-                return count(left, iterations - 1) + count(right, iterations - 1)
+                result = count(left, iterations - 1, &cache) + count(right, iterations - 1, &cache)
+            } else {
+                result = count(num * 2024, iterations - 1, &cache)
             }
         }
-        return count(num * 2024, iterations - 1)
+        cache[SIMD2<Int>(num, iterations)] = result
+        return result
     }
 
     func solve(_ nums: [Int], _ iterations: Int) -> Int {
-        nums.reduce(0) { acc, num in acc + count(num, iterations) }
+        var cache: Cache = [:]
+        return nums.reduce(0) { acc, num in acc + count(num, iterations, &cache) }
     }
 
     override func part1(_ input: [String]) -> String {
@@ -39,6 +50,6 @@ class PlutonianPebbles: Solution {
 
     override func part2(_ input: [String]) -> String {
         let nums = input[0].split(separator: " ").map { Int($0)! }
-        return String(solve(nums, 45))
+        return String(solve(nums, 75))
     }
 }
