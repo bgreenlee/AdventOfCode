@@ -16,4 +16,5 @@
     ResonantCollinearity(),
     DiskFragmenter(),
     HoofIt(),
+    PlutonianPebbles(),
 ]
