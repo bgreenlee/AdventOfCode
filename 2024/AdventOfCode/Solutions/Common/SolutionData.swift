@@ -18,4 +18,5 @@
     HoofIt(),
     PlutonianPebbles(),
     GardenGroups(),
+    ClawContraption(),
 ]

@@ -11,6 +11,7 @@
 		A222BD9E2D02591100F539CB /* Inputs in Resources */ = {isa = PBXBuildFile; fileRef = A222BD9D2D02591100F539CB /* Inputs */; };
 		A222BDB52D048EC600F539CB /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = A222BDB42D048EC600F539CB /* Algorithms */; };
 		A2AC16642D0790410069A9A6 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = A2AC16632D0790410069A9A6 /* Collections */; };
+		A2B9C2642D0CAC2B009A6950 /* Numerics in Frameworks */ = {isa = PBXBuildFile; productRef = A2B9C2632D0CAC2B009A6950 /* Numerics */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +68,11 @@
 				"Resources/Inputs/Day 10/test2.dat",
 				"Resources/Inputs/Day 11/input.dat",
 				"Resources/Inputs/Day 11/test.dat",
+				"Resources/Inputs/Day 12/input.dat",
+				"Resources/Inputs/Day 12/test.dat",
+				"Resources/Inputs/Day 12/test2.dat",
+				"Resources/Inputs/Day 13/input.dat",
+				"Resources/Inputs/Day 13/test.dat",
 			);
 			target = A2A949232CFCA57D002935C1 /* AdventOfCode */;
 		};
@@ -99,6 +105,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A2AC16642D0790410069A9A6 /* Collections in Frameworks */,
+				A2B9C2642D0CAC2B009A6950 /* Numerics in Frameworks */,
 				A222BDB52D048EC600F539CB /* Algorithms in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -128,6 +135,7 @@
 				A2A949262CFCA57D002935C1 /* AdventOfCode */,
 				A2A949382CFCA57E002935C1 /* AdventOfCodeTests */,
 				A2A949422CFCA57E002935C1 /* AdventOfCodeUITests */,
+				A2B9C2612D0C9C37009A6950 /* Frameworks */,
 				A2A949252CFCA57D002935C1 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -140,6 +148,13 @@
 				A2A9493F2CFCA57E002935C1 /* AdventOfCodeUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A2B9C2612D0C9C37009A6950 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -164,6 +179,7 @@
 			packageProductDependencies = (
 				A222BDB42D048EC600F539CB /* Algorithms */,
 				A2AC16632D0790410069A9A6 /* Collections */,
+				A2B9C2632D0CAC2B009A6950 /* Numerics */,
 			);
 			productName = AdventOfCode;
 			productReference = A2A949242CFCA57D002935C1 /* AdventOfCode.app */;
@@ -226,7 +242,7 @@
 					"SourceCodePro-Medium",
 				);
 				LastSwiftUpdateCheck = 1610;
-				LastUpgradeCheck = 1610;
+				LastUpgradeCheck = 1620;
 				TargetAttributes = {
 					A2A949232CFCA57D002935C1 = {
 						CreatedOnToolsVersion = 16.1;
@@ -253,6 +269,7 @@
 			packageReferences = (
 				A222BDB32D048EC600F539CB /* XCRemoteSwiftPackageReference "swift-algorithms" */,
 				A2AC16622D0790410069A9A6 /* XCRemoteSwiftPackageReference "swift-collections" */,
+				A2B9C2622D0CAC14009A6950 /* XCRemoteSwiftPackageReference "swift-numerics" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A2A949252CFCA57D002935C1 /* Products */;
@@ -364,6 +381,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -375,6 +393,12 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
+				);
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = (
+					"DEBUG=1",
+					"$(inherited)",
+					"ACCELERATE_NEW_LAPACK=1",
+					"ACCELERATE_LAPACK_ILP64=1",
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -428,12 +452,17 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = (
+					"ACCELERATE_NEW_LAPACK=1",
+					"ACCELERATE_LAPACK_ILP64=1",
+				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -459,6 +488,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"AdventOfCode/Preview Content\"";
 				DEVELOPMENT_TEAM = UBXXTX5R7W;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -487,6 +517,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"AdventOfCode/Preview Content\"";
 				DEVELOPMENT_TEAM = UBXXTX5R7W;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -512,6 +543,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = UBXXTX5R7W;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.1;
@@ -530,6 +562,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = UBXXTX5R7W;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.1;
@@ -547,6 +580,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = UBXXTX5R7W;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
@@ -563,6 +597,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = UBXXTX5R7W;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
@@ -632,6 +667,14 @@
 				minimumVersion = 1.1.4;
 			};
 		};
+		A2B9C2622D0CAC14009A6950 /* XCRemoteSwiftPackageReference "swift-numerics" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-numerics.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -644,6 +687,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A2AC16622D0790410069A9A6 /* XCRemoteSwiftPackageReference "swift-collections" */;
 			productName = Collections;
+		};
+		A2B9C2632D0CAC2B009A6950 /* Numerics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A2B9C2622D0CAC14009A6950 /* XCRemoteSwiftPackageReference "swift-numerics" */;
+			productName = Numerics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
