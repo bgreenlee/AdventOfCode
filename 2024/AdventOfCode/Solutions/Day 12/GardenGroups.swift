@@ -11,6 +11,7 @@ class GardenGroups: Solution {
     }
 
     typealias Map = [Point: Character]
+    typealias Region = Set<Point>
     let dirs = [Vector(0, -1), Vector(1, 0), Vector(0, 1), Vector(-1, 0)]
 
     func parseInput(_ input: [String]) -> Map {
@@ -24,14 +25,13 @@ class GardenGroups: Solution {
     }
 
     func floodFill(
-        _ map: Map, _ point: Point, _ plant: Character, _ visited: inout Map,
-        _ region: inout Set<Point>
+        _ map: Map, _ point: Point, _ plant: Character, _ visited: inout Set<Point>, _ region: inout Region
     ) {
-        if map[point] != plant || visited[point] != nil {
+        if map[point] != plant || visited.contains(point) {
             return  // not on map or already visited
         }
 
-        visited[point] = plant
+        visited.insert(point)
         region.insert(point)
 
         for dir in dirs {
@@ -42,7 +42,7 @@ class GardenGroups: Solution {
     }
 
     // perimeter is just the total number of sides not in the region
-    func calculatePerimeter(_ region: Set<Point>) -> Int {
+    func calculatePerimeter(_ region: Region) -> Int {
         var perimeter: Int = 0
 
         for point in region {
@@ -59,7 +59,7 @@ class GardenGroups: Solution {
     // calculate the number of sides by counting corners
     // a corner has two adjacent sides out of the region, or two
     // adjacent sides in the region, but a diagonal outside
-    func calculateSides(_ region: Set<Point>) -> Int {
+    func calculateSides(_ region: Region) -> Int {
         var sides: Int = 0
 
         for point in region {
@@ -78,13 +78,13 @@ class GardenGroups: Solution {
         return sides
     }
 
-    func solve(_ input: [String], _ method: (Set<Point>) -> Int) -> Int {
+    func solve(_ input: [String], _ method: (Region) -> Int) -> Int {
         let map = parseInput(input)
-        var regions: [Set<Point>] = []
-        var visited: Map = [:]
+        var regions: [Region] = []
+        var visited: Set<Point> = []
 
         for (point, plant) in map {
-            var region: Set<Point> = []
+            var region: Region = []
             floodFill(map, point, plant, &visited, &region)
             if !region.isEmpty {
                 regions.append(region)
