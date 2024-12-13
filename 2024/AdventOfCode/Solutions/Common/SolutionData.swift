@@ -17,4 +17,5 @@
     DiskFragmenter(),
     HoofIt(),
     PlutonianPebbles(),
+    GardenGroups(),
 ]
