@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SolutionPartView: View {
     @ObservedObject var solution: Solution
+    @State private var isRunning: Bool = false
     let part: SolutionPart
 
     var body: some View {
@@ -19,17 +20,33 @@ struct SolutionPartView: View {
                     .font(Font.Design.heading2())
                     .padding(.bottom)
                 Spacer()
-                Button("Run", systemImage: "play") {
-                    solution.run(part, file: solution.selectedInput?.name ?? "input")
+                HStack(spacing: 8) {  // Add spacing between spinner and button
+                    if isRunning {
+                        ProgressView()
+                            .controlSize(.small)
+                            .frame(height: 24)
+                    }
+                    Button {
+                        Task {
+                            isRunning = true
+                            let result = await solution.run(part, file: solution.selectedInput?.name ?? "input")
+                            solution.updateUI(part: part, answer: result)
+                            isRunning = false
+                        }
+                    } label: {
+                        Text("Run")
+                    }
                 }
+                .disabled(isRunning || solution.selectedInput == nil)
                 .buttonStyle(.borderedProminent)
                 .tint(.green)
-                .disabled(solution.selectedInput == nil)
                 .help(solution.selectedInput == nil ? "Select an input file" : "Run the solution")
             }
             Text("Answer: \(solution.answers[part]?.answer ?? "")")
                 .textSelection(.enabled)
-            Text("Execution time: \(solution.answers[part] == nil ? "" : "\(solution.answers[part]!.executionTime.smartFormatted)")")
+            Text(
+                "Execution time: \(solution.answers[part] == nil ? "" : "\(solution.answers[part]!.executionTime.smartFormatted)")"
+            )
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -39,12 +56,13 @@ struct SolutionPartView: View {
 
         if solution.hasDisplay {
             let displaySize = solution.display[part]?.count(where: { $0 == "\n" }) ?? 0
-            let font = switch displaySize {
+            let font =
+                switch displaySize {
                 case 0...20: Font.Design.body()
                 case 21...40: Font.Design.bodySmall()
                 case 41...60: Font.Design.bodyXSmall()
                 default: Font.Design.bodyXXSmall()
-            }
+                }
 
             VStack {
                 ScrollView {

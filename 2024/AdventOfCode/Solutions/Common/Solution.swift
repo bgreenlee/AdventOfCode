@@ -6,10 +6,12 @@
 //
 import Foundation
 
-struct SolutionAnswer: Hashable {
+struct SolutionAnswer {
     var answer: String
     var executionTime: Duration
+}
 
+extension SolutionAnswer: Hashable {
     static func == (lhs: SolutionAnswer, rhs: SolutionAnswer) -> Bool {
         return lhs.answer == rhs.answer
     }
@@ -24,14 +26,14 @@ enum SolutionPart: String {
     case part2 = "Part 2"
 }
 
-class Solution: ObservableObject, Identifiable, Hashable {
+class Solution: ObservableObject, Identifiable {
     let id: Int
     let name: String
     let inputs: [Input]
     let hasDisplay: Bool
-    @Published var selectedInput: Input?
-    @Published var answers: [SolutionPart: SolutionAnswer] = [:]
-    @Published var display: [SolutionPart: String] = [:]
+    @MainActor @Published var selectedInput: Input?
+    @MainActor @Published var answers: [SolutionPart: SolutionAnswer] = [:]
+    @MainActor @Published var display: [SolutionPart: String] = [:]
 
     var aocUrl: String {
         return "https://adventofcode.com/2024/day/\(id)"
@@ -47,23 +49,14 @@ class Solution: ObservableObject, Identifiable, Hashable {
         self.hasDisplay = hasDisplay
     }
 
-    static func == (lhs: Solution, rhs: Solution) -> Bool {
-        return lhs.id == rhs.id && lhs.answers == rhs.answers
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-        hasher.combine(answers)
-    }
-
-    func run(_ part: SolutionPart, file: String) {
+    func run(_ part: SolutionPart, file: String) async -> SolutionAnswer {
         let clock = ContinuousClock()
-        let input = selectedInput?.lines ?? []
+        let input = await selectedInput?.lines ?? []
         var result: String = ""
         var time: Duration
         switch part {
         case .part1:
-            time = clock.measure {
+            time =  clock.measure {
                 result = part1(input)
             }
         case .part2:
@@ -71,7 +64,12 @@ class Solution: ObservableObject, Identifiable, Hashable {
                 result = part2(input)
             }
         }
-        self.answers[part] = SolutionAnswer(answer: result, executionTime: time)
+        return SolutionAnswer(answer: result, executionTime: time)
+    }
+
+    @MainActor
+    func updateUI(part: SolutionPart, answer: SolutionAnswer) {
+        self.answers[part] = answer
     }
 
     func part1(_ input: [String]) -> String {
@@ -80,5 +78,15 @@ class Solution: ObservableObject, Identifiable, Hashable {
 
     func part2(_ input: [String]) -> String {
         return "unimplemented"
+    }
+}
+
+extension Solution: Hashable {
+    static func == (lhs: Solution, rhs: Solution) -> Bool {
+        return lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }
