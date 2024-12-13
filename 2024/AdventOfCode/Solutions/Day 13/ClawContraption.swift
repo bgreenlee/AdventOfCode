@@ -1,3 +1,4 @@
+import Accelerate.vecLib.LinearAlgebra
 //
 //  ClawContraption.swift
 //  AdventOfCode
@@ -5,7 +6,6 @@
 //  Created by Brad Greenlee on 12/13/24.
 //
 import Numerics
-import Accelerate.vecLib.LinearAlgebra
 
 class ClawContraption: Solution {
     init() {
@@ -42,7 +42,7 @@ class ClawContraption: Solution {
 
     // from https://developer.apple.com/documentation/accelerate/solving_systems_of_linear_equations_with_lapack
     func solveSystemOfEquations(_ a: [Double], _ b: [Double]) -> [Double]? {
-        let dimension = b.count // technically: Int(sqrt(Double(a.count)))
+        let dimension = b.count  // technically: Int(sqrt(Double(a.count)))
         let rightHandSideCount = 1
         var info: __LAPACK_int = 0
 
@@ -69,15 +69,17 @@ class ClawContraption: Solution {
         return x
     }
 
-    func solve(_ input: [String], add: Int = 0) -> Int {
+    func solve(_ input: [String], max: Double = 0, add: Double = 0) -> Int {
         let configurations = parseInput(input)
         var total: Int = 0
         for (matA, vecB) in configurations {
-            let vecB = vecB.map { $0 + Double(add) }
+            let vecB = vecB.map { $0 + add }
             if let result = solveSystemOfEquations(matA, vecB) {
                 let a = result[0]
                 let b = result[1]
-                if !a.isApproximatelyEqual(to: a.rounded(), absoluteTolerance: 0.001)
+                if a < 0 || b < 0
+                    || (max > 0 && (a > max || b > max))
+                    || !a.isApproximatelyEqual(to: a.rounded(), absoluteTolerance: 0.001)
                     || !b.isApproximatelyEqual(to: b.rounded(), absoluteTolerance: 0.001)
                 {
                     continue  // not a valid solution
@@ -89,7 +91,7 @@ class ClawContraption: Solution {
     }
 
     override func part1(_ input: [String]) -> String {
-        return String(solve(input))
+        return String(solve(input, max: 100))
     }
 
     override func part2(_ input: [String]) -> String {
