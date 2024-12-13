@@ -1,19 +1,18 @@
-import Accelerate.vecLib.LinearAlgebra
 //
 //  ClawContraption.swift
 //  AdventOfCode
 //
 //  Created by Brad Greenlee on 12/13/24.
 //
-import Foundation
 import Numerics
+import Accelerate.vecLib.LinearAlgebra
 
 class ClawContraption: Solution {
     init() {
         super.init(id: 13, name: "Claw Contraption", hasDisplay: false)
     }
 
-    func parseInput(_ input: [String]) -> [(Vector, Vector, Point)] {
+    func parseInput(_ input: [String]) -> [([Double], [Double])] {
         let matches =
             input
             .joined()
@@ -27,15 +26,22 @@ class ClawContraption: Solution {
             )
         return matches.map {
             (
-                Vector(Int($0.1)!, Int($0.2)!),
-                Vector(Int($0.3)!, Int($0.4)!),
-                Point(Int($0.5)!, Int($0.6)!)
+                // matrix of coefficients
+                [
+                    Double($0.1)!, Double($0.2)!,
+                    Double($0.3)!, Double($0.4)!,
+                ],
+                // vector of answers
+                [
+                    Double($0.5)!,
+                    Double($0.6)!,
+                ]
             )
         }
     }
 
     // from https://developer.apple.com/documentation/accelerate/solving_systems_of_linear_equations_with_lapack
-    func solveSystemOfEquations(a: [Double], b: [Double]) -> [Double]? {
+    func solveSystemOfEquations(_ a: [Double], _ b: [Double]) -> [Double]? {
         let dimension = b.count // technically: Int(sqrt(Double(a.count)))
         let rightHandSideCount = 1
         var info: __LAPACK_int = 0
@@ -66,16 +72,9 @@ class ClawContraption: Solution {
     func solve(_ input: [String], add: Int = 0) -> Int {
         let configurations = parseInput(input)
         var total: Int = 0
-        for conf in configurations {
-            let matA: [Double] = [
-                Double(conf.0.x), Double(conf.0.y),
-                Double(conf.1.x), Double(conf.1.y),
-            ]
-            let vecB: [Double] = [
-                Double(add + conf.2.x),
-                Double(add + conf.2.y)
-            ]
-            if let result = solveSystemOfEquations(a: matA, b: vecB) {
+        for (matA, vecB) in configurations {
+            let vecB = vecB.map { $0 + Double(add) }
+            if let result = solveSystemOfEquations(matA, vecB) {
                 let a = result[0]
                 let b = result[1]
                 if !a.isApproximatelyEqual(to: a.rounded(), absoluteTolerance: 0.001)
