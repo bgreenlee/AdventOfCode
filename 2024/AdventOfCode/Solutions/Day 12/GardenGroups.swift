@@ -11,7 +11,7 @@ class GardenGroups: Solution {
     }
 
     typealias Map = [Point: Character]
-    let cardinalDirections = [Vector(0, -1), Vector(1, 0), Vector(0, 1), Vector(-1, 0)]
+    let dirs = [Vector(0, -1), Vector(1, 0), Vector(0, 1), Vector(-1, 0)]
 
     func parseInput(_ input: [String]) -> Map {
         var map: Map = [:]
@@ -34,7 +34,7 @@ class GardenGroups: Solution {
         visited[point] = plant
         region.insert(point)
 
-        for dir in cardinalDirections {
+        for dir in dirs {
             floodFill(map, point &+ dir, plant, &visited, &region)
         }
 
@@ -46,7 +46,7 @@ class GardenGroups: Solution {
         var perimeter: Int = 0
 
         for point in region {
-            for dir in cardinalDirections {
+            for dir in dirs {
                 if !region.contains(point &+ dir) {
                     perimeter += 1
                 }
@@ -64,9 +64,9 @@ class GardenGroups: Solution {
 
         for point in region {
             for i in 0...3 {
-                let p1 = point &+ cardinalDirections[i]
-                let p2 = point &+ cardinalDirections[(i + 1) % 4]
-                let p3 = point &+ cardinalDirections[i] &+ cardinalDirections[(i + 1) % 4]  // diagonal
+                let p1 = point &+ dirs[i]
+                let p2 = point &+ dirs[(i + 1) % 4]
+                let p3 = point &+ dirs[i] &+ dirs[(i + 1) % 4]  // diagonal
                 if (!region.contains(p1) && !region.contains(p2))
                     || (region.contains(p1) && region.contains(p2) && !region.contains(p3))
                 {
@@ -83,17 +83,17 @@ class GardenGroups: Solution {
         var regions: [Set<Point>] = []
         var visited: Map = [:]
 
-        for point in map.keys {
+        for (point, plant) in map {
             var region: Set<Point> = []
-            floodFill(map, point, map[point]!, &visited, &region)
+            floodFill(map, point, plant, &visited, &region)
             if !region.isEmpty {
                 regions.append(region)
             }
         }
 
         let price = regions.reduce(0) { acc, region in
-            let result = method(region)
             let area = region.count
+            let result = method(region)
             return acc + area * result
         }
 
