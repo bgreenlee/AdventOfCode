@@ -15,16 +15,22 @@ class RestroomRedoubt: Solution {
         let vec: Vector
     }
 
-    func parseInput(_ input: [String]) -> [Robot] {
+    // parse input into list of robots and width and height
+    // this assumes there will be at least one robot at the edges of the map,
+    // which is the case for my input at least
+    func parseInput(_ input: [String]) -> ([Robot], Int, Int) {
         var robots: [Robot] = []
+        var (maxX, maxY) = (0, 0)
         for line in input {
             if let m = line.wholeMatch(of: /p=(\d+),(\d+) v=([-\d]+),([-\d]+)/) {
+                let (x, y) = (Int(m.1)!, Int(m.2)!)
+                (maxX, maxY) = (max(maxX, x), max(maxY, y))
                 robots.append(
-                    Robot(pos: Point(Int(m.1)!, Int(m.2)!), vec: Vector(Int(m.3)!, Int(m.4)!))
+                    Robot(pos: Point(x, y), vec: Vector(Int(m.3)!, Int(m.4)!))
                 )
             }
         }
-        return robots
+        return (robots, maxX + 1, maxY + 1)
     }
 
     func cycleRobots(_ robots: inout [Robot], width: Int, height: Int) {
@@ -48,9 +54,7 @@ class RestroomRedoubt: Solution {
     }
 
     override func part1(_ input: [String]) -> String {
-        var robots = parseInput(input)
-        let width = robots.max(by: { $0.pos.x < $1.pos.x })!.pos.x + 1  // making assumptions here, but it works
-        let height = robots.max(by: { $0.pos.y < $1.pos.y })!.pos.y + 1
+        var (robots, width, height) = parseInput(input)
 
         for _ in 1...100 {
             cycleRobots(&robots, width: width, height: height)
@@ -65,9 +69,7 @@ class RestroomRedoubt: Solution {
     }
 
     override func part2(_ input: [String]) -> String {
-        var robots = parseInput(input)
-        let width = robots.max(by: { $0.pos.x < $1.pos.x })!.pos.x + 1  // making assumptions here, but it works
-        let height = robots.max(by: { $0.pos.y < $1.pos.y })!.pos.y + 1
+        var (robots, width, height) = parseInput(input)
 
         // cycle until we find an arrangement with a lot of robots with the same x & y positions
         var cycles: Int = 0
