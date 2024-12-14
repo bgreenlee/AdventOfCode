@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SolutionPartView: View {
     @ObservedObject var solution: Solution
-    @State private var isRunning: Bool = false
+    @State private var showProgressView: Bool = false
     let part: SolutionPart
 
     var body: some View {
@@ -21,23 +21,28 @@ struct SolutionPartView: View {
                     .padding(.bottom)
                 Spacer()
                 HStack(spacing: 8) {  // Add spacing between spinner and button
-                    if isRunning {
+                    if showProgressView {
                         ProgressView()
                             .controlSize(.small)
                             .frame(height: 24)
                     }
                     Button {
                         Task {
-                            isRunning = true
+                            // only show ProgressView if it is taking longer than 100 ms
+                            let progressViewTask = Task {
+                                try await Task.sleep(nanoseconds: 100_000_000)
+                                showProgressView = true
+                            }
                             let result = await solution.run(part, file: solution.selectedInput?.name ?? "input")
                             solution.updateUI(part: part, answer: result)
-                            isRunning = false
+                            progressViewTask.cancel()
+                            showProgressView = false
                         }
                     } label: {
                         Text("Run")
                     }
                 }
-                .disabled(isRunning || solution.selectedInput == nil)
+                .disabled(showProgressView || solution.selectedInput == nil)
                 .buttonStyle(.borderedProminent)
                 .tint(.green)
                 .help(solution.selectedInput == nil ? "Select an input file" : "Run the solution")
