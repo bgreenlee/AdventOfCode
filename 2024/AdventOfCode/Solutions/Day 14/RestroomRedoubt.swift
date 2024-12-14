@@ -18,11 +18,10 @@ class RestroomRedoubt: Solution {
     func parseInput(_ input: [String]) -> [Robot] {
         var robots: [Robot] = []
         for line in input {
-            if let match = line.wholeMatch(of: /p=(\d+),(\d+) v=([-\d]+),([-\d]+)/) {
+            if let m = line.wholeMatch(of: /p=(\d+),(\d+) v=([-\d]+),([-\d]+)/) {
                 robots.append(
-                    Robot(
-                        pos: Point(Int(match.1)!, Int(match.2)!),
-                        vec: Vector(Int(match.3)!, Int(match.4)!)))
+                    Robot(pos: Point(Int(m.1)!, Int(m.2)!), vec: Vector(Int(m.3)!, Int(m.4)!))
+                )
             }
         }
         return robots
@@ -52,13 +51,16 @@ class RestroomRedoubt: Solution {
         var robots = parseInput(input)
         let width = robots.max(by: { $0.pos.x < $1.pos.x })!.pos.x + 1  // making assumptions here, but it works
         let height = robots.max(by: { $0.pos.y < $1.pos.y })!.pos.y + 1
+
         for _ in 1...100 {
             cycleRobots(&robots, width: width, height: height)
         }
+
         let q1 = robots.filter { $0.pos.x < width / 2 && $0.pos.y < height / 2 }.count
         let q2 = robots.filter { $0.pos.x > width / 2 && $0.pos.y < height / 2 }.count
         let q3 = robots.filter { $0.pos.x < width / 2 && $0.pos.y > height / 2 }.count
         let q4 = robots.filter { $0.pos.x > width / 2 && $0.pos.y > height / 2 }.count
+
         return String(q1 * q2 * q3 * q4)
     }
 
@@ -66,6 +68,7 @@ class RestroomRedoubt: Solution {
         var robots = parseInput(input)
         let width = robots.max(by: { $0.pos.x < $1.pos.x })!.pos.x + 1  // making assumptions here, but it works
         let height = robots.max(by: { $0.pos.y < $1.pos.y })!.pos.y + 1
+
         // cycle until we find an arrangement with a lot of robots with the same x & y positions
         var cycles: Int = 0
         while true {
@@ -77,7 +80,9 @@ class RestroomRedoubt: Solution {
                 break
             }
         }
+
         display(robots, width: width, height: height)
+
         return String(cycles)
     }
 }
