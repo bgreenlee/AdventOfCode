@@ -38,6 +38,7 @@ class ResonantCollinearity: Solution {
         }
     }
 
+    @MainActor
     func updateDisplay(part: SolutionPart, input: [String], antinodes: Set<Point>) {
         // generate a string representation of the map, including antinodes
         var display: String = ""
@@ -92,7 +93,7 @@ class ResonantCollinearity: Solution {
                     antinodes.insert(antinode)
                     antinode &+= dist
                 }
-                updateDisplay(part: .part2, input: input, antinodes: antinodes)
+//                updateDisplay(part: .part2, input: input, antinodes: antinodes)
             }
         }
         return String(antinodes.count)
