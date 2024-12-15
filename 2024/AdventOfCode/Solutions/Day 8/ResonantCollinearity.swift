@@ -38,24 +38,24 @@ class ResonantCollinearity: Solution {
         }
     }
 
-    @MainActor
-    func updateDisplay(part: SolutionPart, input: [String], antinodes: Set<Point>) {
-        // generate a string representation of the map, including antinodes
-        var display: String = ""
-        for y in 0..<input.count {
-            for x in 0..<input[0].count {
-                if antinodes.contains(Point(x, y)) {
-                    display += "#"
-                } else {
-                    let line = input[y]
-                    let charPos = line.index(line.startIndex, offsetBy: x)
-                    display += String(line[charPos])
-                }
-            }
-            display += "\n"
-        }
-        self.display[part] = display
-    }
+//    @MainActor
+//    func updateDisplay(part: SolutionPart, input: [String], antinodes: Set<Point>) {
+//        // generate a string representation of the map, including antinodes
+//        var display: String = ""
+//        for y in 0..<input.count {
+//            for x in 0..<input[0].count {
+//                if antinodes.contains(Point(x, y)) {
+//                    display += "#"
+//                } else {
+//                    let line = input[y]
+//                    let charPos = line.index(line.startIndex, offsetBy: x)
+//                    display += String(line[charPos])
+//                }
+//            }
+//            display += "\n"
+//        }
+//        self.display[part] = display
+//    }
 
     override func part1(_ input: [String]) -> String {
         let map = Map(input)

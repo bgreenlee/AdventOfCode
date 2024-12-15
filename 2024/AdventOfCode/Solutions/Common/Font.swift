@@ -58,15 +58,15 @@ extension Font {
         }
 
         static func bodySmall(weight: CustomWeight = .regular) -> Font {
-            custom(weight.fontName, size: 13)
+            custom(weight.fontName, size: 12)
         }
 
         static func bodyXSmall(weight: CustomWeight = .regular) -> Font {
-            custom(weight.fontName, size: 10)
+            custom(weight.fontName, size: 8)
         }
 
         static func bodyXXSmall(weight: CustomWeight = .regular) -> Font {
-            custom(weight.fontName, size: 8)
+            custom(weight.fontName, size: 4)
         }
     }
 }

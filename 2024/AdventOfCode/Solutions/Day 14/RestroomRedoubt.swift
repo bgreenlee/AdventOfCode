@@ -7,7 +7,7 @@
 
 class RestroomRedoubt: Solution {
     init() {
-        super.init(id: 14, name: "Restroom Redoubt")
+        super.init(id: 14, name: "Restroom Redoubt", hasDisplay: true)
     }
 
     struct Robot {
@@ -40,17 +40,17 @@ class RestroomRedoubt: Solution {
         }
     }
 
-    func display(_ robots: [Robot], width: Int, height: Int) {
+    func generateDisplay(_ robots: [Robot], width: Int, height: Int) -> String {
+        var display: [Character] = Array(repeating: ".", count: (width + 1) * height)
         for y in 0..<height {
             for x in 0..<width {
                 if robots.contains(where: { $0.pos == Point(x, y) }) {
-                    print("#", terminator: "")
-                } else {
-                    print(".", terminator: "")
+                    display[y * (width + 1) + x] = "#"
                 }
             }
-            print()
+            display[y * (width + 1) + width] = "\n"
         }
+        return String(display)
     }
 
     override func part1(_ input: [String]) -> String {
@@ -75,6 +75,7 @@ class RestroomRedoubt: Solution {
         var cycles: Int = 0
         while true {
             cycleRobots(&robots, width: width, height: height)
+            addFrame(part: .part2, generateDisplay(robots, width: width, height: height))
             cycles += 1
             if robots.grouped(by: { $0.pos.x }).values.contains(where: { $0.count > 20 })
                 && robots.grouped(by: { $0.pos.y }).values.contains(where: { $0.count > 20 })
@@ -83,7 +84,7 @@ class RestroomRedoubt: Solution {
             }
         }
 
-        display(robots, width: width, height: height)
+        print(frames[.part2]?.last ?? "")
 
         return String(cycles)
     }

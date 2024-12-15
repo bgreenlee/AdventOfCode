@@ -31,9 +31,9 @@ class Solution: ObservableObject, Identifiable {
     let name: String
     let inputs: [Input]
     let hasDisplay: Bool
+    var frames: [SolutionPart: [String]] = [:]  // display frames
     @MainActor @Published var selectedInput: Input?
     @MainActor @Published var answers: [SolutionPart: SolutionAnswer] = [:]
-    @MainActor @Published var display: [SolutionPart: String] = [:]
 
     var aocUrl: String {
         return "https://adventofcode.com/2024/day/\(id)"
@@ -65,6 +65,10 @@ class Solution: ObservableObject, Identifiable {
             }
         }
         return SolutionAnswer(answer: result, executionTime: time)
+    }
+
+    func addFrame(part: SolutionPart, _ frame: String) {
+        frames[part, default: []].append(frame)
     }
 
     @MainActor
