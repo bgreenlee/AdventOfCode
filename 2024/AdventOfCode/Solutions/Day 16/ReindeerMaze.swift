@@ -6,44 +6,18 @@
 //
 import Collections
 
+
 class ReindeerMaze: Solution {
     init() {
         super.init(id: 16, name: "Reindeer Maze", hasDisplay: true)
     }
 
-    enum Direction: Int {
-        case north
-        case east
-        case south
-        case west
-    }
-    let directions = [Vector(0, -1), Vector(1, 0), Vector(0, 1), Vector(-1, 0)]
-
-    struct Map: CustomStringConvertible {
+    struct Map {
         var grid: Set<Point> = []
         let width: Int
         let height: Int
         let start: Point
         let end: Point
-        var description: String {
-            var string = ""
-            for y in 0..<height {
-                for x in 0..<width {
-                    let point = Point(x, y)
-                    if point == start {
-                        string += "S"
-                    } else if point == end {
-                        string += "E"
-                    } else if grid.contains(point) {
-                        string += "."
-                    } else {
-                        string += "#"
-                    }
-                }
-                string += "\n"
-            }
-            return string
-        }
 
         init(_ input: [String]) {
             var map: Set<Point> = []
@@ -77,17 +51,17 @@ class ReindeerMaze: Solution {
     struct Tile: Comparable, Hashable, CustomStringConvertible {
         let location: Point
         let direction: Vector?
-        let fscore: Int
+        var fscore: Int
         var description: String {
             let dirStr =
                 switch direction {
-                case Vector(0, -1):
+                case .north:
                     "^"
-                case Vector(1, 0):
+                case .east:
                     ">"
-                case Vector(0, 1):
+                case .south:
                     "v"
-                case Vector(-1, 0):
+                case .west:
                     "<"
                 default:
                     "?"
@@ -109,13 +83,9 @@ class ReindeerMaze: Solution {
         }
     }
 
-    // cost heuristic for A* - Manhattan distance
-    func heuristic(_ start: Tile, _ goal: Tile) -> Int {
-        abs(start.location.x - goal.location.x) + abs(start.location.y - goal.location.y)
-    }
-
     func neighbors(_ tile: Tile, _ map: Set<Point>) -> [Tile] {
         var neighbors: [Tile] = []
+        let directions: [Vector] = [.north, .east, .south, .west]
         for direction in directions {
             // ignore the opposite direction of this tile...we can't go backwards
             //            if direction == Vector(-tile.direction!.x, -tile.direction!.y) { continue }
@@ -133,51 +103,44 @@ class ReindeerMaze: Solution {
         return neighbors
     }
 
-    // A* search algorithm
-    func aStar(_ map: Set<Point>, start: Point, goal: Point) -> [Tile] {
-        var path: [Tile] = []
-        // the set of discovered nodes
-        let startTile = Tile(
-            location: start, direction: directions[Direction.east.rawValue], fscore: 0)
-        let goalTile = Tile(location: goal, direction: nil, fscore: 0)
-        var openSet: Heap<Tile> = Heap([startTile])
-        var openSetTiles: Set<Tile> = [startTile]  // so we can test for inclusion efficiently
-        // for node n, cameFrom[n] is the node immediately preceding it on the cheapest path
-        // from start to n currently known
-        var cameFrom: [Tile: Tile] = [:]
-        // For node n, gscore[n] is the cost of the cheapest path from start to n currently known.
-        var gscore: [Tile: Int] = [startTile: 0]
-        // For node n, fscore[n] := gscore[n] + heuristic(n, goal). fscore[n] represents our current best guess as to
-        // how short a path from start to finish can be if it goes through n.
-        var fscore: [Tile: Int] = [startTile: heuristic(startTile, goalTile)]
+    // Dijkstra's algorithm
+    func findPath(_ map: Set<Point>, _ start: Point, _ goal: Point) -> [Tile] {
+        let INT_MAX = Int.max - 2001 // max int minus what we could add to it
+        var visited: Set<Tile> = []
+        var parents: [Tile: Tile] = [:]
+        let startTile = Tile(location: start, direction: .east, fscore: 0)
+        var pqueue: Heap<Tile> = Heap([startTile])
+        var dists: [Tile : Int] = [startTile : 0]
 
-        while !openSet.isEmpty {
-            var current = openSet.popMin()!
-            openSetTiles.remove(current)
+        while !pqueue.isEmpty {
+            let current = pqueue.removeMin()
             if current.location == goal {
-                path.append(current)
-                while let parent = cameFrom[current] {
-                    path.append(parent)
-                    current = parent
-                }
-                return path
+                break
             }
+            visited.insert(current)
 
-            for neighbor in neighbors(current, map) {
-                let tentativeGscore = gscore[current]! + neighbor.fscore
-                if tentativeGscore < gscore[neighbor, default: Int.max] {
-                    // this path to neighbor is better than any previous one
-                    cameFrom[neighbor] = current
-                    gscore[neighbor] = tentativeGscore
-                    fscore[neighbor] = tentativeGscore + heuristic(neighbor, goalTile)
-                    if !openSetTiles.contains(neighbor) {
-                        openSet.insert(neighbor)
-                        openSetTiles.insert(neighbor)
-                    }
+            for var neighbor in neighbors(current, map) {
+                if visited.contains(neighbor) {
+                    continue
+                }
+                let dist = dists[current, default: INT_MAX] + neighbor.fscore
+                if dists[neighbor, default: INT_MAX] > dist {
+                    parents[neighbor] = current
+                    dists[neighbor] = dist
+                    neighbor.fscore = dist
+                    pqueue.insert(neighbor)
                 }
             }
         }
-        return path
+
+        var path: [Tile] = []
+        var node = parents.first(where: { k, v in k.location == goal})!.value // end node
+        while node != startTile {
+            path.append(node)
+            node = parents[node]!
+        }
+        path.append(startTile)
+        return path.reversed()
     }
 
     func generateFrame(map: Map, path: [Tile]) -> String {
@@ -216,10 +179,8 @@ class ReindeerMaze: Solution {
     }
     override func part1(_ input: [String]) -> String {
         let map = Map(input)
-//        addFrame(part: .part1, map.description)
-        let path = aStar(map.grid, start: map.start, goal: map.end).reversed()
-        //        print(Array(path))
-        addFrame(part: .part1, generateFrame(map: map, path: Array(path)))
+        let path = findPath(map.grid, map.start, map.end)
+        addFrame(part: .part1, generateFrame(map: map, path: path))
         let (score, _) = path.reduce((0, Vector(1, 0))) { acc, tile in
             let (score, direction) = acc
             if tile.direction! == direction {

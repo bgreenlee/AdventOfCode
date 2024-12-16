@@ -28,3 +28,10 @@ extension Point {
         self / abs(gcd())
     }
 }
+
+extension Vector {
+    static let north = Vector(0, -1)
+    static let east = Vector(1, 0)
+    static let south = Vector(0, 1)
+    static let west = Vector(-1, 0)
+}
