@@ -66,7 +66,7 @@ extension Font {
         }
 
         static func bodyXXSmall(weight: CustomWeight = .regular) -> Font {
-            custom(weight.fontName, size: 4)
+            custom(weight.fontName, size: 6)
         }
     }
 }

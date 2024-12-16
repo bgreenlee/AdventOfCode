@@ -21,4 +21,5 @@
     ClawContraption(),
     RestroomRedoubt(),
     WarehouseWoes(),
+    ReindeerMaze(),
 ]

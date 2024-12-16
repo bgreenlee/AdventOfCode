@@ -104,7 +104,7 @@ class WarehouseWoes: Solution {
         addFrame(part: .part1, map.description)
         for move in moves {
             map.moveRobot(move)
-//            addFrame(part: .part1, map.description)
+            addFrame(part: .part1, map.description)
         }
         let boxes = map.grid
             .filter({ _, char in char == "O" })

@@ -54,6 +54,7 @@ class Solution: ObservableObject, Identifiable {
         let input = await selectedInput?.lines ?? []
         var result: String = ""
         var time: Duration
+        frames[part] = []
         switch part {
         case .part1:
             time =  clock.measure {
