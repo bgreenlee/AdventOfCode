@@ -19,5 +19,6 @@
     PlutonianPebbles(),
     GardenGroups(),
     ClawContraption(),
-    RestroomRedoubt()
+    RestroomRedoubt(),
+    WarehouseWoes(),
 ]
