@@ -22,4 +22,5 @@
     RestroomRedoubt(),
     WarehouseWoes(),
     ReindeerMaze(),
+    ChronospatialComputer(),
 ]

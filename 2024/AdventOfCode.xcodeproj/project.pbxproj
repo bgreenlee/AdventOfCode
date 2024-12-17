@@ -83,6 +83,9 @@
 				"Resources/Inputs/Day 16/test2.dat",
 				"Resources/Inputs/Day 16/test3.dat",
 				"Resources/Inputs/Day 16/test4.dat",
+				"Resources/Inputs/Day 17/input.dat",
+				"Resources/Inputs/Day 17/test.dat",
+				"Resources/Inputs/Day 17/test2.dat",
 			);
 			target = A2A949232CFCA57D002935C1 /* AdventOfCode */;
 		};
