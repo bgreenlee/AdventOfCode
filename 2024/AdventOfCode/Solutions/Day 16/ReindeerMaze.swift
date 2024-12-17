@@ -103,7 +103,7 @@ class ReindeerMaze: Solution {
         return neighbors
     }
 
-    // Dijkstra's algorithm
+    // Part 1: Dijkstra's algorithm
     func findPath(_ map: Set<Point>, _ start: Point, _ goal: Point) -> [Tile] {
         let INT_MAX = Int.max - 2001 // max int minus what we could add to it
         var visited: Set<Tile> = []
@@ -124,7 +124,7 @@ class ReindeerMaze: Solution {
                     continue
                 }
                 let dist = dists[current, default: INT_MAX] + neighbor.fscore
-                if dists[neighbor, default: INT_MAX] > dist {
+                if dist < dists[neighbor, default: INT_MAX] {
                     parents[neighbor] = current
                     dists[neighbor] = dist
                     neighbor.fscore = dist
@@ -141,6 +141,67 @@ class ReindeerMaze: Solution {
         }
         path.append(startTile)
         return path.reversed()
+    }
+
+    // Part 2: Dijkstra modified to return all best paths
+    func findAllPaths(_ map: Set<Point>, _ start: Point, _ goal: Point) -> [[Tile]] {
+        let INT_MAX = Int.max - 2001
+        var visited: Set<Tile> = []
+        var parents: [Tile: Set<Tile>] = [:] // track multiple parents for each node
+        let startTile = Tile(location: start, direction: .east, fscore: 0)
+        var pqueue: Heap<Tile> = Heap([startTile])
+        var dists: [Tile : Int] = [startTile : 0]
+
+        while !pqueue.isEmpty {
+            let current = pqueue.removeMin()
+            if current.location == goal {
+                break
+            }
+            visited.insert(current)
+
+            for var neighbor in neighbors(current, map) {
+                if visited.contains(neighbor) {
+                    continue
+                }
+                let dist = dists[current, default: INT_MAX] + neighbor.fscore
+                if dist < dists[neighbor, default: INT_MAX] {
+                    // Found a better path - clear existing parents
+                    parents[neighbor] = [current]
+                    dists[neighbor] = dist
+                    neighbor.fscore = dist
+                    pqueue.insert(neighbor)
+                } else if dist == dists[neighbor, default: INT_MAX] {
+                    // Found an equal-cost path - add to parents
+                    parents[neighbor, default: []].insert(current)
+                }
+            }
+        }
+
+        // build all paths from the parents map
+        func buildPaths(from node: Tile) -> [[Tile]] {
+            if node == startTile {
+                return [[startTile]]
+            }
+
+            var paths: [[Tile]] = []
+            for parent in parents[node, default: []] {
+                let parentPaths = buildPaths(from: parent)
+                for var parentPath in parentPaths {
+                    parentPath.append(node)
+                    paths.append(parentPath)
+                }
+            }
+            return paths
+        }
+
+        // find all goal tiles and build paths from each
+        let goalTiles = parents.keys.filter { $0.location == goal }
+        var allPaths: [[Tile]] = []
+        for goalTile in goalTiles {
+            allPaths.append(contentsOf: buildPaths(from: goalTile))
+        }
+
+        return allPaths
     }
 
     func generateFrame(map: Map, path: [Tile]) -> String {
@@ -177,6 +238,7 @@ class ReindeerMaze: Solution {
         }
         return string
     }
+
     override func part1(_ input: [String]) -> String {
         let map = Map(input)
         let path = findPath(map.grid, map.start, map.end)
@@ -193,6 +255,9 @@ class ReindeerMaze: Solution {
     }
 
     override func part2(_ input: [String]) -> String {
-        return ""
+        let map = Map(input)
+        let paths = findAllPaths(map.grid, map.start, map.end)
+        let score = Set(paths.flatMap({$0}).map { $0.location }).count
+        return String(score)
     }
 }
