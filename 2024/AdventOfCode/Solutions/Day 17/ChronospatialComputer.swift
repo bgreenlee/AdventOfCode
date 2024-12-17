@@ -87,16 +87,13 @@ class ChronospatialComputer: Solution {
     override func part2(_ input: [String]) -> String {
         let (_, regB, regC, program) = parseInput(input)
         var i = 1
-        let log2of8 = log2(Double(8))
-        while true {
+        var j = 1
+        while j < program.count {
             let output = runProgram(i, regB, regC, program)
-            let offset = Int(log2(Double(i))/log2of8) + 1 // offset from end — log8(i)
-            // compare last offset digits...if they match, go up an order of magnitude
-            if output[(output.count - offset)...] == program[(program.count - offset)...] {
-                if offset == program.count {
-                    break // we're done!
-                }
+            // compare last j digits...if they match, go up an order of magnitude
+            if output[(output.count - j)...] == program[(program.count - j)...] {
                 i *= 8
+                j += 1
             } else {
                 i += 1
             }
