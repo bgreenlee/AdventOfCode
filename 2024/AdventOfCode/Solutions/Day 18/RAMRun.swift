@@ -51,7 +51,7 @@ class RAMRun: Solution {
         return neighbors
     }
 
-    // Part 1: Dijkstra's algorithm
+    // Dijkstra's algorithm
     func findPath(_ map: Map, _ start: Point, _ goal: Point) -> [Tile] {
         let INT_MAX = Int.max - 1  // max int minus what we could add to it
         var visited: Set<Tile> = []
