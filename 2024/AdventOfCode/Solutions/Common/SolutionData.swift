@@ -23,4 +23,5 @@
     WarehouseWoes(),
     ReindeerMaze(),
     ChronospatialComputer(),
+    RAMRun(),
 ]
