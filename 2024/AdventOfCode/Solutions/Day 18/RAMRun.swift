@@ -114,13 +114,15 @@ class RAMRun: Solution {
         }
 
         let mapSize = input.count >= 1024 ? 71 : 7  // test case vs. full input
-        for maxBytes in 1..<input.count {
+        var maxBytes = input.count - 1
+        while maxBytes > 0 {
             let truncatedBytes = Set(allBytes[...maxBytes])
             let map = Map(width: mapSize, height: mapSize, blocks: truncatedBytes)
             let path = findPath(map, Point(0, 0), Point(map.width - 1, map.height - 1))
-            if path.isEmpty {
-                return input[maxBytes]
+            if !path.isEmpty {
+                return input[maxBytes + 1]
             }
+            maxBytes -= 1
         }
         return ""
     }
