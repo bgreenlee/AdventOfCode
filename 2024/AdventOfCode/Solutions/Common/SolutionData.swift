@@ -24,4 +24,5 @@
     ReindeerMaze(),
     ChronospatialComputer(),
     RAMRun(),
+    LinenLayout(),
 ]
