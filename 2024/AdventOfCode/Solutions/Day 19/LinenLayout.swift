@@ -17,44 +17,63 @@ class LinenLayout: Solution {
         return (towels, Array(patterns))
     }
 
-    // this actually hangs; bug report: https://github.com/swiftlang/swift-experimental-string-processing/issues/793
+    // part 1: recursively match the string and patterns
+    func match(_ pattern: String, _ towels: [String], _ cache: inout [String: Bool]) -> Bool {
+        if let cached = cache[pattern] {
+            return cached
+        }
+        for towel in towels {
+            if pattern == towel {
+                cache[pattern] = true
+                return true
+            } else if pattern.starts(with: towel) {
+                let strRemaining = String(pattern[pattern.index(pattern.startIndex, offsetBy: towel.count)...])
+                cache[pattern] = match(strRemaining, towels, &cache)
+                if cache[pattern]! {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
     override func part1(_ input: [String]) -> String {
         let (towels, patterns) = parseInput(input)
-        let towelRE = try! Regex("(?U)^(?:\(towels.joined(separator: "|")))+$")
-        let count = patterns.filter({ $0.wholeMatch(of: towelRE) != nil }).count
+
+        // this actually hangs; bug report: https://github.com/swiftlang/swift-experimental-string-processing/issues/793
+        // let towelRE = try! Regex("(?U)^(?:\(towels.joined(separator: "|")))+$")
+        // let count = patterns.filter({ $0.wholeMatch(of: towelRE) != nil }).count
+
+        let count = patterns.filter({
+            var cache: [String: Bool] = [:]
+            return match($0, towels, &cache)
+        }).count
         return String(count)
     }
 
-    // recursively match the string and patterns
-    var cache: [String: Int] = [:]
-    func matchCount(_ pattern: String, _ towels: [String], _ numMatches: Int = 0) -> Int {
-        if cache[pattern] != nil {
-            return cache[pattern]!
+    // part 2: recursively match the string and patterns, returning the total number of possible matches
+    func matchCount(_ pattern: String, _ towels: [String],  _ cache: inout [String: Int]) -> Int {
+        if let cached = cache[pattern] {
+            return cached
         }
-
-        if pattern == "" {
-            return numMatches + 1
-        }
-
-        var numMatches = numMatches
+        var numMatches = 0
         for towel in towels {
-            if towel.count > pattern.count {
-                continue
-            }
-            if pattern.starts(with: towel) {
+            if pattern == towel {
+                numMatches += 1
+            } else if pattern.starts(with: towel) {
                 let strRemaining = String(pattern[pattern.index(pattern.startIndex, offsetBy: towel.count)...])
-                cache[strRemaining] = matchCount(strRemaining, towels)
-                numMatches += cache[strRemaining]!
+                numMatches += matchCount(strRemaining, towels, &cache)
             }
         }
+        cache[pattern] = numMatches
         return numMatches
     }
 
     override func part2(_ input: [String]) -> String {
         let (towels, patterns) = parseInput(input)
         let count = patterns.reduce(0) { acc, pattern in
-            cache = [:] // clear the cache for each one
-            return acc + matchCount(pattern, towels, 0)
+            var cache: [String: Int] = [:]
+            return acc + matchCount(pattern, towels, &cache)
         }
         return String(count)
     }
