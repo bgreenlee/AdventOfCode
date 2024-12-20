@@ -40,20 +40,13 @@ class RaceCondition: Solution {
     // There's only one way through the maze, so it doesn't require anything fancy.
     func findPath(_ map: Set<Point>, _ start: Point, _ goal: Point) -> [Point] {
         var path: [Point] = [start]
-        var currentPoint: Point = start
+        var currPoint: Point = start
         var prevPoint: Point = start
-        var nextPoint: Point = start
-        while currentPoint != goal {
-            for dir in [Vector(0, -1), Vector(1, 0), Vector(0, 1), Vector(-1, 0)] {
-                let point = currentPoint &+ dir
-                if map.contains(point) && point != prevPoint {
-                    nextPoint = point
-                    break
-                }
-            }
-            currentPoint = nextPoint
+        while currPoint != goal {
+            currPoint &+= [Vector(0, -1), Vector(1, 0), Vector(0, 1), Vector(-1, 0)]
+                .first(where: { map.contains(currPoint &+ $0) && currPoint &+ $0 != prevPoint })!
             prevPoint = path.last!
-            path.append(currentPoint)
+            path.append(currPoint)
         }
         return path
     }
@@ -67,8 +60,8 @@ class RaceCondition: Solution {
         let (map, start, end) = parseInput(input)
         let path = findPath(map, start, end)
         var score = 0
-        for i in 0..<path.count-2 {
-            for j in i+2..<path.count {
+        for i in 0..<path.count - 4 { // 4 because that's the closest two path points can be for a shortcut to make sense
+            for j in i + 4..<path.count {
                 let dist = distance(path[i], path[j])
                 if dist > 1 && dist <= maxDistance && dist < j - i {
                     if (j - i) - dist >= minSaved {
