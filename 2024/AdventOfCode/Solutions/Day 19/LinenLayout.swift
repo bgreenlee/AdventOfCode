@@ -51,7 +51,7 @@ class LinenLayout: Solution {
         return String(count)
     }
 
-    // part 2: recursively match the string and patterns, returning the total number of possible matches
+    // recursively match the string and patterns, returning the total number of possible matches
     func matchCount(_ pattern: String, _ towels: [String],  _ cache: inout [String: Int]) -> Int {
         if let cached = cache[pattern] {
             return cached

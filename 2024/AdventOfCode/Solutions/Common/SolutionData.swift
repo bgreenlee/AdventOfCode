@@ -25,4 +25,5 @@
     ChronospatialComputer(),
     RAMRun(),
     LinenLayout(),
+    RaceCondition(),
 ]
