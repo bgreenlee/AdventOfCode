@@ -26,4 +26,6 @@
     RAMRun(),
     LinenLayout(),
     RaceCondition(),
+    KeypadConundrum(),
+    MonkeyMarket(),
 ]
