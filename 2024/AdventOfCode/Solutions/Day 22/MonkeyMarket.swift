@@ -37,7 +37,7 @@ class MonkeyMarket: Solution {
         var allChanges: [SIMD4<Int>:Int] = [:]
         for var secret in secrets {
             var prices: [Int] = [secret % 10]
-            for j in 1...2000 {
+            for _ in 1...2000 {
                 secret = nextSecret(secret)
                 prices.append(secret % 10)
             }
