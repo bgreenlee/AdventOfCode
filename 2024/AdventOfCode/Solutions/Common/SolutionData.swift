@@ -29,4 +29,5 @@
     KeypadConundrum(),
     MonkeyMarket(),
     LANParty(),
+    CrossedWires(),
 ]
