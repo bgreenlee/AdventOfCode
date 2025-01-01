@@ -30,4 +30,5 @@
     MonkeyMarket(),
     LANParty(),
     CrossedWires(),
+    CodeChronicle(),
 ]
