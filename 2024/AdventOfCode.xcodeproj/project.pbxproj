@@ -96,6 +96,8 @@
 				"Resources/Inputs/Day 21/test.dat",
 				"Resources/Inputs/Day 22/input.dat",
 				"Resources/Inputs/Day 22/test.dat",
+				"Resources/Inputs/Day 23/input.dat",
+				"Resources/Inputs/Day 23/test.dat",
 			);
 			target = A2A949232CFCA57D002935C1 /* AdventOfCode */;
 		};

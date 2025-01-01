@@ -28,4 +28,5 @@
     RaceCondition(),
     KeypadConundrum(),
     MonkeyMarket(),
+    LANParty(),
 ]
