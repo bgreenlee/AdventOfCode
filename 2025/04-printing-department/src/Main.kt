@@ -14,38 +14,30 @@ class PaperMap {
     var rolls: MutableSet<Point> = mutableSetOf()
 
     constructor(input: List<String>) {
-        this.height = input.count()
-        this.width = input[0].length
+        height = input.count()
+        width = input[0].length
 
         for ((y, row) in input.withIndex())
             for ((x, char) in row.withIndex())
-                if (char == '@') this.rolls.add(Point(x, y))
+                if (char == '@') rolls.add(Point(x, y))
     }
 
     // return list of neighbors of the given roll
-    fun neighborList(point: Point): List<Point> {
-        val neighbors: MutableList<Point> = mutableListOf()
-        for (dy in -1..1) {
-            for (dx in -1..1) {
-                if (dx == 0 && dy == 0) continue
-                val neighbor = Point(point.first + dx, point.second + dy)
-                if (this.rolls.contains(neighbor)) neighbors.add(neighbor)
+    fun neighborList(point: Point): List<Point> =
+        (-1..1).flatMap { dy ->
+            (-1..1).mapNotNull { dx ->
+                Point(point.first + dx, point.second + dy)
+                    .takeIf { (dx != 0 || dy != 0) && it in rolls }
             }
         }
-        return neighbors
-    }
 
     // return rolls that are accessible (have fewer than 4 neighbors)
-    fun accessibleRolls(): List<Point> {
-        return this.rolls.filter { neighborList(it).count() < 4 }
-    }
+    fun accessibleRolls(): List<Point> =
+        rolls.filter { neighborList(it).count() < 4 }
 
     // remove accessible rolls, returning the number of rolls removed
-    fun removeAccessibleRolls(): Int {
-        val rolls = this.accessibleRolls()
-        this.rolls.removeAll(rolls)
-        return rolls.count()
-    }
+    fun removeAccessibleRolls(): Int =
+        accessibleRolls().also { rolls.removeAll(it) }.count()
 }
 
 fun part1(input: List<String>): Int {
