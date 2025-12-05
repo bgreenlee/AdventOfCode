@@ -1,4 +1,5 @@
 import java.io.File
+import kotlin.math.max
 
 fun main() {
     val input = File("data/input.dat").readText()
@@ -25,7 +26,7 @@ fun mergeRanges(ranges: List<LongRange>): List<LongRange> {
     if (ranges.count() < 2) return ranges
     val (a, b) = ranges
     if (a.last >= b.first - 1) {
-        val newRange = a.first..if (b.last > a.last) b.last else a.last
+        val newRange = a.first..max(b.last, a.last)
         return mergeRanges(listOf(newRange) + ranges.drop(2))
     }
     return listOf(a) + mergeRanges(ranges.drop(1))
