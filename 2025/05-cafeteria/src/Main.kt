@@ -23,12 +23,12 @@ fun part1(freshIngredients: List<LongRange>, availableIngredients: List<Long>): 
 // recursively merge [sorted] ranges
 fun mergeRanges(ranges: List<LongRange>): List<LongRange> {
     if (ranges.count() < 2) return ranges
-    val (first, second) = ranges
-    if (first.last >= second.first - 1) {
-        val newRange = first.first..(if (second.last > first.last) second.last else first.last)
+    val (a, b) = ranges
+    if (a.last >= b.first - 1) {
+        val newRange = a.first..if (b.last > a.last) b.last else a.last
         return mergeRanges(listOf(newRange) + ranges.drop(2))
     }
-    return listOf(first) + mergeRanges(ranges.drop(1))
+    return listOf(a) + mergeRanges(ranges.drop(1))
 }
 
 fun part2(freshIngredients: List<LongRange>): Long {
