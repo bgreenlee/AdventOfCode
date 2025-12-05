@@ -20,7 +20,7 @@ fun part1(freshIngredients: List<LongRange>, availableIngredients: List<Long>): 
     }
 }
 
-// recursively merge ranges
+// recursively merge [sorted] ranges
 fun mergeRanges(ranges: List<LongRange>): List<LongRange> {
     if (ranges.count() < 2) return ranges
     val (first, second) = ranges
