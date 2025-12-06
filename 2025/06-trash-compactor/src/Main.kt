@@ -37,14 +37,8 @@ fun part2(input: List<String>): Long {
     var op = '+'
     for (col in worksheet) {
         when (col.last()) {
-            '+' -> {
-                op = '+'
-                total = 0
-            }
-            '*' -> {
-                op = '*'
-                total = 1
-            }
+            '+' -> { op = '+'; total = 0 }
+            '*' -> { op = '*'; total = 1 }
         }
         val numStr = col.dropLast(1).joinToString("").trim()
         if (numStr.isEmpty()) {
