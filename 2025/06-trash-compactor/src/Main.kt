@@ -8,62 +8,32 @@ fun main() {
     println("part 2: " + part2(input))
 }
 
-// transpose a matrix
-fun Array<LongArray>.transpose(): Array<LongArray> {
-    val rows = this.size
-    val cols = if (rows > 0) this[0].size else 0
-    val result = Array(cols) { LongArray(rows) }
-
-    for (i in 0 until rows)
-        for (j in 0 until cols)
-            result[j][i] = this[i][j]
-
-    return result
+fun <T> List<List<T>>.transpose(): List<List<T>> {
+    if (isEmpty() || this[0].isEmpty()) return emptyList()
+    return this[0].indices.map { i -> this.map { it[i] } }
 }
 
 fun part1(input: List<String>): Long {
     val whitespace = Regex("""\s+""")
-    val numbers: Array<LongArray> = input.dropLast(1)
-        .map { it.trim()
-            .split(whitespace)
-            .map { it.toLong() }
-            .toLongArray()
-        }
-        .toTypedArray()
+    val numbers = input.dropLast(1)
+        .map { it.trim().split(whitespace).map(String::toLong) }
         .transpose()
-    val ops: CharArray = input.last().trim()
-        .split(whitespace)
-        .map { it[0].toChar() }
-        .toCharArray()
+    val ops = input.last().trim().split(whitespace).map { it[0] }
 
-    return ops.withIndex().sumOf { (i, op) ->
-        numbers[i].reduce { acc, el -> if (op == '+') acc + el else acc * el }
+    return numbers.zip(ops).sumOf { (col, op) ->
+        col.reduce { acc, n -> if (op == '+') acc + n else acc * n }
     }
-}
-
-// sadly it seems there is no way to make this work generically for primitive types
-fun Array<CharArray>.transpose(): Array<CharArray> {
-    val rows = this.size
-    val cols = if (rows > 0) this[0].size else 0
-    val result = Array(cols) { CharArray(rows) }
-
-    for (i in 0 until rows)
-        for (j in 0 until cols)
-            result[j][i] = this[i][j]
-
-    return result
 }
 
 fun part2(input: List<String>): Long {
     // pad input to the same length
-    val maxLen = input.maxOf { it.count() }
-    val paddedInput = input.map { it.padEnd(maxLen) }
-    val worksheet = paddedInput.map { it.toCharArray() }
-        .toTypedArray()
+    val maxLen = input.maxOf { it.length }
+    val worksheet = input
+        .map { it.padEnd(maxLen).toList() }
         .transpose()
 
-    var sum = 0L
-    var total = 0L
+    var sum = 0L // overall sum
+    var total = 0L // column total
     var op = '+'
     for (col in worksheet) {
         when (col.last()) {
@@ -77,7 +47,7 @@ fun part2(input: List<String>): Long {
             }
         }
         val numStr = col.dropLast(1).joinToString("").trim()
-        if (numStr == "") {
+        if (numStr.isEmpty()) {
             sum += total
             continue
         }
