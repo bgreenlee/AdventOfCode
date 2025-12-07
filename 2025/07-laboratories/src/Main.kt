@@ -9,7 +9,7 @@ fun main() {
 }
 
 fun solve(input: List<String>): Pair<Int, Long> {
-    val beams = mutableMapOf<Int, Long>(input.first().length / 2 to 1)
+    val beams = mutableMapOf<Int, Long>(input.first().indexOf('S') to 1)
     var splitCount = 0
     for (line in input)
         for ((x, char) in line.withIndex())
