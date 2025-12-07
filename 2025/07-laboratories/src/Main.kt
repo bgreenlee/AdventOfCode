@@ -13,13 +13,14 @@ fun solve(input: List<String>): Pair<Int, Long> {
     var splitCount = 0
     for (line in input) {
         for ((x, char) in line.withIndex()) {
-            if (char == '^' && beams.contains(x)) {
-                if (x > 0) beams[x - 1] = (beams[x - 1] ?: 0) + (beams[x] ?: 0)
-                if (x < line.length) beams[x + 1] = (beams[x + 1] ?: 0) + (beams[x] ?: 0)
+            if (char == '^' && x in beams) {
+                val parentCount = beams.getValue(x)
+                if (x > 0) beams.merge(x - 1, parentCount, Long::plus)
+                if (x < line.length) beams.merge(x + 1, parentCount, Long::plus)
                 beams.remove(x)
-                splitCount += 1
+                splitCount++
             }
         }
     }
-    return Pair(splitCount, beams.values.sum())
+    return splitCount to beams.values.sum()
 }
