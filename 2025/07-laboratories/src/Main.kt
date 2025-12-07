@@ -11,8 +11,8 @@ fun main() {
 fun solve(input: List<String>): Pair<Int, Long> {
     val beams = mutableMapOf<Int, Long>(input.first().length / 2 to 1)
     var splitCount = 0
-    for (line in input) {
-        for ((x, char) in line.withIndex()) {
+    for (line in input)
+        for ((x, char) in line.withIndex())
             if (char == '^' && x in beams) {
                 val parentCount = beams.getValue(x)
                 if (x > 0) beams.merge(x - 1, parentCount, Long::plus)
@@ -20,7 +20,6 @@ fun solve(input: List<String>): Pair<Int, Long> {
                 beams.remove(x)
                 splitCount++
             }
-        }
-    }
+
     return splitCount to beams.values.sum()
 }
