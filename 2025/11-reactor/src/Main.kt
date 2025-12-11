@@ -11,35 +11,30 @@ fun main() {
     println("part 2: " + part2(graph))
 }
 
+fun countPaths(
+    graph: Map<String, List<String>>,
+    source: String,
+    target: String,
+    requiredNodes: Set<String>
+): Long {
+    val cache = mutableMapOf<Pair<String, Set<String>>, Long>()
 
-fun part1(graph: Map<String, List<String>>): Long {
-    val cache = mutableMapOf<String, Long>()
-    fun countPaths(source: String, target: String): Long =
-        cache.getOrPut(source) {
-            if (source == target) 1
-            else graph.getValue(source)
-                .sumOf { countPaths(it, target) }
+    fun recurse(current: String, found: Set<String>): Long {
+        val newFound = if (current in requiredNodes) found + current else found
+
+        return cache.getOrPut(current to newFound) {
+            if (current == target)
+                if (newFound == requiredNodes) 1 else 0
+            else
+                graph.getValue(current).sumOf { recurse(it, newFound) }
         }
+    }
 
-    return countPaths("you", "out")
+    return recurse(source,emptySet())
 }
 
-fun part2(graph: Map<String, List<String>>): Long {
-    val cache = mutableMapOf<Triple<String, Boolean, Boolean>,Long>()
-    fun countPaths(source: String, target: String, foundDac: Boolean, foundFft: Boolean): Long =
-        cache.getOrPut(Triple(source, foundDac, foundFft)) {
-            if (source == target) {
-                if (foundDac && foundFft) 1 else 0
-            } else {
-                graph.getValue(source)
-                    .sumOf {
-                        countPaths(it, target,
-                            foundDac || source == "dac",
-                            foundFft || source == "fft"
-                        )
-                    }
-            }
-        }
+fun part1(graph: Map<String, List<String>>): Long =
+    countPaths(graph,"you", "out", emptySet())
 
-    return countPaths("svr", "out", false, false)
-}
+fun part2(graph: Map<String, List<String>>): Long =
+    countPaths(graph,"svr", "out", setOf("dac", "fft"))
