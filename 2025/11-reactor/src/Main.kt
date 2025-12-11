@@ -11,20 +11,15 @@ fun main() {
     println("part 2: " + part2(graph))
 }
 
-fun countPaths(
-    graph: Map<String, List<String>>,
-    source: String,
-    target: String,
-    requiredNodes: Set<String>
-): Long {
+fun countPaths(graph: Map<String, List<String>>, source: String, target: String, required: Set<String>): Long {
     val cache = mutableMapOf<Pair<String, Set<String>>, Long>()
 
     fun recurse(current: String, found: Set<String>): Long {
-        val newFound = if (current in requiredNodes) found + current else found
+        val newFound = if (current in required) found + current else found
 
         return cache.getOrPut(current to newFound) {
             if (current == target)
-                if (newFound == requiredNodes) 1 else 0
+                if (newFound == required) 1 else 0
             else
                 graph.getValue(current).sumOf { recurse(it, newFound) }
         }
